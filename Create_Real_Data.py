@@ -2,28 +2,22 @@ import arcpy
 import random
 arcpy.env.overwriteOutput = True
 
+# Workspaces
 intermediate_ws = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Intermediate.gdb"
-arcpy.env.workspace = intermediate_ws
-
 output_ws = r'P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs.gdb'
 
-input_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Parcels.gdb\sacramento_parcels"
-output_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs.gdb\sacramento_parcels"
+# Input & output parcels feature class
+input_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Parcels.gdb\sacramento_parcels"
+#output_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs.gdb\sacramento_parcels"
+output_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs.gdb\sacramento_parcels_subset2"
 
-# Requirement datasets
-city_boundaries_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Inputs.gdb\CA_Cities"
+# Datasets used in calculating requirements:
+city_boundaries_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Inputs.gdb\CA_Cities_Alter_Pop_Test"
 
-def copy_parcels_fc():
-    arcpy.CopyFeatures_management(input_parcels_fc, output_parcels_fc)
 
 requirements = {
-    # Type of Housing
-    1.1: "res_or_mixed_25_com",
-    1.2: "res_or_mixed",
-    1.3: "res",
-    1.4: "multifamily",
     # Location Requirements
-    2.1: "urbanized_area",
+    2.1: "urbanized_area_prc_21071",
     2.2: "urban_area",
     2.3: "within_city_limits",
     2.4: "unincorporated_urbanized_area",
@@ -80,9 +74,16 @@ exemptions = {
     13: ['21159.28', 'Resources Code', [2.5]]
 }
 
+arcpy.env.workspace = intermediate_ws
+
+
+def copy_parcels_fc():
+    print "Copying Parcels Feature Class..."
+    arcpy.CopyFeatures_management(input_parcels_fc, output_parcels_fc)
+
 
 def create_empty_tables():
-    ''' Create the required tables '''
+    print "Creating empty tables..."
 
     # Create the parcel - exemptions table (junction table)
     arcpy.CreateTable_management(intermediate_ws, "parcel_exemptions")
@@ -103,7 +104,7 @@ def create_empty_tables():
     
     
 def populate_exemptions_table():
-    ''' Populate the exemptions table '''
+    print "Populating the exemptions table..."
 
     ic = arcpy.da.InsertCursor("exemptions", ["exemption_id", "exemption_code", "exemption_source"])
 
@@ -112,7 +113,7 @@ def populate_exemptions_table():
 
 
 def calculate_parcel_requirements():
-    ''' For each requirement field, determine whether or not each parcel meets the requirement. Random numbers. '''
+    print "Calculating 1's and 0's for the spatial requirements...."
 
     uc = arcpy.da.UpdateCursor(output_parcels_fc, "*")
     
@@ -121,11 +122,14 @@ def calculate_parcel_requirements():
     for field in fields:
         fieldnames.append(field.name)
 
+    count = 0
     for row in uc:
+        parcel_OID = row[1]
 
-        parcel_OID = row[0]
-
+        if count == 0:
+            print "Calculating requirement 2.1...\n"
         requirement_2_1 = calc_requirement_2_1(parcel_OID)
+        row[fieldnames.index('urbanized_area_prc_21071')] = requirement_2_1
 
         # TODO: Replace random number assignment with geoprocessing steps
         #for k, v in requirements.iteritems():
@@ -134,12 +138,13 @@ def calculate_parcel_requirements():
         #            row[fieldnames.index(v)] = 1
         #        else:
         #            row[fieldnames.index(v)] = 0
+        count += 1
 
-    uc.updateRow(row)
+        uc.updateRow(row)
             
             
 def calculate_parcel_exemptions():
-    ''' Determines what parcels meet what exemptions based on the binary requirement fields in the parcels feature class. Output stored in the junction table (parcels_exemptions). '''
+    print "Calculating parcel exemptions based on requirements (output stored in the junction table (parcels_exemptions)."
     
     parcels_uc = arcpy.da.UpdateCursor(output_parcels_fc, "*")
     exemptions_ic = arcpy.da.InsertCursor("parcel_exemptions", ['parcel_id', 'exemption_id'])
@@ -179,6 +184,7 @@ def calculate_parcel_exemptions():
 
 
 def create_outputs():
+    print "Creating outputs..."
     arcpy.env.workspace = output_ws
     #parcels_name = arcpy.Describe(output_parcels_fc).Name
     #arcpy.CopyRows_management(output_parcels_fc, "requirements_table")
@@ -206,18 +212,17 @@ def create_outputs():
     print "Deleting fields from parcels table"
     arcpy.DeleteField_management(output_parcels_fc, requirements_fields)
 
-#copy_parcels_fc()
-#create_empty_tables()
-calculate_parcel_requirements()
-#populate_exemptions_table()
-#create_outputs()
+
+# REQUIREMENTS #########################################################################################################
 
 def calc_requirement_2_1(parcel_OID):
+
+    print "Parcel OBJECTID: " + str(parcel_OID)
 
     city_boundaries_layer = arcpy.MakeFeatureLayer_management(city_boundaries_fc)
     output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
 
-    # Select the current parcel
+    # Select the current parcel.
     query = '"OBJECTID" = %s' % str(parcel_OID)
     arcpy.SelectLayerByAttribute_management(output_parcels_layer, "NEW_SELECTION", query)
 
@@ -225,7 +230,7 @@ def calc_requirement_2_1(parcel_OID):
     arcpy.SelectLayerByLocation_management(city_boundaries_layer, "CONTAINS", output_parcels_layer)
     arcpy.MakeFeatureLayer_management(city_boundaries_layer, "city_boundary_containing_parcel")
 
-    ################################ INCORPORATED CITY CRITERIA  ########################################
+    # INCORPORATED CITY ################################################################################################
 
     # Get the population of the selected city boundary
     city_boundary_containing_parcel_population = 0
@@ -233,36 +238,61 @@ def calc_requirement_2_1(parcel_OID):
     for row in sc:
         city_boundary_containing_parcel_population = row.getValue("POPULATION")
 
+    print "City Population: " + str(city_boundary_containing_parcel_population)
+
     # If the city boundary has a population > 100,000k, we're done(21017 a(1)).
     if city_boundary_containing_parcel_population > 100000:
-        print "Population of city exceeds 100,000: " + str(city_boundary_containing_parcel_population)
+        print "Requirement met."
         requirement_2_1 = 1
-
 
     # If the city boundary has a population < 100000k, but the total population with two contiguous cities > 100,000k
     else:
         # Select contiguous city boundaries.
         arcpy.SelectLayerByLocation_management(city_boundaries_layer, "SHARE_A_LINE_SEGMENT_WITH", "city_boundary_containing_parcel")
+        arcpy.SelectLayerByLocation_management(city_boundaries_layer, "ARE_IDENTICAL_TO", "city_boundary_containing_parcel", "", "REMOVE_FROM_SELECTION")
 
         # Get the sum of the top two contiguous city populations.
         city_boundary_sc = arcpy.SearchCursor(city_boundaries_layer)
         population_list = []
+        number_of_surrounding_cities = 0
         for row in city_boundary_sc:
             population_list.append(row.getValue("POPULATION"))
+            number_of_surrounding_cities += 1
 
-        # If there are no more than two contiguous incorporated cities...
-        if len(population_list) <= 2:
-            sorted_pop_list = sorted(population_list)
-            sum_largest_two_surrounding_pops = sorted_pop_list[-1] + sorted_pop_list[-2]
+        # If the city plus two contiguous incorporated cities total more than 100,000k...
+
+        sorted_pop_list = sorted(population_list)
+        print "Number of surrounding cities: " + str(number_of_surrounding_cities) + "(Populations: " + ", ".join(map(str, sorted_pop_list)) + ")"
+
+        if number_of_surrounding_cities >= 1:
+            if number_of_surrounding_cities >= 2:
+                sum_largest_two_surrounding_pops = sorted_pop_list[-1] + sorted_pop_list[-2]
+            else:
+                sum_largest_two_surrounding_pops = sorted_pop_list[-1]
+
             sum_surrounding_populations = city_boundary_containing_parcel_population + sum_largest_two_surrounding_pops
 
+            print "City Population including top two surrounding cities: " + str(sum_surrounding_populations)
             # ...and the selected city + the two largest surrounding cities  have a population > 100,000k, we're done
-            if sum_surrounding_populations >= 10000:
+            if sum_surrounding_populations >= 100000:
+                print "Requirement met."
                 requirement_2_1 = 1
 
-            ################################ UNINCORPORATED CITY CRITERIA  ########################################
+            # UNINCORPORATED CITY ######################################################################################
             else:
+                print "Requirement not met."
                 requirement_2_1 = 0
+        else:
+            print "Requirement not met."
+            requirement_2_1 = 0
+
+    print "\n"
 
     return requirement_2_1
+
+#copy_parcels_fc()
+create_empty_tables()
+calculate_parcel_requirements()
+#populate_exemptions_table()
+#create_outputs()
 
