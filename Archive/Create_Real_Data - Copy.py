@@ -9,7 +9,7 @@ output_ws = r'P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel
 # Input & output parcels feature class
 input_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Parcels.gdb\sacramento_parcels"
 #output_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs.gdb\sacramento_parcels"
-output_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs.gdb\sacramento_parcels_subset3"
+output_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs.gdb\sacramento_parcels_subset2"
 
 # Datasets used in calculating requirements:
 city_boundaries_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Inputs.gdb\CA_Cities"
@@ -231,105 +231,69 @@ def calc_requirement_2_1(parcel_OID):
     arcpy.SelectLayerByLocation_management(city_boundaries_layer, "CONTAINS", output_parcels_layer)
     arcpy.MakeFeatureLayer_management(city_boundaries_layer, "city_boundary_containing_parcel")
 
-    is_city = 0
+    # INCORPORATED CITY ################################################################################################
 
-    # Determine if the parcel is in a city, and get the population of the selected city boundary
+    # Get the population of the selected city boundary
+    is_incorporated = 0
     sc = arcpy.SearchCursor("city_boundary_containing_parcel")
     for row in sc:
-        is_city = 1
+        is_incorporated = 1
         city_boundary_containing_parcel_population = row.getValue("POPULATION")
 
-    # INCORPORATED CITY ################################################################################################
-    if is_city:
+    if is_incorporated:
 
-        print "City Population: " + str(city_boundary_containing_parcel_population)
+    print "City Population: " + str(city_boundary_containing_parcel_population)
 
-        # If the city boundary has a population > 100,000k, we're done(21017 a(1)).
-        if city_boundary_containing_parcel_population > 100000:
-            print "Requirement met."
-            requirement_2_1 = 1
+    # If the city boundary has a population > 100,000k, we're done(21017 a(1)).
+    if city_boundary_containing_parcel_population > 100000:
+        print "Requirement met."
+        requirement_2_1 = 1
 
-        # If the city boundary has a population < 100000k, but the total population with two contiguous cities > 100,000k
-        else:
-            # Select contiguous city boundaries.
-            arcpy.SelectLayerByLocation_management(city_boundaries_layer, "SHARE_A_LINE_SEGMENT_WITH", "city_boundary_containing_parcel")
-            arcpy.SelectLayerByLocation_management(city_boundaries_layer, "ARE_IDENTICAL_TO", "city_boundary_containing_parcel", "", "REMOVE_FROM_SELECTION")
-
-            # Get the sum of the top two contiguous city populations.
-            city_boundary_sc = arcpy.SearchCursor(city_boundaries_layer)
-            population_list = []
-            number_of_surrounding_cities = 0
-            for row in city_boundary_sc:
-                population_list.append(row.getValue("POPULATION"))
-                number_of_surrounding_cities += 1
-
-            # If the city plus two contiguous incorporated cities total more than 100,000k...
-            sorted_pop_list = sorted(population_list)
-            print "Number of surrounding cities: " + str(number_of_surrounding_cities) + "(Populations: " + ", ".join(map(str, sorted_pop_list)) + ")"
-
-            if number_of_surrounding_cities >= 1:
-                if number_of_surrounding_cities >= 2:
-                    sum_largest_two_surrounding_pops = sorted_pop_list[-1] + sorted_pop_list[-2]
-                else:
-                    sum_largest_two_surrounding_pops = sorted_pop_list[-1]
-
-                sum_surrounding_populations = city_boundary_containing_parcel_population + sum_largest_two_surrounding_pops
-
-                print "City Population including top two surrounding cities: " + str(sum_surrounding_populations)
-                # ...and the selected city + the two largest surrounding cities  have a population > 100,000k, we're done
-                if sum_surrounding_populations >= 100000:
-                    print "Requirement met."
-                    requirement_2_1 = 1
-
-                # UNINCORPORATED CITY ##################################################################################
-                else:
-                    arcpy.MakeFeatureLayer_management(unincorported_area_surrounded_by_cities_fc, "unincorporated_area_surrounded_layer")
-                    # Select the surrounded unincorporated that the parcel falls within and get the OBJECTID
-                    arcpy.SelectLayerByLocation_management(city_boundaries_layer, "CONTAINS", output_parcels_layer)
-                    arcpy.MakeFeatureLayer_management(city_boundaries_layer, "city_boundary_containing_parcel")
-
-                    requirement_2_1 = 0
-            else:
-                print "Requirement not met."
-                requirement_2_1 = 0
-
+    # If the city boundary has a population < 100000k, but the total population with two contiguous cities > 100,000k
     else:
-        print "Unincorporated"
-        # Check to see if the unincorporated parcel is in an area surrounded by city boundaries.
-        arcpy.MakeFeatureLayer_management(unincorported_area_surrounded_by_cities_fc, "unincorporated_area_surrounded_by_cities_layer")
-        arcpy.SelectLayerByLocation_management("unincorporated_area_surrounded_by_cities_layer", "CONTAINS", output_parcels_layer)
-        is_surrounded = int(arcpy.GetCount_management("unincorporated_area_surrounded_by_cities_layer").getOutput(0))
+        # Select contiguous city boundaries.
+        arcpy.SelectLayerByLocation_management(city_boundaries_layer, "SHARE_A_LINE_SEGMENT_WITH", "city_boundary_containing_parcel")
+        arcpy.SelectLayerByLocation_management(city_boundaries_layer, "ARE_IDENTICAL_TO", "city_boundary_containing_parcel", "", "REMOVE_FROM_SELECTION")
 
-        # If the area is surrounded by cities, get the population of the surrounding cities.
-        if is_surrounded:
-            print "Completely surrounded by one or more incorporated cities"
+        # Get the sum of the top two contiguous city populations.
+        city_boundary_sc = arcpy.SearchCursor(city_boundaries_layer)
+        population_list = []
+        number_of_surrounding_cities = 0
+        for row in city_boundary_sc:
+            population_list.append(row.getValue("POPULATION"))
+            number_of_surrounding_cities += 1
 
-            # Select the surrounding cities.
-            arcpy.SelectLayerByLocation_management(city_boundaries_layer, "SHARE_A_LINE_SEGMENT_WITH", "unincorporated_area_surrounded_by_cities_layer")
-            sc = arcpy.SearchCursor(city_boundaries_layer)
-            sum_surrounding_area = 0
-            sum_surrounding_populations = 0
-            # Get the population and area of the surrounding cities.
-            for row in sc:
+        # If the city plus two contiguous incorporated cities total more than 100,000k...
+        sorted_pop_list = sorted(population_list)
+        print "Number of surrounding cities: " + str(number_of_surrounding_cities) + "(Populations: " + ", ".join(map(str, sorted_pop_list)) + ")"
 
-                sum_surrounding_populations += int(row.getValue("POPULATION"))
-                sum_surrounding_area += float(row.getValue("shape_Area"))
+        if number_of_surrounding_cities >= 1:
+            if number_of_surrounding_cities >= 2:
+                sum_largest_two_surrounding_pops = sorted_pop_list[-1] + sorted_pop_list[-2]
+            else:
+                sum_largest_two_surrounding_pops = sorted_pop_list[-1]
 
-            population_density = sum_surrounding_populations/sum_surrounding_area
-            print "Surrounding Population " + str(sum_surrounding_populations)
-            print "Surrounding Population Density " + str(population_density)
+            sum_surrounding_populations = city_boundary_containing_parcel_population + sum_largest_two_surrounding_pops
 
+            print "City Population including top two surrounding cities: " + str(sum_surrounding_populations)
+            # ...and the selected city + the two largest surrounding cities  have a population > 100,000k, we're done
             if sum_surrounding_populations >= 100000:
                 print "Requirement met."
                 requirement_2_1 = 1
-            else:
-                print "Requirement not met."
-                requirement_2_1 = 0
 
+            # UNINCORPORATED CITY ######################################################################################
+            else:
+                arcpy.MakeFeatureLayer_management(unincorported_area_surrounded_by_cities_fc, "unincorporated_area_surrounded_layer")
+                # Select the surrounded unincorporated that the parcel falls within and get the OBJECTID
+                arcpy.SelectLayerByLocation_management(city_boundaries_layer, "CONTAINS", output_parcels_layer)
+                arcpy.MakeFeatureLayer_management(city_boundaries_layer, "city_boundary_containing_parcel")
+
+                requirement_2_1 = 0
         else:
-            print "Not surrounded"
-            print "Requirement not met"
+            print "Requirement not met."
             requirement_2_1 = 0
+
+    print "\n"
 
     return requirement_2_1
 
