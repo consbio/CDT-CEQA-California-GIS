@@ -1,4 +1,5 @@
 import sys
+import os
 import arcpy
 import random
 import datetime
@@ -14,8 +15,17 @@ output_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA
 #output_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs.gdb\sacramento_parcels_subset3"
 
 # Datasets used in calculating requirements:
-city_boundaries_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Inputs.gdb\CA_Cities"
+
+#2.1
+city_boundaries_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Inputs.gdb\CA_Cities" # 2.3
 unincorporated_islands = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Intermediate.gdb\Unincorporated_Islands_with_Population_Dissolve"
+
+#2.4
+urbanized_area_urban_cluster_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Inputs.gdb\CA_urbanized_area_urban_cluster"
+incorporated_and_unincorporated_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Inputs.gdb\CA_incorporated_and_unincorporated"
+
+#2.5
+mpo_boundary_dissolve_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Intermediate.gdb\MPO_boundaries_dissolve"
 
 start_time = datetime.datetime.now()
 print("Start Time: " + str(start_time))
@@ -117,43 +127,69 @@ def populate_exemptions_table():
         ic.insertRow([k, v[0], v[1]])
 
 
-def calculate_parcel_requirements(start_oid, end_oid):
+def calculate_parcel_requirements(requirements_to_process, start_oid=0, end_oid=0):
     print "Calculating 1's and 0's for the spatial requirements...."
 
-    filter_records = "OBJECTID > %s and OBJECTID <= %s" % (start_oid, end_oid)
+    # For requirements requiring an update cursor
+    if 2.1 in requirements_to_process:
+        print "Calculating requirements using an update cursor...\n"
 
-    uc = arcpy.da.UpdateCursor(output_parcels_fc, "*", filter_records)
-    
-    fieldnames = []
-    fields = arcpy.ListFields(output_parcels_fc)
-    for field in fields:
-        fieldnames.append(field.name)
+        fieldnames = []
+        fields = arcpy.ListFields(output_parcels_fc)
+        for field in fields:
+            fieldnames.append(field.name)
 
-    count = 0
-    for row in uc:
-        parcel_OID = row[0]
+        filter_records = "OBJECTID > %s and OBJECTID <= %s" % (start_oid, end_oid)
+        uc = arcpy.da.UpdateCursor(output_parcels_fc, "*", filter_records)
 
-        if count == 0:
-            print "Calculating requirement 2.1...\n"
+        count = 0
+        for row in uc:
+            parcel_OID = row[0]
 
-        start_time_calc = datetime.datetime.now()
-        requirement_2_1 = calc_requirement_2_1(parcel_OID)
-        end_time_calc = datetime.datetime.now()
-        calc_duration = end_time_calc - start_time_calc
-        print("Duration: " + str(calc_duration))
-        row[fieldnames.index('urbanized_area_prc_21071')] = requirement_2_1
+            if count == 0:
+                print "Calculating requirement 2.1...\n"
 
-        # TODO: Replace random number assignment with geoprocessing steps
-        #for k, v in requirements.iteritems():
-        #        rand = random.choice([0, 0, 0, 0, 0, 0, 0, 0, 1])
-        #        if rand:
-        #            row[fieldnames.index(v)] = 1
-        #        else:
-        #            row[fieldnames.index(v)] = 0
-        count += 1
+            start_time_calc = datetime.datetime.now()
 
-        uc.updateRow(row)
+            # Call functions to calculate individual requirements
+            if 2.1 in requirements_to_process:
+                requirement_2_1 = calc_requirement_2_1(parcel_OID)
 
+            end_time_calc = datetime.datetime.now()
+            calc_duration = end_time_calc - start_time_calc
+            print("Duration: " + str(calc_duration))
+            row[fieldnames.index('urbanized_area_prc_21071')] = requirement_2_1
+
+            # TODO: Replace random number assignment with geoprocessing steps
+            #for k, v in requirements.iteritems():
+            #        rand = random.choice([0, 0, 0, 0, 0, 0, 0, 0, 1])
+            #        if rand:
+            #            row[fieldnames.index(v)] = 1
+            #        else:
+            #            row[fieldnames.index(v)] = 0
+            count += 1
+
+            uc.updateRow(row)
+
+    if 2.2 in requirements_to_process:
+        print "Calculating requirement 2.2...\n"
+        field_to_calc = requirements[2.2]
+        calc_requirement_2_2(field_to_calc)
+
+    if 2.3 in requirements_to_process:
+        print "Calculating requirement 2.3...\n"
+        field_to_calc = requirements[2.3]
+        calc_requirement_2_3(field_to_calc)
+
+    if 2.4 in requirements_to_process:
+        print "Calculating requirement 2.4...\n"
+        field_to_calc = requirements[2.4]
+        calc_requirement_2_4(field_to_calc)
+
+    if 2.5 in requirements_to_process:
+        print "Calculating requirement 2.5...\n"
+        field_to_calc = requirements[2.5]
+        calc_requirement_2_5(field_to_calc)
 
             
 def calculate_parcel_exemptions():
@@ -366,16 +402,62 @@ def calc_requirement_2_1(parcel_OID):
 
     return requirement_2_1
 
-def calc_requirement_2_2():
-    arcpy.MakeFeatureLayer_management(output_parcels_fc, "output_parcesls_fc")
-    arcpy.SelectLayerByLocation_management()
+
+def calc_requirement_2_2(field_to_calc):
+
+    print field_to_calc
+
+
+def calc_requirement_2_3(field_to_calc):
+
+    arcpy.MakeFeatureLayer_management(output_parcels_fc, "output_parcels_layer")
+    arcpy.SelectLayerByLocation_management("output_parcels_layer", "WITHIN", city_boundaries_fc)
+    arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 1, "PYTHON")
+    arcpy.SelectLayerByAttribute_management("output_parcels_layer", "SWITCH_SELECTION")
+    arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 0, "PYTHON")
+
+def calc_requirement_2_4(field_to_calc):
+
+    # Unincorporated areas
+    arcpy.MakeFeatureLayer_management(incorporated_and_unincorporated_fc, "incorporated_and_unincorporated_layer")
+    arcpy.SelectLayerByAttribute_management("incorporated_and_unincorporated_layer", "NEW_SELECTION", "CITY = 'Unincorporated'")
+
+    # Urbanized area or urban cluster
+    arcpy.MakeFeatureLayer_management(urbanized_area_urban_cluster_fc, "urbanized_area_urban_cluster_layer")
+
+    # Unincorporated Urbanized area or urban cluster
+    unincorporated_urbanized_area_or_urban_cluster_fc = intermediate_ws + os.sep + "unincorporated_urbanized_area_or_urban_cluster"
+    arcpy.Intersect_analysis(["incorporated_and_unincorporated_layer", "urbanized_area_urban_cluster_layer"], unincorporated_urbanized_area_or_urban_cluster_fc)
+
+    arcpy.MakeFeatureLayer_management(output_parcels_fc, "output_parcels_layer")
+    arcpy.SelectLayerByLocation_management("output_parcels_layer", "WITHIN", unincorporated_urbanized_area_or_urban_cluster_fc)
+
+    arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 1, "PYTHON")
+    arcpy.SelectLayerByAttribute_management("output_parcels_layer", "SWITCH_SELECTION")
+    arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 0, "PYTHON")
+
+
+def calc_requirement_2_5(field_to_calc):
+
+    field_to_calc = "within_mpo"
+
+    arcpy.MakeFeatureLayer_management(output_parcels_fc, "output_parcels_layer")
+    arcpy.SelectLayerByLocation_management("output_parcels_layer", "WITHIN", mpo_boundary_dissolve_fc)
+    arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 1, "PYTHON")
+    arcpy.SelectLayerByAttribute_management("output_parcels_layer", "SWITCH_SELECTION")
+    arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 0, "PYTHON")
+
 
 #copy_parcels_fc()
 #create_empty_tables()
 
-start_oid = sys.argv[1]
-end_oid = sys.argv[2]
-calculate_parcel_requirements(start_oid, end_oid)
+requirements_to_process = [2.2]
+
+#start_oid = sys.argv[1] # If called multiple times from batch script to increase performance, get oids from batch file.
+#end_oid = sys.argv[2]
+# If called multiple times from batch script to increase performance, get oids from batch file.
+#calculate_parcel_requirements(requirements_to_process, start_oid, end_oid)
+calculate_parcel_requirements(requirements_to_process)
 #populate_exemptions_table()
 #create_outputs()
 
