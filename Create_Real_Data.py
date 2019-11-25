@@ -1,5 +1,7 @@
+import sys
 import arcpy
 import random
+import datetime
 arcpy.env.overwriteOutput = True
 
 # Workspaces
@@ -8,13 +10,15 @@ output_ws = r'P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel
 
 # Input & output parcels feature class
 input_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Parcels.gdb\sacramento_parcels"
-#output_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs.gdb\sacramento_parcels"
-output_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs.gdb\sacramento_parcels_subset3"
+output_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs.gdb\sacramento_parcels"
+#output_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs.gdb\sacramento_parcels_subset3"
 
 # Datasets used in calculating requirements:
 city_boundaries_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Inputs.gdb\CA_Cities"
-unincorported_area_surrounded_by_cities_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Intermediate.gdb\Unincorporated_Areas_Completely_Surrounded_By_Cities"
+unincorporated_islands = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Intermediate.gdb\Unincorporated_Islands_with_Population_Dissolve"
 
+start_time = datetime.datetime.now()
+print("Start Time: " + str(start_time))
 
 requirements = {
     # Location Requirements
@@ -113,10 +117,12 @@ def populate_exemptions_table():
         ic.insertRow([k, v[0], v[1]])
 
 
-def calculate_parcel_requirements():
+def calculate_parcel_requirements(start_oid, end_oid):
     print "Calculating 1's and 0's for the spatial requirements...."
 
-    uc = arcpy.da.UpdateCursor(output_parcels_fc, "*")
+    filter_records = "OBJECTID > %s and OBJECTID <= %s" % (start_oid, end_oid)
+
+    uc = arcpy.da.UpdateCursor(output_parcels_fc, "*", filter_records)
     
     fieldnames = []
     fields = arcpy.ListFields(output_parcels_fc)
@@ -125,11 +131,16 @@ def calculate_parcel_requirements():
 
     count = 0
     for row in uc:
-        parcel_OID = row[1]
+        parcel_OID = row[0]
 
         if count == 0:
             print "Calculating requirement 2.1...\n"
+
+        start_time_calc = datetime.datetime.now()
         requirement_2_1 = calc_requirement_2_1(parcel_OID)
+        end_time_calc = datetime.datetime.now()
+        calc_duration = end_time_calc - start_time_calc
+        print("Duration: " + str(calc_duration))
         row[fieldnames.index('urbanized_area_prc_21071')] = requirement_2_1
 
         # TODO: Replace random number assignment with geoprocessing steps
@@ -142,7 +153,8 @@ def calculate_parcel_requirements():
         count += 1
 
         uc.updateRow(row)
-            
+
+
             
 def calculate_parcel_exemptions():
     print "Calculating parcel exemptions based on requirements (output stored in the junction table (parcels_exemptions)."
@@ -267,6 +279,8 @@ def calc_requirement_2_1(parcel_OID):
             sorted_pop_list = sorted(population_list)
             print "Number of surrounding cities: " + str(number_of_surrounding_cities) + "(Populations: " + ", ".join(map(str, sorted_pop_list)) + ")"
 
+            del city_boundary_sc
+
             if number_of_surrounding_cities >= 1:
                 if number_of_surrounding_cities >= 2:
                     sum_largest_two_surrounding_pops = sorted_pop_list[-1] + sorted_pop_list[-2]
@@ -283,7 +297,7 @@ def calc_requirement_2_1(parcel_OID):
 
                 # UNINCORPORATED CITY ##################################################################################
                 else:
-                    arcpy.MakeFeatureLayer_management(unincorported_area_surrounded_by_cities_fc, "unincorporated_area_surrounded_layer")
+                    arcpy.MakeFeatureLayer_management(unincorporated_islands, "unincorporated_area_surrounded_layer")
                     # Select the surrounded unincorporated that the parcel falls within and get the OBJECTID
                     arcpy.SelectLayerByLocation_management(city_boundaries_layer, "CONTAINS", output_parcels_layer)
                     arcpy.MakeFeatureLayer_management(city_boundaries_layer, "city_boundary_containing_parcel")
@@ -296,30 +310,45 @@ def calc_requirement_2_1(parcel_OID):
     else:
         print "Unincorporated"
         # Check to see if the unincorporated parcel is in an area surrounded by city boundaries.
-        arcpy.MakeFeatureLayer_management(unincorported_area_surrounded_by_cities_fc, "unincorporated_area_surrounded_by_cities_layer")
-        arcpy.SelectLayerByLocation_management("unincorporated_area_surrounded_by_cities_layer", "CONTAINS", output_parcels_layer)
-        is_surrounded = int(arcpy.GetCount_management("unincorporated_area_surrounded_by_cities_layer").getOutput(0))
+        arcpy.MakeFeatureLayer_management(unincorporated_islands, "unincorporated_islands_layer")
+        arcpy.SelectLayerByLocation_management("unincorporated_islands_layer", "CONTAINS", output_parcels_layer)
+        is_surrounded = int(arcpy.GetCount_management("unincorporated_islands_layer").getOutput(0))
 
         # If the area is surrounded by cities, get the population of the surrounding cities.
         if is_surrounded:
             print "Completely surrounded by one or more incorporated cities"
+            # Get population of unincorporated area
+            sc = arcpy.SearchCursor("unincorporated_islands_layer")
+            for row in sc:
+                unincorporated_population = int(row.getValue("SUM_POP10"))
+                unincorporated_area = int(row.getValue("shape_Area")) * 0.001
+
+            unincorporated_density = unincorporated_population / unincorporated_area
 
             # Select the surrounding cities.
-            arcpy.SelectLayerByLocation_management(city_boundaries_layer, "SHARE_A_LINE_SEGMENT_WITH", "unincorporated_area_surrounded_by_cities_layer")
+            arcpy.SelectLayerByLocation_management(city_boundaries_layer, "SHARE_A_LINE_SEGMENT_WITH", "unincorporated_islands_layer")
             sc = arcpy.SearchCursor(city_boundaries_layer)
             sum_surrounding_area = 0
-            sum_surrounding_populations = 0
+            sum_surrounding_population = 0
+
             # Get the population and area of the surrounding cities.
             for row in sc:
 
-                sum_surrounding_populations += int(row.getValue("POPULATION"))
-                sum_surrounding_area += float(row.getValue("shape_Area"))
+                sum_surrounding_population += int(row.getValue("POPULATION"))
+                sum_surrounding_area += float(row.getValue("shape_Area")) * 0.001
 
-            population_density = sum_surrounding_populations/sum_surrounding_area
-            print "Surrounding Population " + str(sum_surrounding_populations)
-            print "Surrounding Population Density " + str(population_density)
+            # Calculate the density of the surrounding cities
+            surrounding_density = sum_surrounding_population / sum_surrounding_area
+            surrounding_population = unincorporated_population + sum_surrounding_population
 
-            if sum_surrounding_populations >= 100000:
+            # Sum of unincorporated area and surrounding population
+            combined_population = unincorporated_population + surrounding_population
+
+            print "Combined Population: " + str(combined_population)
+            print "Unincorporated Population Density: " + str(unincorporated_density)
+            print "Surrounding Population Density: " + str(surrounding_density)
+
+            if combined_population >= 100000 and unincorporated_density >= surrounding_density:
                 print "Requirement met."
                 requirement_2_1 = 1
             else:
@@ -331,11 +360,30 @@ def calc_requirement_2_1(parcel_OID):
             print "Requirement not met"
             requirement_2_1 = 0
 
+    print "\n"
+
+    del sc
+
     return requirement_2_1
 
+def calc_requirement_2_2():
+    arcpy.MakeFeatureLayer_management(output_parcels_fc, "output_parcesls_fc")
+    arcpy.SelectLayerByLocation_management()
+
 #copy_parcels_fc()
-create_empty_tables()
-calculate_parcel_requirements()
+#create_empty_tables()
+
+start_oid = sys.argv[1]
+end_oid = sys.argv[2]
+calculate_parcel_requirements(start_oid, end_oid)
 #populate_exemptions_table()
 #create_outputs()
+
+end_time = datetime.datetime.now()
+duration = end_time - start_time
+
+print("Start Time: " + str(start_time))
+print("End Time: " + str(end_time))
+print("Duration: " + str(duration))
+
 
