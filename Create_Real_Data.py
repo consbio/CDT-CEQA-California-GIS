@@ -132,44 +132,9 @@ def calculate_parcel_requirements(requirements_to_process, start_oid=0, end_oid=
 
     # For requirements requiring an update cursor
     if 2.1 in requirements_to_process:
-        print "Calculating requirements using an update cursor...\n"
-
-        fieldnames = []
-        fields = arcpy.ListFields(output_parcels_fc)
-        for field in fields:
-            fieldnames.append(field.name)
-
-        filter_records = "OBJECTID > %s and OBJECTID <= %s" % (start_oid, end_oid)
-        uc = arcpy.da.UpdateCursor(output_parcels_fc, "*", filter_records)
-
-        count = 0
-        for row in uc:
-            parcel_OID = row[0]
-
-            if count == 0:
-                print "Calculating requirement 2.1...\n"
-
-            start_time_calc = datetime.datetime.now()
-
-            # Call functions to calculate individual requirements
-            if 2.1 in requirements_to_process:
-                requirement_2_1 = calc_requirement_2_1(parcel_OID)
-
-            end_time_calc = datetime.datetime.now()
-            calc_duration = end_time_calc - start_time_calc
-            print("Duration: " + str(calc_duration))
-            row[fieldnames.index('urbanized_area_prc_21071')] = requirement_2_1
-
-            # TODO: Replace random number assignment with geoprocessing steps
-            #for k, v in requirements.iteritems():
-            #        rand = random.choice([0, 0, 0, 0, 0, 0, 0, 0, 1])
-            #        if rand:
-            #            row[fieldnames.index(v)] = 1
-            #        else:
-            #            row[fieldnames.index(v)] = 0
-            count += 1
-
-            uc.updateRow(row)
+        print "Calculating requirement 2.2...\n"
+        field_to_calc = requirements[2.1]
+        calc_requirement_2_2(field_to_calc, start_oid, end_oid)
 
     if 2.2 in requirements_to_process:
         print "Calculating requirement 2.2...\n"
@@ -264,148 +229,255 @@ def create_outputs():
 
 # REQUIREMENTS #########################################################################################################
 
-def calc_requirement_2_1(parcel_OID):
+def calc_requirement_2_1(field_to_calc, start_oid, end_oid):
 
-    print "Parcel OBJECTID: " + str(parcel_OID)
+    def calc_requirement_2_1_iterate(parcel_OID):
 
-    city_boundaries_layer = arcpy.MakeFeatureLayer_management(city_boundaries_fc)
-    output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
+        print "Parcel OBJECTID: " + str(parcel_OID)
 
-    # Select the current parcel.
-    query = '"OBJECTID" = %s' % str(parcel_OID)
-    arcpy.SelectLayerByAttribute_management(output_parcels_layer, "NEW_SELECTION", query)
+        city_boundaries_layer = arcpy.MakeFeatureLayer_management(city_boundaries_fc)
+        output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
 
-    # Select the city boundary that the parcel falls within and get the OBJECTID
-    arcpy.SelectLayerByLocation_management(city_boundaries_layer, "CONTAINS", output_parcels_layer)
-    arcpy.MakeFeatureLayer_management(city_boundaries_layer, "city_boundary_containing_parcel")
+        # Select the current parcel.
+        query = '"OBJECTID" = %s' % str(parcel_OID)
+        arcpy.SelectLayerByAttribute_management(output_parcels_layer, "NEW_SELECTION", query)
 
-    is_city = 0
+        # Select the city boundary that the parcel falls within and get the OBJECTID
+        arcpy.SelectLayerByLocation_management(city_boundaries_layer, "CONTAINS", output_parcels_layer)
+        arcpy.MakeFeatureLayer_management(city_boundaries_layer, "city_boundary_containing_parcel")
 
-    # Determine if the parcel is in a city, and get the population of the selected city boundary
-    sc = arcpy.SearchCursor("city_boundary_containing_parcel")
-    for row in sc:
-        is_city = 1
-        city_boundary_containing_parcel_population = row.getValue("POPULATION")
+        is_city = 0
 
-    # INCORPORATED CITY ################################################################################################
-    if is_city:
+        # Determine if the parcel is in a city, and get the population of the selected city boundary
+        sc = arcpy.SearchCursor("city_boundary_containing_parcel")
+        for row in sc:
+            is_city = 1
+            city_boundary_containing_parcel_population = row.getValue("POPULATION")
 
-        print "City Population: " + str(city_boundary_containing_parcel_population)
+        # INCORPORATED CITY ################################################################################################
+        if is_city:
 
-        # If the city boundary has a population > 100,000k, we're done(21017 a(1)).
-        if city_boundary_containing_parcel_population > 100000:
-            print "Requirement met."
-            requirement_2_1 = 1
+            print "City Population: " + str(city_boundary_containing_parcel_population)
 
-        # If the city boundary has a population < 100000k, but the total population with two contiguous cities > 100,000k
-        else:
-            # Select contiguous city boundaries.
-            arcpy.SelectLayerByLocation_management(city_boundaries_layer, "SHARE_A_LINE_SEGMENT_WITH", "city_boundary_containing_parcel")
-            arcpy.SelectLayerByLocation_management(city_boundaries_layer, "ARE_IDENTICAL_TO", "city_boundary_containing_parcel", "", "REMOVE_FROM_SELECTION")
-
-            # Get the sum of the top two contiguous city populations.
-            city_boundary_sc = arcpy.SearchCursor(city_boundaries_layer)
-            population_list = []
-            number_of_surrounding_cities = 0
-            for row in city_boundary_sc:
-                population_list.append(row.getValue("POPULATION"))
-                number_of_surrounding_cities += 1
-
-            # If the city plus two contiguous incorporated cities total more than 100,000k...
-            sorted_pop_list = sorted(population_list)
-            print "Number of surrounding cities: " + str(number_of_surrounding_cities) + "(Populations: " + ", ".join(map(str, sorted_pop_list)) + ")"
-
-            del city_boundary_sc
-
-            if number_of_surrounding_cities >= 1:
-                if number_of_surrounding_cities >= 2:
-                    sum_largest_two_surrounding_pops = sorted_pop_list[-1] + sorted_pop_list[-2]
-                else:
-                    sum_largest_two_surrounding_pops = sorted_pop_list[-1]
-
-                sum_surrounding_populations = city_boundary_containing_parcel_population + sum_largest_two_surrounding_pops
-
-                print "City Population including top two surrounding cities: " + str(sum_surrounding_populations)
-                # ...and the selected city + the two largest surrounding cities  have a population > 100,000k, we're done
-                if sum_surrounding_populations >= 100000:
-                    print "Requirement met."
-                    requirement_2_1 = 1
-
-                # UNINCORPORATED CITY ##################################################################################
-                else:
-                    arcpy.MakeFeatureLayer_management(unincorporated_islands, "unincorporated_area_surrounded_layer")
-                    # Select the surrounded unincorporated that the parcel falls within and get the OBJECTID
-                    arcpy.SelectLayerByLocation_management(city_boundaries_layer, "CONTAINS", output_parcels_layer)
-                    arcpy.MakeFeatureLayer_management(city_boundaries_layer, "city_boundary_containing_parcel")
-
-                    requirement_2_1 = 0
-            else:
-                print "Requirement not met."
-                requirement_2_1 = 0
-
-    else:
-        print "Unincorporated"
-        # Check to see if the unincorporated parcel is in an area surrounded by city boundaries.
-        arcpy.MakeFeatureLayer_management(unincorporated_islands, "unincorporated_islands_layer")
-        arcpy.SelectLayerByLocation_management("unincorporated_islands_layer", "CONTAINS", output_parcels_layer)
-        is_surrounded = int(arcpy.GetCount_management("unincorporated_islands_layer").getOutput(0))
-
-        # If the area is surrounded by cities, get the population of the surrounding cities.
-        if is_surrounded:
-            print "Completely surrounded by one or more incorporated cities"
-            # Get population of unincorporated area
-            sc = arcpy.SearchCursor("unincorporated_islands_layer")
-            for row in sc:
-                unincorporated_population = int(row.getValue("SUM_POP10"))
-                unincorporated_area = int(row.getValue("shape_Area")) * 0.001
-
-            unincorporated_density = unincorporated_population / unincorporated_area
-
-            # Select the surrounding cities.
-            arcpy.SelectLayerByLocation_management(city_boundaries_layer, "SHARE_A_LINE_SEGMENT_WITH", "unincorporated_islands_layer")
-            sc = arcpy.SearchCursor(city_boundaries_layer)
-            sum_surrounding_area = 0
-            sum_surrounding_population = 0
-
-            # Get the population and area of the surrounding cities.
-            for row in sc:
-
-                sum_surrounding_population += int(row.getValue("POPULATION"))
-                sum_surrounding_area += float(row.getValue("shape_Area")) * 0.001
-
-            # Calculate the density of the surrounding cities
-            surrounding_density = sum_surrounding_population / sum_surrounding_area
-            surrounding_population = unincorporated_population + sum_surrounding_population
-
-            # Sum of unincorporated area and surrounding population
-            combined_population = unincorporated_population + surrounding_population
-
-            print "Combined Population: " + str(combined_population)
-            print "Unincorporated Population Density: " + str(unincorporated_density)
-            print "Surrounding Population Density: " + str(surrounding_density)
-
-            if combined_population >= 100000 and unincorporated_density >= surrounding_density:
+            # If the city boundary has a population > 100,000k, we're done(21017 a(1)).
+            if city_boundary_containing_parcel_population > 100000:
                 print "Requirement met."
                 requirement_2_1 = 1
+
+            # If the city boundary has a population < 100000k, but the total population with two contiguous cities > 100,000k
             else:
-                print "Requirement not met."
-                requirement_2_1 = 0
+                # Select contiguous city boundaries.
+                arcpy.SelectLayerByLocation_management(city_boundaries_layer, "SHARE_A_LINE_SEGMENT_WITH", "city_boundary_containing_parcel")
+                arcpy.SelectLayerByLocation_management(city_boundaries_layer, "ARE_IDENTICAL_TO", "city_boundary_containing_parcel", "", "REMOVE_FROM_SELECTION")
+
+                # Get the sum of the top two contiguous city populations.
+                city_boundary_sc = arcpy.SearchCursor(city_boundaries_layer)
+                population_list = []
+                number_of_surrounding_cities = 0
+                for row in city_boundary_sc:
+                    population_list.append(row.getValue("POPULATION"))
+                    number_of_surrounding_cities += 1
+
+                # If the city plus two contiguous incorporated cities total more than 100,000k...
+                sorted_pop_list = sorted(population_list)
+                print "Number of surrounding cities: " + str(number_of_surrounding_cities) + "(Populations: " + ", ".join(map(str, sorted_pop_list)) + ")"
+
+                del city_boundary_sc
+
+                if number_of_surrounding_cities >= 1:
+                    if number_of_surrounding_cities >= 2:
+                        sum_largest_two_surrounding_pops = sorted_pop_list[-1] + sorted_pop_list[-2]
+                    else:
+                        sum_largest_two_surrounding_pops = sorted_pop_list[-1]
+
+                    sum_surrounding_populations = city_boundary_containing_parcel_population + sum_largest_two_surrounding_pops
+
+                    print "City Population including top two surrounding cities: " + str(sum_surrounding_populations)
+                    # ...and the selected city + the two largest surrounding cities  have a population > 100,000k, we're done
+                    if sum_surrounding_populations >= 100000:
+                        print "Requirement met."
+                        requirement_2_1 = 1
+
+                    # UNINCORPORATED CITY ##################################################################################
+                    else:
+                        arcpy.MakeFeatureLayer_management(unincorporated_islands, "unincorporated_area_surrounded_layer")
+                        # Select the surrounded unincorporated that the parcel falls within and get the OBJECTID
+                        arcpy.SelectLayerByLocation_management(city_boundaries_layer, "CONTAINS", output_parcels_layer)
+                        arcpy.MakeFeatureLayer_management(city_boundaries_layer, "city_boundary_containing_parcel")
+
+                        requirement_2_1 = 0
+                else:
+                    print "Requirement not met."
+                    requirement_2_1 = 0
 
         else:
-            print "Not surrounded"
-            print "Requirement not met"
-            requirement_2_1 = 0
+            print "Unincorporated"
+            # Check to see if the unincorporated parcel is in an area surrounded by city boundaries.
+            arcpy.MakeFeatureLayer_management(unincorporated_islands, "unincorporated_islands_layer")
+            arcpy.SelectLayerByLocation_management("unincorporated_islands_layer", "CONTAINS", output_parcels_layer)
+            is_surrounded = int(arcpy.GetCount_management("unincorporated_islands_layer").getOutput(0))
 
-    print "\n"
+            # If the area is surrounded by cities, get the population of the surrounding cities.
+            if is_surrounded:
+                print "Completely surrounded by one or more incorporated cities"
+                # Get population of unincorporated area
+                sc = arcpy.SearchCursor("unincorporated_islands_layer")
+                for row in sc:
+                    unincorporated_population = int(row.getValue("SUM_POP10"))
+                    unincorporated_area = int(row.getValue("shape_Area")) * 0.001
 
-    del sc
+                unincorporated_density = unincorporated_population / unincorporated_area
 
-    return requirement_2_1
+                # Select the surrounding cities.
+                arcpy.SelectLayerByLocation_management(city_boundaries_layer, "SHARE_A_LINE_SEGMENT_WITH", "unincorporated_islands_layer")
+                sc = arcpy.SearchCursor(city_boundaries_layer)
+                sum_surrounding_area = 0
+                sum_surrounding_population = 0
+
+                # Get the population and area of the surrounding cities.
+                for row in sc:
+
+                    sum_surrounding_population += int(row.getValue("POPULATION"))
+                    sum_surrounding_area += float(row.getValue("shape_Area")) * 0.001
+
+                # Calculate the density of the surrounding cities
+                surrounding_density = sum_surrounding_population / sum_surrounding_area
+                surrounding_population = unincorporated_population + sum_surrounding_population
+
+                # Sum of unincorporated area and surrounding population
+                combined_population = unincorporated_population + surrounding_population
+
+                print "Combined Population: " + str(combined_population)
+                print "Unincorporated Population Density: " + str(unincorporated_density)
+                print "Surrounding Population Density: " + str(surrounding_density)
+
+                if combined_population >= 100000 and unincorporated_density >= surrounding_density:
+                    print "Requirement met."
+                    requirement_2_1 = 1
+                else:
+                    print "Requirement not met."
+                    requirement_2_1 = 0
+
+            else:
+                print "Not surrounded"
+                print "Requirement not met"
+                requirement_2_1 = 0
+
+        print "\n"
+
+        del sc
+
+        return requirement_2_1
+
+    print "Calculating requirements using an update cursor...\n"
+
+    fieldnames = []
+    fields = arcpy.ListFields(output_parcels_fc)
+    for field in fields:
+        fieldnames.append(field.name)
+
+    filter_records = "OBJECTID > %s and OBJECTID <= %s" % (start_oid, end_oid)
+    uc = arcpy.da.UpdateCursor(output_parcels_fc, "*", filter_records)
+
+    count = 0
+    for row in uc:
+        parcel_OID = row[0]
+
+        if count == 0:
+            print "Calculating requirement 2.1...\n"
+
+        start_time_calc = datetime.datetime.now()
+
+        # Call functions to calculate individual requirements
+        requirement_2_1 = calc_requirement_2_1_iterate(parcel_OID)
+
+        end_time_calc = datetime.datetime.now()
+        calc_duration = end_time_calc - start_time_calc
+        print("Duration: " + str(calc_duration))
+        row[fieldnames.index(field_to_calc)] = requirement_2_1
+
+        count += 1
+
+        uc.updateRow(row)
 
 
 def calc_requirement_2_2(field_to_calc):
 
-    print field_to_calc
+    # Make a city boundaries layer
+    arcpy.MakeFeatureLayer_management(city_boundaries_fc, "city_boundaries_layer")
+
+    # Make a parcels layer
+    arcpy.MakeFeatureLayer_management(output_parcels_fc, "output_parcels_layer")
+
+    # Within a city? Yes = 1
+    arcpy.SelectLayerByLocation_management("output_parcels_layer", "WITHIN", city_boundaries_fc)
+    arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 1, "PYTHON")
+
+    # Not within a city = 0
+    arcpy.SelectLayerByAttribute_management("output_parcels_layer", "SWITCH_SELECTION")
+    arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 0, "PYTHON")
+
+    # Not within a city is selected.  Of those, select parcels within an unincorporated island).
+    unincorporated_islands_layer = arcpy.MakeFeatureLayer_management(unincorporated_islands)
+    surrounded_parcels = arcpy.SelectLayerByLocation_management("output_parcels_layer", "WITHIN", unincorporated_islands_layer, "", "SUBSET_SELECTION")
+
+    print "Number of unincorporated parcels surrounded: " + str(arcpy.GetCount_management("output_parcels_layer")[0])
+
+    fieldnames = []
+    fields = arcpy.ListFields(surrounded_parcels)
+    for field in fields:
+        fieldnames.append(field.name)
+
+    # output_parcels_layer now consists of polygons that are completely surrounded.
+    uc = arcpy.da.UpdateCursor(surrounded_parcels, "*")
+    for uc_row in uc:
+
+        parcel_OID = uc_row[fieldnames.index("OBJECTID")]
+        print "Parcel OID: " + str(parcel_OID)
+
+        this_surrounded_parcel = arcpy.SelectLayerByAttribute_management("output_parcels_layer", "NEW_SELECTION", "OBJECTID = " + str(parcel_OID))
+
+        # Select the unincorporated island polygon containing this parcel
+        this_unincorporated_island = arcpy.SelectLayerByLocation_management(unincorporated_islands_layer, "CONTAINS", this_surrounded_parcel)
+
+        # Get population of unincorporated area
+        sc = arcpy.SearchCursor(this_unincorporated_island)
+        for row in sc:
+            unincorporated_population = int(row.getValue("SUM_POP10"))
+            unincorporated_area = int(row.getValue("shape_Area")) * 0.001
+
+        unincorporated_density = unincorporated_population / unincorporated_area
+
+        # Select the surrounding cities.
+        surrounding_cities = arcpy.SelectLayerByLocation_management("city_boundaries_layer", "SHARE_A_LINE_SEGMENT_WITH", this_unincorporated_island)
+        sc = arcpy.SearchCursor(surrounding_cities)
+        sum_surrounding_area = 0
+        sum_surrounding_population = 0
+
+        # Get the population and area of the surrounding cities.
+        for row in sc:
+            sum_surrounding_population += int(row.getValue("POPULATION"))
+            sum_surrounding_area += float(row.getValue("shape_Area")) * 0.001
+
+        # Calculate the density of the surrounding cities
+        surrounding_density = sum_surrounding_population / sum_surrounding_area
+        surrounding_population = unincorporated_population + sum_surrounding_population
+
+        # Sum of unincorporated area and surrounding population
+        combined_population = unincorporated_population + surrounding_population
+
+        print "Combined Population: " + str(combined_population)
+        print "Unincorporated Population Density: " + str(unincorporated_density)
+        print "Surrounding Population Density: " + str(surrounding_density)
+
+        # Check to see if both of these conditions are met:
+        # (A) The population of the unincorporated area and the population of the surrounding incorporated cities equal a population of 100, 000 or more.
+        # (B) The population density of the unincorporated area is equal to, or greater than, the population density of the surrounding cities.
+
+        if combined_population >= 100000 and unincorporated_density >= surrounding_density:
+            uc_row[fieldnames.index(field_to_calc)] = 1
+
+        uc.updateRow(uc_row)
 
 
 def calc_requirement_2_3(field_to_calc):
@@ -415,6 +487,7 @@ def calc_requirement_2_3(field_to_calc):
     arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 1, "PYTHON")
     arcpy.SelectLayerByAttribute_management("output_parcels_layer", "SWITCH_SELECTION")
     arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 0, "PYTHON")
+
 
 def calc_requirement_2_4(field_to_calc):
 
