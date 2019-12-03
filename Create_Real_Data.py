@@ -1,30 +1,34 @@
-import sys
 import os
+import sys
 import arcpy
 import random
 import datetime
 arcpy.env.overwriteOutput = True
 
+# If called multiple times from batch script to increase performance, get oids from batch file.
+start_oid = sys.argv[1]
+end_oid = sys.argv[2]
+
 # Workspaces
 intermediate_ws = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Intermediate.gdb"
 output_ws = r'P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs.gdb'
 
-# Input & output parcels feature class
+# Input & output parcel feature classes
 input_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Parcels.gdb\sacramento_parcels"
 output_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs.gdb\sacramento_parcels"
 #output_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs.gdb\sacramento_parcels_subset3"
 
 # Datasets used in calculating requirements:
 
-#2.1
-city_boundaries_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Inputs.gdb\CA_Cities" # 2.3
-unincorporated_islands = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Intermediate.gdb\Unincorporated_Islands_with_Population_Dissolve"
+# 2.1, 2.2, 2.3
+city_boundaries_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Inputs.gdb\CA_TIGER_2019_incorporated_cities_with_TIGER_2017_population"
+unincorporated_islands = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Intermediate.gdb\CA_TIGER_Unincorporated_Islands_with_Population_Dissolve" #2.2
 
-#2.4
+# 2.4
 urbanized_area_urban_cluster_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Inputs.gdb\CA_urbanized_area_urban_cluster"
 incorporated_and_unincorporated_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Inputs.gdb\CA_incorporated_and_unincorporated"
 
-#2.5
+# 2.5
 mpo_boundary_dissolve_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Intermediate.gdb\MPO_boundaries_dissolve"
 
 start_time = datetime.datetime.now()
@@ -33,7 +37,7 @@ print("Start Time: " + str(start_time))
 requirements = {
     # Location Requirements
     2.1: "urbanized_area_prc_21071",
-    2.2: "urban_area",
+    2.2: "urban_area_prc_21094",
     2.3: "within_city_limits",
     2.4: "unincorporated_urbanized_area",
     2.5: "within_mpo",
@@ -91,13 +95,14 @@ exemptions = {
 
 arcpy.env.workspace = intermediate_ws
 
+# ACTIONS ##############################################################################################################
 
 def copy_parcels_fc():
     print "Copying Parcels Feature Class..."
     arcpy.CopyFeatures_management(input_parcels_fc, output_parcels_fc)
 
 
-def create_empty_tables():
+def create_empty_exemption_tables():
     print "Creating empty tables..."
 
     # Create the parcel - exemptions table (junction table)
@@ -127,14 +132,16 @@ def populate_exemptions_table():
         ic.insertRow([k, v[0], v[1]])
 
 
+# Function Handler that calls the INDIVIDUAL REQUIREMENT function for processing.
 def calculate_parcel_requirements(requirements_to_process, start_oid=0, end_oid=0):
+
     print "Calculating 1's and 0's for the spatial requirements...."
 
     # For requirements requiring an update cursor
     if 2.1 in requirements_to_process:
-        print "Calculating requirement 2.2...\n"
+        print "Calculating requirement 2.1...\n"
         field_to_calc = requirements[2.1]
-        calc_requirement_2_2(field_to_calc, start_oid, end_oid)
+        calc_requirement_2_1(field_to_calc, start_oid, end_oid)
 
     if 2.2 in requirements_to_process:
         print "Calculating requirement 2.2...\n"
@@ -200,14 +207,12 @@ def calculate_parcel_exemptions():
 def create_outputs():
     print "Creating outputs..."
     arcpy.env.workspace = output_ws
-    #parcels_name = arcpy.Describe(output_parcels_fc).Name
-    #arcpy.CopyRows_management(output_parcels_fc, "requirements_table")
 
     all_fields = arcpy.ListFields(output_parcels_fc)
-    parcel_fc_fields = ["SHAPE", "SHAPE_Length", "SHAPE_Area", "PARCEL_ID", "PARCEL_APN", "FIPS_CODE", "COUNTYNAME", "TAXAPN", "SITE_ADDR", "SITE_CITY", "SITE_STATE", "SITE_ZIP", "LATITUDE", "LONGITUDE", "CENSUS_TRACT", "CENSUS_BLOCK_GROUP", "Zoning", "LOT_SIZE_AREA", "LOT_SIZE_AREA_UNIT"]
+    parcel_fc_fields_to_keep = ["SHAPE", "SHAPE_Length", "SHAPE_Area", "PARCEL_ID", "PARCEL_APN", "FIPS_CODE", "COUNTYNAME", "TAXAPN", "SITE_ADDR", "SITE_CITY", "SITE_STATE", "SITE_ZIP", "LATITUDE", "LONGITUDE", "CENSUS_TRACT", "CENSUS_BLOCK_GROUP", "Zoning", "LOT_SIZE_AREA", "LOT_SIZE_AREA_UNIT"]
     requirements_fields = []
     for field in all_fields:
-        if field.name not in parcel_fc_fields and field.name not in ["OBJECTID", "SHAPE_Length", "SHAPE_Area"]:
+        if field.name not in parcel_fc_fields_to_keep and field.name not in ["OBJECTID", "SHAPE_Length", "SHAPE_Area"]:
             requirements_fields.append(field.name)
    
     fmap = arcpy.FieldMappings()
@@ -227,7 +232,7 @@ def create_outputs():
     arcpy.DeleteField_management(output_parcels_fc, requirements_fields)
 
 
-# REQUIREMENTS #########################################################################################################
+# INDIVIDUAL REQUIREMENTS ##############################################################################################
 
 def calc_requirement_2_1(field_to_calc, start_oid, end_oid):
 
@@ -252,9 +257,9 @@ def calc_requirement_2_1(field_to_calc, start_oid, end_oid):
         sc = arcpy.SearchCursor("city_boundary_containing_parcel")
         for row in sc:
             is_city = 1
-            city_boundary_containing_parcel_population = row.getValue("POPULATION")
+            city_boundary_containing_parcel_population = row.getValue("B01003_001E_Pop_Estimate_Total")
 
-        # INCORPORATED CITY ################################################################################################
+        # INCORPORATED CITY ############################################################################################
         if is_city:
 
             print "City Population: " + str(city_boundary_containing_parcel_population)
@@ -275,7 +280,7 @@ def calc_requirement_2_1(field_to_calc, start_oid, end_oid):
                 population_list = []
                 number_of_surrounding_cities = 0
                 for row in city_boundary_sc:
-                    population_list.append(row.getValue("POPULATION"))
+                    population_list.append(row.getValue("B01003_001E_Pop_Estimate_Total"))
                     number_of_surrounding_cities += 1
 
                 # If the city plus two contiguous incorporated cities total more than 100,000k...
@@ -324,7 +329,7 @@ def calc_requirement_2_1(field_to_calc, start_oid, end_oid):
                 sc = arcpy.SearchCursor("unincorporated_islands_layer")
                 for row in sc:
                     unincorporated_population = int(row.getValue("SUM_POP10"))
-                    unincorporated_area = int(row.getValue("shape_Area")) * 0.001
+                    unincorporated_area = int(row.getValue("SHAPE_Area")) * 0.001
 
                 unincorporated_density = unincorporated_population / unincorporated_area
 
@@ -337,8 +342,8 @@ def calc_requirement_2_1(field_to_calc, start_oid, end_oid):
                 # Get the population and area of the surrounding cities.
                 for row in sc:
 
-                    sum_surrounding_population += int(row.getValue("POPULATION"))
-                    sum_surrounding_area += float(row.getValue("shape_Area")) * 0.001
+                    sum_surrounding_population += int(row.getValue("B01003_001E_Pop_Estimate_Total"))
+                    sum_surrounding_area += float(row.getValue("SHAPE_Area")) * 0.001
 
                 # Calculate the density of the surrounding cities
                 surrounding_density = sum_surrounding_population / sum_surrounding_area
@@ -444,7 +449,7 @@ def calc_requirement_2_2(field_to_calc):
         sc = arcpy.SearchCursor(this_unincorporated_island)
         for row in sc:
             unincorporated_population = int(row.getValue("SUM_POP10"))
-            unincorporated_area = int(row.getValue("shape_Area")) * 0.001
+            unincorporated_area = int(row.getValue("SHAPE_Area")) * 0.001
 
         unincorporated_density = unincorporated_population / unincorporated_area
 
@@ -456,8 +461,8 @@ def calc_requirement_2_2(field_to_calc):
 
         # Get the population and area of the surrounding cities.
         for row in sc:
-            sum_surrounding_population += int(row.getValue("POPULATION"))
-            sum_surrounding_area += float(row.getValue("shape_Area")) * 0.001
+            sum_surrounding_population += int(row.getValue("B01003_001E_Pop_Estimate_Total"))
+            sum_surrounding_area += float(row.getValue("SHAPE_Area")) * 0.001
 
         # Calculate the density of the surrounding cities
         surrounding_density = sum_surrounding_population / sum_surrounding_area
@@ -512,8 +517,6 @@ def calc_requirement_2_4(field_to_calc):
 
 def calc_requirement_2_5(field_to_calc):
 
-    field_to_calc = "within_mpo"
-
     arcpy.MakeFeatureLayer_management(output_parcels_fc, "output_parcels_layer")
     arcpy.SelectLayerByLocation_management("output_parcels_layer", "WITHIN", mpo_boundary_dissolve_fc)
     arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 1, "PYTHON")
@@ -522,16 +525,12 @@ def calc_requirement_2_5(field_to_calc):
 
 
 #copy_parcels_fc()
-#create_empty_tables()
-
-requirements_to_process = [2.2]
-
-#start_oid = sys.argv[1] # If called multiple times from batch script to increase performance, get oids from batch file.
-#end_oid = sys.argv[2]
-# If called multiple times from batch script to increase performance, get oids from batch file.
-#calculate_parcel_requirements(requirements_to_process, start_oid, end_oid)
-calculate_parcel_requirements(requirements_to_process)
+#create_empty_exemption_tables()
 #populate_exemptions_table()
+
+calculate_parcel_requirements(requirements_to_process=[2.1], start_oid=start_oid, end_oid=end_oid)
+#calculate_parcel_requirements(requirements_to_process=[2.3], start_oid=0, end_oid=456000)
+
 #create_outputs()
 
 end_time = datetime.datetime.now()
@@ -540,5 +539,4 @@ duration = end_time - start_time
 print("Start Time: " + str(start_time))
 print("End Time: " + str(end_time))
 print("Duration: " + str(duration))
-
 
