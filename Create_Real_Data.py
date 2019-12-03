@@ -1,7 +1,6 @@
 import os
 import sys
 import arcpy
-import random
 import datetime
 arcpy.env.overwriteOutput = True
 
