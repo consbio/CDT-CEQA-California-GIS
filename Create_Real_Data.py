@@ -4,12 +4,11 @@ import arcpy
 import datetime
 arcpy.env.overwriteOutput = True
 
-# If called multiple times from batch script to increase performance, get oids from batch file.
-start_oid = sys.argv[1]
-end_oid = sys.argv[2]
+create_parcel_points = 0
 
 # Workspaces
 intermediate_ws = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Intermediate.gdb"
+scratch_ws = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Scratch\Scratch.gdb"
 output_ws = r'P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs.gdb'
 
 # Input & output parcel feature classes
@@ -29,6 +28,11 @@ incorporated_and_unincorporated_fc = r"P:\Projects3\CDT-CEQA_California_2019_mik
 
 # 2.5
 mpo_boundary_dissolve_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Intermediate.gdb\MPO_boundaries_dissolve"
+
+parcel_points_fc = scratch_ws + os.sep + "parcels_point"
+
+if create_parcel_points:
+    arcpy.FeatureToPoint_management(output_parcels_fc, parcel_points_fc)
 
 start_time = datetime.datetime.now()
 print("Start Time: " + str(start_time))
@@ -234,13 +238,22 @@ def create_outputs():
 # INDIVIDUAL REQUIREMENTS ##############################################################################################
 
 def calc_requirement_2_1(field_to_calc, start_oid, end_oid):
+    """
+        2.1
+        Requirement Long Name: Urbanized Area PRC 21071
+        Description: Complicated, see description here:
+        https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=PRC&sectionNum=21071.
+        The basic idea is that we iterate over each parcel, pass the OID to a subfunction which determines whether or
+        not it meets the requirements in the the link above.
+    """
 
     def calc_requirement_2_1_iterate(parcel_OID):
 
         print "Parcel OBJECTID: " + str(parcel_OID)
 
         city_boundaries_layer = arcpy.MakeFeatureLayer_management(city_boundaries_fc)
-        output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
+        # NOTE: uses points....
+        output_parcels_layer = arcpy.MakeFeatureLayer_management(parcel_points_fc)
 
         # Select the current parcel.
         query = '"OBJECTID" = %s' % str(parcel_OID)
@@ -406,40 +419,50 @@ def calc_requirement_2_1(field_to_calc, start_oid, end_oid):
 
 
 def calc_requirement_2_2(field_to_calc):
+    """
+        2.2
+        Requirement Long Name: Urban Area PRC 21094.5
+        Description: Select parcels WITHIN a city. Yes = 1, No = 0
+        If not in a city, check to see if WITHIN an unincorporated island
+        If within an unincorporated island, check to see if the unincorporated island it's in meets both of the following requirements:
+            (A) The population of the unincorporated area and the population of the surrounding incorporated cities equal a population of 100,000 or more.
+            (B) The population density of the unincorporated area is equal to, or greater than, the population density of the surrounding cities.
+    """
 
     # Make a city boundaries layer
-    arcpy.MakeFeatureLayer_management(city_boundaries_fc, "city_boundaries_layer")
+    city_boundaries_layer = arcpy.MakeFeatureLayer_management(city_boundaries_fc)
 
     # Make a parcels layer
-    arcpy.MakeFeatureLayer_management(output_parcels_fc, "output_parcels_layer")
+    output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
 
-    # Within a city? Yes = 1
-    arcpy.SelectLayerByLocation_management("output_parcels_layer", "WITHIN", city_boundaries_fc)
-    arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 1, "PYTHON")
+    # Find parcels within a city? Yes = 1
+    arcpy.SelectLayerByLocation_management(output_parcels_layer, "HAVE_THEIR_CENTER_IN", city_boundaries_fc)
+    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
 
-    # Not within a city = 0
-    arcpy.SelectLayerByAttribute_management("output_parcels_layer", "SWITCH_SELECTION")
-    arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 0, "PYTHON")
+    # Find parcels not within a city = 0
+    arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
+    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
 
-    # Not within a city is selected.  Of those, select parcels within an unincorporated island).
+    # Parcels not within a city is selected.  Of those, select parcels within an unincorporated island).
     unincorporated_islands_layer = arcpy.MakeFeatureLayer_management(unincorporated_islands)
-    surrounded_parcels = arcpy.SelectLayerByLocation_management("output_parcels_layer", "WITHIN", unincorporated_islands_layer, "", "SUBSET_SELECTION")
+    # Use WITHIN here rather than HAVE CENTER IN so that the SBL below which uses CONTAINS (no "has center in equivalent") works.
+    surrounded_parcels = arcpy.SelectLayerByLocation_management(output_parcels_layer, "WITHIN", unincorporated_islands_layer, "", "SUBSET_SELECTION")
 
-    print "Number of unincorporated parcels surrounded: " + str(arcpy.GetCount_management("output_parcels_layer")[0])
+    print "Number of unincorporated parcels surrounded: " + str(arcpy.GetCount_management(output_parcels_layer)[0])
 
     fieldnames = []
     fields = arcpy.ListFields(surrounded_parcels)
     for field in fields:
         fieldnames.append(field.name)
 
-    # output_parcels_layer now consists of polygons that are completely surrounded.
+    # output_parcels_layer now consists of polygons that are completely surrounded. Iterate over each one.
     uc = arcpy.da.UpdateCursor(surrounded_parcels, "*")
     for uc_row in uc:
 
         parcel_OID = uc_row[fieldnames.index("OBJECTID")]
         print "Parcel OID: " + str(parcel_OID)
 
-        this_surrounded_parcel = arcpy.SelectLayerByAttribute_management("output_parcels_layer", "NEW_SELECTION", "OBJECTID = " + str(parcel_OID))
+        this_surrounded_parcel = arcpy.SelectLayerByAttribute_management(output_parcels_layer, "NEW_SELECTION", "OBJECTID = " + str(parcel_OID))
 
         # Select the unincorporated island polygon containing this parcel
         this_unincorporated_island = arcpy.SelectLayerByLocation_management(unincorporated_islands_layer, "CONTAINS", this_surrounded_parcel)
@@ -447,13 +470,14 @@ def calc_requirement_2_2(field_to_calc):
         # Get population of unincorporated area
         sc = arcpy.SearchCursor(this_unincorporated_island)
         for row in sc:
+            print row.getValue("OBJECTID")
             unincorporated_population = int(row.getValue("SUM_POP10"))
             unincorporated_area = int(row.getValue("SHAPE_Area")) * 0.001
 
         unincorporated_density = unincorporated_population / unincorporated_area
 
         # Select the surrounding cities.
-        surrounding_cities = arcpy.SelectLayerByLocation_management("city_boundaries_layer", "SHARE_A_LINE_SEGMENT_WITH", this_unincorporated_island)
+        surrounding_cities = arcpy.SelectLayerByLocation_management(city_boundaries_layer, "SHARE_A_LINE_SEGMENT_WITH", this_unincorporated_island)
         sc = arcpy.SearchCursor(surrounding_cities)
         sum_surrounding_area = 0
         sum_surrounding_population = 0
@@ -485,50 +509,78 @@ def calc_requirement_2_2(field_to_calc):
 
 
 def calc_requirement_2_3(field_to_calc):
-
-    arcpy.MakeFeatureLayer_management(output_parcels_fc, "output_parcels_layer")
-    arcpy.SelectLayerByLocation_management("output_parcels_layer", "WITHIN", city_boundaries_fc)
-    arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 1, "PYTHON")
-    arcpy.SelectLayerByAttribute_management("output_parcels_layer", "SWITCH_SELECTION")
-    arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 0, "PYTHON")
+    """
+        2.3
+        Requirement Long Name: Within City Limit
+        Description: Select parcels that have their centers in a city boundary. Yes = 1, No = 0
+    """
+    output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
+    arcpy.SelectLayerByLocation_management(output_parcels_layer, "HAVE_THEIR_CENTER_IN", city_boundaries_fc)
+    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
+    arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
+    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
 
 
 def calc_requirement_2_4(field_to_calc):
+    """
+        2.4
+        Requirement Long Name: Unincorporated urbanized area or urban cluster
+        Description: Intersect Unincorporated areas with urbanized area or urban clusters.
+        Select parcels that HAVE THEIR CENTERS IN this intersected area.
+    """
 
     # Unincorporated areas
-    arcpy.MakeFeatureLayer_management(incorporated_and_unincorporated_fc, "incorporated_and_unincorporated_layer")
-    arcpy.SelectLayerByAttribute_management("incorporated_and_unincorporated_layer", "NEW_SELECTION", "CITY = 'Unincorporated'")
+    incorporated_and_unincorporated_layer = arcpy.MakeFeatureLayer_management(incorporated_and_unincorporated_fc)
+    unincorporated_layer = arcpy.SelectLayerByAttribute_management(incorporated_and_unincorporated_layer, "NEW_SELECTION", "CITY = 'Unincorporated'")
 
     # Urbanized area or urban cluster
-    arcpy.MakeFeatureLayer_management(urbanized_area_urban_cluster_fc, "urbanized_area_urban_cluster_layer")
+    urbanized_area_urban_cluster_layer = arcpy.MakeFeatureLayer_management(urbanized_area_urban_cluster_fc)
 
-    # Unincorporated Urbanized area or urban cluster
+    # Intersect the two layers above -> Unincorporated Urbanized area or urban cluster
     unincorporated_urbanized_area_or_urban_cluster_fc = intermediate_ws + os.sep + "unincorporated_urbanized_area_or_urban_cluster"
-    arcpy.Intersect_analysis(["incorporated_and_unincorporated_layer", "urbanized_area_urban_cluster_layer"], unincorporated_urbanized_area_or_urban_cluster_fc)
+    arcpy.Intersect_analysis([unincorporated_layer, urbanized_area_urban_cluster_layer], unincorporated_urbanized_area_or_urban_cluster_fc)
 
-    arcpy.MakeFeatureLayer_management(output_parcels_fc, "output_parcels_layer")
-    arcpy.SelectLayerByLocation_management("output_parcels_layer", "WITHIN", unincorporated_urbanized_area_or_urban_cluster_fc)
+    # Select parcels that HAVE THEIR CENTERS IN the unincorporated urbanized area or urban cluster
+    output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
+    arcpy.SelectLayerByLocation_management(output_parcels_layer, "HAVE_THEIR_CENTER_IN", unincorporated_urbanized_area_or_urban_cluster_fc)
 
-    arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 1, "PYTHON")
-    arcpy.SelectLayerByAttribute_management("output_parcels_layer", "SWITCH_SELECTION")
-    arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 0, "PYTHON")
+    # Calculate 1's and 0's
+    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
+    arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
+    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
 
 
 def calc_requirement_2_5(field_to_calc):
-
+    """
+        2.5
+        Requirement Long Name: Within a Metropolitan Planning Organization boundary
+        Description: Select parcels that HAVE THEIR CENTERS IN an MPO boundary. Yes = 1, No = 0
+    """
     arcpy.MakeFeatureLayer_management(output_parcels_fc, "output_parcels_layer")
-    arcpy.SelectLayerByLocation_management("output_parcels_layer", "WITHIN", mpo_boundary_dissolve_fc)
+    arcpy.SelectLayerByLocation_management("output_parcels_layer", "HAVE_THEIR_CENTER_IN", mpo_boundary_dissolve_fc)
     arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 1, "PYTHON")
     arcpy.SelectLayerByAttribute_management("output_parcels_layer", "SWITCH_SELECTION")
     arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 0, "PYTHON")
 
+def join_additional_requirements(additional_requirements_table, fields_to_join):
+    #arcpy.AddIndex_management(additional_requirements_table, "parcel_id", "parcel_id_index")
+    #arcpy.AddIndex_management(output_parcels_fc, "parcel_id", "parcel_id_index")
+    arcpy.JoinField_management(output_parcels_fc, "parcel_id", additional_requirements_table, "parcel_id", fields_to_join)
 
 #copy_parcels_fc()
 #create_empty_exemption_tables()
 #populate_exemptions_table()
 
-calculate_parcel_requirements(requirements_to_process=[2.1], start_oid=start_oid, end_oid=end_oid)
-#calculate_parcel_requirements(requirements_to_process=[2.3], start_oid=0, end_oid=456000)
+# If called multiple times from batch script to increase performance, get oids from batch file.
+#start_oid = sys.argv[1]
+#end_oid = sys.argv[2]
+#calculate_parcel_requirements(requirements_to_process=[2.1], start_oid=start_oid, end_oid=end_oid)
+#calculate_parcel_requirements(requirements_to_process=[2.4, 2.5], start_oid=0, end_oid=456000)
+
+additional_requirements_table = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\From_Kai\Transit_and_Infill.gdb\Sacramento_Parcels_MG"
+fields_to_join = [u'MajTS_3_1', u'HighQualTC_3_4', u'HighQualTC_3_2', u'StpTC_1_2m_3_5', u'Infill_PRC_4_1', u'Wetlands_8_1', u'RipWet_8_2', u'Spec_Habitat_8_3', u'WildHaz_9_3', u'EQFault_9_2', u'LS_Pot_9_3']
+
+join_additional_requirements(additional_requirements_table, fields_to_join)
 
 #create_outputs()
 

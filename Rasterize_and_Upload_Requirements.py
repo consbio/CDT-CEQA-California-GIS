@@ -17,7 +17,8 @@ resolution = 10
 arcpy.env.workspace = output_ws
 
 #fields = ["urbanized_area_prc_21071", "urban_area_prc_21094", "within_city_limits", "unincorporated_urbanized_area", "within_mpo"]
-fields = ["urbanized_area_prc_21071", "urban_area_prc_21094", "within_city_limits"]
+#fields = ["urban_area_prc_21094", "within_city_limits", "unincorporated_urbanized_area", "within_mpo"]
+fields = [u'MajTS_3_1', u'HighQualTC_3_4', u'HighQualTC_3_2', u'StpTC_1_2m_3_5', u'Infill_PRC_4_1', u'Wetlands_8_1', u'RipWet_8_2', u'Spec_Habitat_8_3', u'WildHaz_9_3', u'EQFault_9_2']
 
 for field in fields:
     output_raster = field
