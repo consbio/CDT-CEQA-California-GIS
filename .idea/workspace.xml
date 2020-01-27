@@ -3,8 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="7b3751b4-152f-460c-8539-1fb51277ddec" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Create_Real_Data.py" beforeDir="false" afterPath="$PROJECT_DIR$/Create_Real_Data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Rasterize_and_Upload_Requirements.py" beforeDir="false" afterPath="$PROJECT_DIR$/Rasterize_and_Upload_Requirements.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Create_Dummy_Data.py" beforeDir="false" afterPath="$PROJECT_DIR$/Create_Dummy_Data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Create_Real_Data.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -14,40 +14,35 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/CEQA$Rename_Fields.coverage" NAME="Rename_Fields Coverage Results" MODIFIED="1578688178957" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/CEQA$call.coverage" NAME="call Coverage Results" MODIFIED="1574117980906" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/CEQA$Create_Real_Data.coverage" NAME="Create_Real_Data Coverage Results" MODIFIED="1578329622893" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/CEQA$Create_Dummy_Data.coverage" NAME="Create_Dummy_Data Coverage Results" MODIFIED="1578508919504" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/CEQA$Create_Real_Data.coverage" NAME="Create_Real_Data Coverage Results" MODIFIED="1579212309212" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/CEQA$List_Fields.coverage" NAME="List_Fields Coverage Results" MODIFIED="1579198946443" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/CEQA$Rasterize_and_Upload_Requirements.coverage" NAME="Rasterize_and_Upload_Requirements Coverage Results" MODIFIED="1575394985722" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/CEQA$Test_Exemptions_Bug.coverage" NAME="Test_Exemptions_Bug Coverage Results" MODIFIED="1580166506361" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/CEQA$Calculate_CEQA_Requirements_and_Exemptions.coverage" NAME="Calculate_CEQA_Requirements_and_Exemptions Coverage Results" MODIFIED="1580165886244" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/CEQA$Nosetests_in_test_call_py.coverage" NAME="Nosetests in test_call.py Coverage Results" MODIFIED="1574115766564" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Create_Real_Data.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Create_Real_Data.py">
+      <file leaf-file-name="Test_Exemptions_Bug.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Test_Exemptions_Bug.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="618">
-              <caret line="79" column="22" selection-start-line="79" selection-start-column="22" selection-end-line="79" selection-end-column="22" />
-              <folding>
-                <element signature="e#0#9#0" expanded="true" />
-                <element signature="e#4590#4701#0" />
-                <element signature="e#5674#5897#0" />
-                <element signature="e#7134#9045#0" />
-                <element signature="e#9074#10385#0" />
-                <element signature="e#10575#19313#0" />
-                <element signature="e#19361#24191#0" />
-                <element signature="e#24239#24854#0" />
-                <element signature="e#24902#26573#0" />
-                <element signature="e#26621#27286#0" />
-                <element signature="e#27373#27666#0" />
-              </folding>
+            <state relative-caret-position="289">
+              <caret line="24" column="19" lean-forward="true" selection-start-line="24" selection-start-column="19" selection-end-line="24" selection-end-column="19" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Rasterize_and_Upload_Requirements.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Rasterize_and_Upload_Requirements.py">
+      <file leaf-file-name="Calculate_CEQA_Requirements_and_Exemptions.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="340">
-              <caret line="20" column="183" selection-start-line="20" selection-start-column="183" selection-end-line="20" selection-end-column="183" />
+            <state relative-caret-position="167">
+              <caret line="154" column="12" selection-start-line="152" selection-end-line="161" selection-end-column="25" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -66,7 +61,12 @@
         <option value="$PROJECT_DIR$/Archive/Create_Real_Data_backup_pre_refactor_10.2_20190312.py" />
         <option value="$PROJECT_DIR$/Create_Real_Data_with_revised2.1.py" />
         <option value="$PROJECT_DIR$/Rasterize_and_Upload_Requirements.py" />
+        <option value="$PROJECT_DIR$/Create_Dummy_Data.py" />
+        <option value="$PROJECT_DIR$/Rename_Fields.py" />
+        <option value="$PROJECT_DIR$/List_Fields.py" />
         <option value="$PROJECT_DIR$/Create_Real_Data.py" />
+        <option value="$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions.py" />
+        <option value="$PROJECT_DIR$/Test_Exemptions_Bug.py" />
       </list>
     </option>
   </component>
@@ -77,8 +77,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="206" />
-    <option name="y" value="57" />
+    <option name="x" value="440" />
+    <option name="y" value="140" />
     <option name="width" value="1309" />
     <option name="height" value="915" />
   </component>
@@ -125,7 +125,26 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.Create_Real_Data">
+  <component name="RunManager" selected="Python.Test_Exemptions_Bug">
+    <configuration name="Calculate_CEQA_Requirements_and_Exemptions" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="CEQA" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
     <configuration name="Create_Real_Data" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="CEQA" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -145,7 +164,7 @@
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
     </configuration>
-    <configuration name="Rasterize_and_Upload_Requirements" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="List_Fields" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="CEQA" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -158,13 +177,13 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Rasterize_and_Upload_Requirements.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/List_Fields.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
     </configuration>
-    <configuration name="call" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="Rename_Fields" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="CEQA" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -177,39 +196,45 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/call.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Rename_Fields.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
     </configuration>
-    <configuration name="Nosetests in test_call.py" type="tests" factoryName="Nosetests" temporary="true" nameIsGenerated="true">
+    <configuration name="Test_Exemptions_Bug" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="CEQA" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_regexPattern" value="&quot;&quot;" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/test_call.py&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Test_Exemptions_Bug.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
     </configuration>
     <list>
       <item itemvalue="Python.Create_Real_Data" />
-      <item itemvalue="Python tests.Nosetests in test_call.py" />
-      <item itemvalue="Python.call" />
-      <item itemvalue="Python.Rasterize_and_Upload_Requirements" />
+      <item itemvalue="Python.Rename_Fields" />
+      <item itemvalue="Python.List_Fields" />
+      <item itemvalue="Python.Calculate_CEQA_Requirements_and_Exemptions" />
+      <item itemvalue="Python.Test_Exemptions_Bug" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.Test_Exemptions_Bug" />
+        <item itemvalue="Python.Calculate_CEQA_Requirements_and_Exemptions" />
         <item itemvalue="Python.Create_Real_Data" />
-        <item itemvalue="Python.Rasterize_and_Upload_Requirements" />
-        <item itemvalue="Python.call" />
-        <item itemvalue="Python tests.Nosetests in test_call.py" />
+        <item itemvalue="Python.List_Fields" />
+        <item itemvalue="Python.Rename_Fields" />
       </list>
     </recent_temporary>
   </component>
@@ -247,7 +272,7 @@
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.10726257" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.2122905" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.06503198" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
@@ -255,7 +280,7 @@
       <window_info anchor="right" id="SciView" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.15307263" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -278,7 +303,14 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="11" />
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions.py</url>
+          <line>527</line>
+          <option name="timeStamp" value="28" />
+        </line-breakpoint>
+      </breakpoints>
+      <option name="time" value="29" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -288,16 +320,28 @@
           <caret line="555" column="82" selection-start-line="555" selection-start-column="82" selection-end-line="555" selection-end-column="82" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#4590#4701#0" />
+            <element signature="e#2215#3403#0" />
+            <element signature="e#4660#5523#0" />
+            <element signature="e#4590#4960#0" />
+            <element signature="e#4745#5366#0" />
             <element signature="e#5674#5897#0" />
+            <element signature="e#7203#10465#0" />
             <element signature="e#7134#9045#0" />
-            <element signature="e#9074#10385#0" />
+            <element signature="e#12365#13676#0" />
             <element signature="e#10575#19313#0" />
             <element signature="e#19361#24191#0" />
             <element signature="e#24239#24854#0" />
             <element signature="e#24902#26573#0" />
             <element signature="e#26621#27286#0" />
-            <element signature="e#27373#27666#0" />
+            <element signature="e#29036#29797#0" />
+            <element signature="e#31530#33559#0" />
+            <element signature="e#32645#33262#0" />
+            <element signature="e#33309#33929#0" />
+            <element signature="e#34560#35180#0" />
+            <element signature="e#36141#36435#0" />
+            <element signature="e#36505#38886#0" />
+            <element signature="e#39335#39934#0" />
+            <element signature="e#36933#37360#0" />
           </folding>
         </state>
       </provider>
@@ -315,16 +359,28 @@
           <caret line="564" lean-forward="true" selection-start-line="564" selection-end-line="564" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#4590#4701#0" />
+            <element signature="e#2215#3403#0" />
+            <element signature="e#4660#5523#0" />
+            <element signature="e#4590#4960#0" />
+            <element signature="e#4745#5366#0" />
             <element signature="e#5674#5897#0" />
+            <element signature="e#7203#10465#0" />
             <element signature="e#7134#9045#0" />
-            <element signature="e#9074#10385#0" />
+            <element signature="e#12365#13676#0" />
             <element signature="e#10575#19313#0" />
             <element signature="e#19361#24191#0" />
             <element signature="e#24239#24854#0" />
             <element signature="e#24902#26573#0" />
             <element signature="e#26621#27286#0" />
-            <element signature="e#27373#27666#0" />
+            <element signature="e#29036#29797#0" />
+            <element signature="e#31530#33559#0" />
+            <element signature="e#32645#33262#0" />
+            <element signature="e#33309#33929#0" />
+            <element signature="e#34560#35180#0" />
+            <element signature="e#36141#36435#0" />
+            <element signature="e#36505#38886#0" />
+            <element signature="e#39335#39934#0" />
+            <element signature="e#36933#37360#0" />
           </folding>
         </state>
       </provider>
@@ -342,16 +398,28 @@
           <caret line="243" column="9" selection-start-line="243" selection-start-column="9" selection-end-line="243" selection-end-column="9" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#4590#4701#0" />
+            <element signature="e#2215#3403#0" />
+            <element signature="e#4660#5523#0" />
+            <element signature="e#4590#4960#0" />
+            <element signature="e#4745#5366#0" />
             <element signature="e#5674#5897#0" />
+            <element signature="e#7203#10465#0" />
             <element signature="e#7134#9045#0" />
-            <element signature="e#9074#10385#0" />
+            <element signature="e#12365#13676#0" />
             <element signature="e#10575#19313#0" />
             <element signature="e#19361#24191#0" />
             <element signature="e#24239#24854#0" />
             <element signature="e#24902#26573#0" />
             <element signature="e#26621#27286#0" />
-            <element signature="e#27373#27666#0" />
+            <element signature="e#29036#29797#0" />
+            <element signature="e#31530#33559#0" />
+            <element signature="e#32645#33262#0" />
+            <element signature="e#33309#33929#0" />
+            <element signature="e#34560#35180#0" />
+            <element signature="e#36141#36435#0" />
+            <element signature="e#36505#38886#0" />
+            <element signature="e#39335#39934#0" />
+            <element signature="e#36933#37360#0" />
           </folding>
         </state>
       </provider>
@@ -376,16 +444,28 @@
           <caret line="351" column="13" selection-start-line="351" selection-start-column="13" selection-end-line="351" selection-end-column="13" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#4590#4701#0" />
+            <element signature="e#2215#3403#0" />
+            <element signature="e#4660#5523#0" />
+            <element signature="e#4590#4960#0" />
+            <element signature="e#4745#5366#0" />
             <element signature="e#5674#5897#0" />
+            <element signature="e#7203#10465#0" />
             <element signature="e#7134#9045#0" />
-            <element signature="e#9074#10385#0" />
+            <element signature="e#12365#13676#0" />
             <element signature="e#10575#19313#0" />
             <element signature="e#19361#24191#0" />
             <element signature="e#24239#24854#0" />
             <element signature="e#24902#26573#0" />
             <element signature="e#26621#27286#0" />
-            <element signature="e#27373#27666#0" />
+            <element signature="e#29036#29797#0" />
+            <element signature="e#31530#33559#0" />
+            <element signature="e#32645#33262#0" />
+            <element signature="e#33309#33929#0" />
+            <element signature="e#34560#35180#0" />
+            <element signature="e#36141#36435#0" />
+            <element signature="e#36505#38886#0" />
+            <element signature="e#39335#39934#0" />
+            <element signature="e#36933#37360#0" />
           </folding>
         </state>
       </provider>
@@ -403,16 +483,28 @@
           <caret line="53" column="20" selection-start-line="53" selection-start-column="20" selection-end-line="53" selection-end-column="20" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#4590#4701#0" />
+            <element signature="e#2215#3403#0" />
+            <element signature="e#4660#5523#0" />
+            <element signature="e#4590#4960#0" />
+            <element signature="e#4745#5366#0" />
             <element signature="e#5674#5897#0" />
+            <element signature="e#7203#10465#0" />
             <element signature="e#7134#9045#0" />
-            <element signature="e#9074#10385#0" />
+            <element signature="e#12365#13676#0" />
             <element signature="e#10575#19313#0" />
             <element signature="e#19361#24191#0" />
             <element signature="e#24239#24854#0" />
             <element signature="e#24902#26573#0" />
             <element signature="e#26621#27286#0" />
-            <element signature="e#27373#27666#0" />
+            <element signature="e#29036#29797#0" />
+            <element signature="e#31530#33559#0" />
+            <element signature="e#32645#33262#0" />
+            <element signature="e#33309#33929#0" />
+            <element signature="e#34560#35180#0" />
+            <element signature="e#36141#36435#0" />
+            <element signature="e#36505#38886#0" />
+            <element signature="e#39335#39934#0" />
+            <element signature="e#36933#37360#0" />
           </folding>
         </state>
       </provider>
@@ -446,16 +538,28 @@
           <caret line="8" selection-start-line="8" selection-end-line="8" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#4590#4701#0" />
+            <element signature="e#2215#3403#0" />
+            <element signature="e#4660#5523#0" />
+            <element signature="e#4590#4960#0" />
+            <element signature="e#4745#5366#0" />
             <element signature="e#5674#5897#0" />
+            <element signature="e#7203#10465#0" />
             <element signature="e#7134#9045#0" />
-            <element signature="e#9074#10385#0" />
+            <element signature="e#12365#13676#0" />
             <element signature="e#10575#19313#0" />
             <element signature="e#19361#24191#0" />
             <element signature="e#24239#24854#0" />
             <element signature="e#24902#26573#0" />
             <element signature="e#26621#27286#0" />
-            <element signature="e#27373#27666#0" />
+            <element signature="e#29036#29797#0" />
+            <element signature="e#31530#33559#0" />
+            <element signature="e#32645#33262#0" />
+            <element signature="e#33309#33929#0" />
+            <element signature="e#34560#35180#0" />
+            <element signature="e#36141#36435#0" />
+            <element signature="e#36505#38886#0" />
+            <element signature="e#39335#39934#0" />
+            <element signature="e#36933#37360#0" />
           </folding>
         </state>
       </provider>
@@ -473,16 +577,28 @@
           <caret line="351" column="13" selection-start-line="351" selection-start-column="13" selection-end-line="351" selection-end-column="13" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#4590#4701#0" />
+            <element signature="e#2215#3403#0" />
+            <element signature="e#4660#5523#0" />
+            <element signature="e#4590#4960#0" />
+            <element signature="e#4745#5366#0" />
             <element signature="e#5674#5897#0" />
+            <element signature="e#7203#10465#0" />
             <element signature="e#7134#9045#0" />
-            <element signature="e#9074#10385#0" />
+            <element signature="e#12365#13676#0" />
             <element signature="e#10575#19313#0" />
             <element signature="e#19361#24191#0" />
             <element signature="e#24239#24854#0" />
             <element signature="e#24902#26573#0" />
             <element signature="e#26621#27286#0" />
-            <element signature="e#27373#27666#0" />
+            <element signature="e#29036#29797#0" />
+            <element signature="e#31530#33559#0" />
+            <element signature="e#32645#33262#0" />
+            <element signature="e#33309#33929#0" />
+            <element signature="e#34560#35180#0" />
+            <element signature="e#36141#36435#0" />
+            <element signature="e#36505#38886#0" />
+            <element signature="e#39335#39934#0" />
+            <element signature="e#36933#37360#0" />
           </folding>
         </state>
       </provider>
@@ -500,16 +616,28 @@
           <caret line="53" column="20" selection-start-line="53" selection-start-column="20" selection-end-line="53" selection-end-column="20" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#4590#4701#0" />
+            <element signature="e#2215#3403#0" />
+            <element signature="e#4660#5523#0" />
+            <element signature="e#4590#4960#0" />
+            <element signature="e#4745#5366#0" />
             <element signature="e#5674#5897#0" />
+            <element signature="e#7203#10465#0" />
             <element signature="e#7134#9045#0" />
-            <element signature="e#9074#10385#0" />
+            <element signature="e#12365#13676#0" />
             <element signature="e#10575#19313#0" />
             <element signature="e#19361#24191#0" />
             <element signature="e#24239#24854#0" />
             <element signature="e#24902#26573#0" />
             <element signature="e#26621#27286#0" />
-            <element signature="e#27373#27666#0" />
+            <element signature="e#29036#29797#0" />
+            <element signature="e#31530#33559#0" />
+            <element signature="e#32645#33262#0" />
+            <element signature="e#33309#33929#0" />
+            <element signature="e#34560#35180#0" />
+            <element signature="e#36141#36435#0" />
+            <element signature="e#36505#38886#0" />
+            <element signature="e#39335#39934#0" />
+            <element signature="e#36933#37360#0" />
           </folding>
         </state>
       </provider>
@@ -520,13 +648,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="370">
           <caret line="1049" selection-start-line="1049" selection-end-line="1049" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Create_Dummy_Data.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3145">
-          <caret line="214" column="2" selection-start-line="214" selection-start-column="2" selection-end-line="214" selection-end-column="2" />
         </state>
       </provider>
     </entry>
@@ -547,27 +668,105 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Rasterize_and_Upload_Requirements.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="20" column="183" selection-start-line="20" selection-start-column="183" selection-end-line="20" selection-end-column="183" />
+        <state relative-caret-position="459">
+          <caret line="27" lean-forward="true" selection-start-line="27" selection-end-line="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Temp/README-MS58.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="15" selection-start-column="15" selection-end-column="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Temp/CBI_Data_Catalog_Script-1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="16" column="25" selection-start-line="16" selection-start-column="11" selection-end-line="16" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Temp/CBI_Data_Catalog_Script.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="34" column="59" selection-start-line="34" selection-start-column="59" selection-end-line="34" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/List_Fields.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="60" column="28" lean-forward="true" selection-start-line="60" selection-start-column="28" selection-end-line="60" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Create_Dummy_Data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1496">
+          <caret line="162" column="11" selection-start-line="162" selection-start-column="11" selection-end-line="162" selection-end-column="11" />
+          <folding>
+            <element signature="e#3070#3953#0" />
+            <element signature="e#4001#4219#0" />
+            <element signature="e#4263#6036#0" />
+            <element signature="e#6102#8070#0" />
+            <element signature="e#8103#9497#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Rename_Fields.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="901">
+          <caret line="55" column="39" lean-forward="true" selection-start-line="55" selection-start-column="39" selection-end-line="55" selection-end-column="39" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Create_Real_Data.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="618">
-          <caret line="79" column="22" selection-start-line="79" selection-start-column="22" selection-end-line="79" selection-end-column="22" />
+        <state relative-caret-position="-2004">
+          <caret line="5" lean-forward="true" selection-start-line="5" selection-end-line="5" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#4590#4701#0" />
+            <element signature="e#2215#3403#0" />
+            <element signature="e#4660#5523#0" />
+            <element signature="e#4590#4960#0" />
+            <element signature="e#4745#5366#0" />
             <element signature="e#5674#5897#0" />
+            <element signature="e#7203#10465#0" />
             <element signature="e#7134#9045#0" />
-            <element signature="e#9074#10385#0" />
+            <element signature="e#12365#13676#0" />
             <element signature="e#10575#19313#0" />
             <element signature="e#19361#24191#0" />
             <element signature="e#24239#24854#0" />
             <element signature="e#24902#26573#0" />
             <element signature="e#26621#27286#0" />
-            <element signature="e#27373#27666#0" />
+            <element signature="e#29036#29797#0" />
+            <element signature="e#31530#33559#0" />
+            <element signature="e#32645#33262#0" />
+            <element signature="e#33309#33929#0" />
+            <element signature="e#34560#35180#0" />
+            <element signature="e#36141#36435#0" />
+            <element signature="e#36505#38886#0" />
+            <element signature="e#39335#39934#0" />
+            <element signature="e#36933#37360#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Test_Exemptions_Bug.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="24" column="19" lean-forward="true" selection-start-line="24" selection-start-column="19" selection-end-line="24" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="167">
+          <caret line="154" column="12" selection-start-line="152" selection-end-line="161" selection-end-column="25" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
