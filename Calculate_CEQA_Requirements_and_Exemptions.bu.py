@@ -25,7 +25,7 @@ input_parcels_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA
 output_parcels_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs_for_DataBasin.gdb\sacramento_parcels_requirements"
 
 #TEST
-#output_parcels_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Test\Outputs_Check_Exemptions_For_DataBasin.gdb\parcels_to_test_with_requirements_one_parcel"
+output_parcels_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Test\Outputs_Check_Exemptions_For_DataBasin.gdb\parcels_to_test_with_requirements"
 
 original_fields_to_keep = [
     "PARCEL_APN",
@@ -91,10 +91,9 @@ requirements = {
     2.1: "urbanized_area_prc_21071_2_1",
     2.2: "urban_area_prc_21094_2_2",
     2.3: "within_city_limits_2_3",
-    2.4: "unincorporated_2_4",
+    2.4: "unincorporated_urbanized_area_2_4",
     2.5: "within_mpo_2_5",
     2.6: "covered_by_a_specific_plan_2_6",
-    2.7: "urbanized_area_or_urban_cluster_2_7",
     # Transit Proximity Requirements
     3.1: "within_half_mile_major_transit_stop_3_1",
     3.2: "within_quarter_mile_transit_corridor_3_2",
@@ -124,19 +123,48 @@ requirements = {
 ##### will exist either through a requirement calculation or a join from other staff.
 ##### Otherwise, this script will abort when it calculates the exemptions.
 exemptions = {
-    1: ['21159.24', 'Resources Code', [2.1, 3.1, 8.1, 8.2, 8.3, 9.2, 9.3, 9.4, 9.5, 9.6]],
-    2: ['21155.1', 'Resources Code', [2.5, [3.1, 3.4], 8.1, 8.2, 8.3, 9.2, 9.3, 9.4, 9.5]], # Remove requirement 3.2 and add requirement 3.1
-    3: ['21155.2', 'Resources Code', [2.5, [3.1, 3.4]]],# Added 3.1 and 3.4
+    1: ['21159.24', 'Resources Code', [2.1, 3.1, 8.1, 8.2, 8.3, 8.4, 9.2, 9.3, 9.4, 9.5, 9.6]],
+    2: ['21155.1', 'Resources Code', [2.5, [3.2, 3.4], 8.1, 8.2, 8.3, 8.4, 9.2, 9.3, 9.4, 9.5]],
+    3: ['21155.2', 'Resources Code', [2.5]],
     4: ['21155.4', 'Resources Code', [2.5, 2.6, 3.3]],
-    5: ['21094.5', 'Resources Code', [2.2, [3.1, 3.5, 3.8]]],# Removed 2.6 and 3.4
-    6: ['65457', 'Government Code', [2.6]],# Removed 8.1 - 8.3. Removed 9.2-9.5
+    5: ['21094.5', 'Resources Code', [2.2, 2.6, [3.1, 3.4, 3.5, 3.8], 4.2]],
+    6: ['65457', 'Government Code', [2.6, 8.1, 8.2, 8.3, 8.4, 9.2, 9.3, 9.4, 9.5]],
+    #7: ['15183', 'CEQA Guidelines', []],
     8: ['15332', 'CEQA Guidelines', [2.3]],
-    9: ['21159.25', 'Resources Code', [2.4, 2.7]],
+    9: ['21159.25', 'Resources Code', [2.4]],
     10: ['15303', 'CEQA Guidelines', [2.1]],
     11: ['21099', 'Resources Code', [3.3]],
+    12: ['21155.2', 'Resources Code', [2.5, [3.1, 3.5]]],
+    #13: ['21159.23', 'Resources Code', []],
     14: ['21159.28', 'Resources Code', [2.5]],
-    15: ['15064.3', 'CEQA Guidelines', [[3.1, 3.5, 3.6, 3.7]]]# Remove 3.4. Add 3.5.
+    15: ['15064.3', 'CEQA Guidelines', [3.1, 3.5, 3.6, 3.7]]
 }
+
+# Remove any items from the "requirements_to_skip" list
+requirements_to_skip = [2.6, 3.3, 3.7, 8.4, 9.1, 4.2]
+# Test without 2.1, or 2.2 (which take a long time)
+#requiremets_to_skip = [2.1, 2.2, 2.6, 3.3, 3.7, 8.4, 9.1, 4.2]
+
+for k, v in exemptions.items():
+
+    new_e_list = []
+
+    #requirements list
+    for e in v[2]:
+
+        # If it's a sub_list of requirements indicating an OR condition (e.g., [3.1, 3.4]), remove the ones that ones in skip list.
+        if isinstance(e, list):
+            new_sub_e_list = []
+            for sub_e in e:
+                if sub_e not in requirements_to_skip:
+                    new_sub_e_list.append(sub_e)
+            new_e_list.append(new_sub_e_list)
+
+        # Otherwise, it's just a simple requirement (e.g., 4.3)
+        elif e not in requirements_to_skip:
+            new_e_list.append(e)
+
+        v[2] = new_e_list
 
 arcpy.env.workspace = output_ws_dev_team
 
@@ -171,7 +199,7 @@ def copy_parcels_fc():
 
 
 # Function Handler that calls the INDIVIDUAL REQUIREMENT function for processing.
-def calculate_parcel_requirements(requirements_to_process, start_oid=False, end_oid=False):
+def calculate_parcel_requirements(requirements_to_process, start_oid=0, end_oid=0):
 
     if arcpy.Exists(output_parcels_fc):
         existing_output_fields = [field.name for field in arcpy.ListFields(output_parcels_fc)]
@@ -213,13 +241,6 @@ def calculate_parcel_requirements(requirements_to_process, start_oid=False, end_
         if not field_to_calc in existing_output_fields:
             arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
         calc_requirement_2_5(field_to_calc)
-
-    if 2.7 in requirements_to_process:
-        print "Calculating requirement 2.7...\n"
-        field_to_calc = requirements[2.7]
-        if not field_to_calc in existing_output_fields:
-            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
-        calc_requirement_2_7(field_to_calc)
 
     if 9.4 in requirements_to_process:
         print "Calculating requirement 9.4...\n"
@@ -455,7 +476,7 @@ def create_parcel_exemptions_table_dev_team(mask, test_TAXAPN=False, test_exempt
                     print "Exemption ID: " + str(k)
                     print "Requirements: " + str(exemptions[k][2])
                     print "Check Requirements: " + str(check_requirements)
-                    print ("NOTE: A value of 1 means it meets the requirement at the same index as above. For OR conditions, the value represents the number of requirements it meets")
+                    print ("NOTE: A value of 1 means it meets the requirement at the same index as above. For OR conditions, the value represents the numbner of requirements it meets")
                     print "\n"
             if all(check_requirements):
                 count_exemptions += 1
@@ -668,10 +689,7 @@ def calc_requirement_2_1(field_to_calc, start_oid, end_oid):
     for field in fields:
         fieldnames.append(field.name)
 
-    if start_oid and end_oid:
-        filter_records = "OBJECTID > %s and OBJECTID <= %s" % (start_oid, end_oid)
-    else:
-        filter_records = "#"
+    filter_records = "OBJECTID > %s and OBJECTID <= %s" % (start_oid, end_oid)
     uc = arcpy.da.UpdateCursor(output_parcels_fc, "*", filter_records)
 
     count = 0
@@ -802,18 +820,25 @@ def calc_requirement_2_3(field_to_calc):
 def calc_requirement_2_4(field_to_calc):
     """
         2.4
-        Requirement Long Name: Unincorporated
-        Select parcels where the CITY = Unincorporated
-        Select parcels that HAVE THEIR CENTERS IN this layer
+        Requirement Long Name: Unincorporated urbanized area or urban cluster
+        Description: Intersect Unincorporated areas with urbanized area or urban clusters.
+        Select parcels that HAVE THEIR CENTERS IN this intersected area.
     """
 
     # Unincorporated areas
     incorporated_and_unincorporated_layer = arcpy.MakeFeatureLayer_management(incorporated_and_unincorporated_fc)
     unincorporated_layer = arcpy.SelectLayerByAttribute_management(incorporated_and_unincorporated_layer, "NEW_SELECTION", "CITY = 'Unincorporated'")
 
-    # Select parcels that HAVE THEIR CENTERS IN the unincorporated area
+    # Urbanized area or urban cluster
+    urbanized_area_urban_cluster_layer = arcpy.MakeFeatureLayer_management(urbanized_area_urban_cluster_fc)
+
+    # Intersect the two layers above -> Unincorporated Urbanized area or urban cluster
+    unincorporated_urbanized_area_or_urban_cluster_fc = intermediate_ws + os.sep + "unincorporated_urbanized_area_or_urban_cluster"
+    arcpy.Intersect_analysis([unincorporated_layer, urbanized_area_urban_cluster_layer], unincorporated_urbanized_area_or_urban_cluster_fc)
+
+    # Select parcels that HAVE THEIR CENTERS IN the unincorporated urbanized area or urban cluster
     output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
-    arcpy.SelectLayerByLocation_management(output_parcels_layer, "HAVE_THEIR_CENTER_IN", unincorporated_layer)
+    arcpy.SelectLayerByLocation_management(output_parcels_layer, "HAVE_THEIR_CENTER_IN", unincorporated_urbanized_area_or_urban_cluster_fc)
 
     # Calculate 1's and 0's
     arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
@@ -832,23 +857,6 @@ def calc_requirement_2_5(field_to_calc):
     arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 1, "PYTHON")
     arcpy.SelectLayerByAttribute_management("output_parcels_layer", "SWITCH_SELECTION")
     arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 0, "PYTHON")
-
-
-def calc_requirement_2_7(field_to_calc):
-    """
-        2.7
-        Requirement Long Name: Urbanized area or urban cluster
-        Select parcels that HAVE THEIR CENTERS IN this layer.
-    """
-
-    # Select parcels that HAVE THEIR CENTERS IN the unincorporated urbanized area or urban cluster
-    output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
-    arcpy.SelectLayerByLocation_management(output_parcels_layer, "HAVE_THEIR_CENTER_IN", urbanized_area_urban_cluster_fc)
-
-    # Calculate 1's and 0's
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
-    arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
 
 
 def calc_requirement_9_4(field_to_calc):
@@ -1022,30 +1030,33 @@ def copy_parcels_fc_with_select_orig_and_requirement_fields():
 
 # Function Calls #######################################################################################################
 
+#STEP 1:
 #copy_parcels_fc()
 
 # Requirements: If called multiple times from batch script to increase performance, get oids from batch file.
 #start_oid = sys.argv[1]
 #end_oid = sys.argv[2]
 #calculate_parcel_requirements(requirements_to_process=[2.1], start_oid=start_oid, end_oid=end_oid)
-#calculate_parcel_requirements(requirements_to_process=[2.4, 2.7])
+#calculate_parcel_requirements(requirements_to_process=[9.5], start_oid=0, end_oid=456000)
+#calculate_parcel_requirements(requirements_to_process=[2.3, 2.4, 2.5, 9.4, 9.5, 9.6, 9.7, 9.8], start_oid=0, end_oid=200)
 
 # Join Additional Requirement Fields (From Kai and other staff)
-additional_requirements_table = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\From_Kai\Transit_and_Infill.gdb\Sacramento_Parcels_MG_v5_VMT_Centroid"
+additional_requirements_table = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\From_Kai\Transit_and_Infill.gdb\Sacramento_Parcels_MG_v4_Fix_Specific_Plan"
 #fields_to_join = ["MajTS_3_1", "HighQualTC_3_4", "HighQualTC_3_2", "StpTC_1_2m_3_5", "Wetlands_8_1", "RipWet_8_2", "Spec_Habitat_8_3", "WildHaz_9_3", "EQFault_9_2", "B15per_RegAv_3_6", "Below_RegAv_3_8"]
-fields_to_join = ["B15per_RegAv_3_6", "B15per_CitAv_3_7", "Below_RegAv_3_8"]
-join_additional_requirements(additional_requirements_table, fields_to_join)
-rename_fields()
+fields_to_join = ["SpecPlan_2_6"]
+
+#join_additional_requirements(additional_requirements_table, fields_to_join)
+
+#rename_fields()
 
 #create_parcel_fc_dev_team(mask=False)
 
-create_exemption_table_dev_team()
+#create_exemption_table_dev_team()
 
 #create_parcel_exemptions_table_dev_team(mask=False, test_TAXAPN='277-0160-021-0000', test_exemption='21094.5')
-
 create_parcel_exemptions_table_dev_team(mask=False, test_TAXAPN=False, test_exemption=False)
 
-create_requirements_table_dev_team(mask=False)
+#create_requirements_table_dev_team(mask=False)
 
 
 # Extra functions (NOT NEEDED)

@@ -8,7 +8,8 @@ arcpy.env.workspace = intermediate_ws
 output_ws = r'P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs.gdb'
 
 input_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Parcels.gdb\sacramento_parcels"
-output_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs.gdb\sacramento_parcels"
+#output_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs.gdb\sacramento_parcels"
+output_parcels_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\DummyData\Outputs.gdb\sacramento_parcels"
 
 def copy_parcels_fc():
     arcpy.CopyFeatures_management(output_parcels_fc, output_parcels_fc)
@@ -194,7 +195,8 @@ def calculate_parcel_exemptions():
             # e.g., [1,1,1,1,1]
             if all(check_requirements):
                 count_exemptions += 1
-                exemptions_ic.insertRow([parcel_id, v[0]])
+                # Fix for bug Dan noticed (change v[0] to k because we want the exemption id, not the exemption code. Provided Nik with corrected table on 1/8/2020
+                exemptions_ic.insertRow([parcel_id, k])
 
         # Add the count of the number of exemptions to the parcels feature class. 
         row[parcels_uc.fields.index("exemptions_count")] = count_exemptions
@@ -233,5 +235,6 @@ def create_outputs():
 #create_tables()
 #populate_exemptions_table()
 #calculate_parcel_requirements()
-create_outputs()
+calculate_parcel_exemptions()
+#create_outputs()
 
