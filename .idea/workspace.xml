@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7b3751b4-152f-460c-8539-1fb51277ddec" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions.py" beforeDir="false" afterPath="$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Create_Dummy_Data.py" beforeDir="false" afterPath="$PROJECT_DIR$/Create_Dummy_Data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Create_Real_Data.py" beforeDir="false" />
-    </list>
+    <list default="true" id="7b3751b4-152f-460c-8539-1fb51277ddec" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -15,11 +11,13 @@
   </component>
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/CEQA$Rename_Fields.coverage" NAME="Rename_Fields Coverage Results" MODIFIED="1578688178957" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/CEQA$arc_objects_get_symbology_from_lyr.coverage" NAME="arc_objects_get_symbology_from_lyr Coverage Results" MODIFIED="1580938058740" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="F:/Projects2/ArcObjects_DataBasin/scripts" />
     <SUITE FILE_PATH="coverage/CEQA$call.coverage" NAME="call Coverage Results" MODIFIED="1574117980906" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/CEQA$Create_Dummy_Data.coverage" NAME="Create_Dummy_Data Coverage Results" MODIFIED="1578508919504" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/CEQA$Create_Real_Data.coverage" NAME="Create_Real_Data Coverage Results" MODIFIED="1579212309212" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/CEQA$List_Fields.coverage" NAME="List_Fields Coverage Results" MODIFIED="1579198946443" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/CEQA$Rasterize_and_Upload_Requirements.coverage" NAME="Rasterize_and_Upload_Requirements Coverage Results" MODIFIED="1575394985722" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/CEQA$arc_objects_get_symbology_from_lyr__1_.coverage" NAME="arc_objects_get_symbology_from_lyr (1) Coverage Results" MODIFIED="1580935150404" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/CEQA$Test_Exemptions_Bug.coverage" NAME="Test_Exemptions_Bug Coverage Results" MODIFIED="1580166506361" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/CEQA$Calculate_CEQA_Requirements_and_Exemptions.coverage" NAME="Calculate_CEQA_Requirements_and_Exemptions Coverage Results" MODIFIED="1580764447342" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/CEQA$Nosetests_in_test_call_py.coverage" NAME="Nosetests in test_call.py Coverage Results" MODIFIED="1574115766564" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -29,8 +27,8 @@
       <file leaf-file-name="Calculate_CEQA_Requirements_and_Exemptions.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1649">
-              <caret line="116" column="31" selection-start-line="116" selection-start-column="31" selection-end-line="116" selection-end-column="31" />
+            <state relative-caret-position="241">
+              <caret line="469" selection-start-line="469" selection-end-line="469" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
                 <element signature="e#2432#2764#0" />
@@ -43,6 +41,7 @@
                 <element signature="e#18046#18636#0" />
                 <element signature="e#18997#23062#0" />
                 <element signature="e#22349#23851#0" />
+                <element signature="e#24040#32775#0" />
                 <element signature="e#32823#37653#0" />
                 <element signature="e#37701#38316#0" />
                 <element signature="e#38364#40035#0" />
@@ -57,6 +56,15 @@
                 <element signature="e#46729#47153#0" />
                 <element signature="e#47228#48502#0" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="arc_objects_get_symbology_from_lyr.py" pinned="false" current-in-tab="false">
+        <entry file="file://F:/Projects2/ArcObjects_DataBasin/scripts/arc_objects_get_symbology_from_lyr.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2051">
+              <caret line="250" column="51" selection-start-line="250" selection-start-column="51" selection-end-line="250" selection-end-column="51" />
             </state>
           </provider>
         </entry>
@@ -81,6 +89,8 @@
         <option value="$PROJECT_DIR$/Create_Real_Data.py" />
         <option value="$PROJECT_DIR$/Test_Exemptions_Bug.py" />
         <option value="$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions.py" />
+        <option value="$PROJECT_DIR$/arc_objects_get_symbology_from_lyr.py" />
+        <option value="F:/Projects2/ArcObjects_DataBasin/scripts/arc_objects_get_symbology_from_lyr.py" />
       </list>
     </option>
   </component>
@@ -91,10 +101,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="294" />
-    <option name="y" value="168" />
-    <option name="width" value="1309" />
-    <option name="height" value="915" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1936" />
+    <option name="height" value="1056" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -139,7 +149,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.Calculate_CEQA_Requirements_and_Exemptions">
+  <component name="RunManager" selected="Python.arc_objects_get_symbology_from_lyr">
     <configuration name="Calculate_CEQA_Requirements_and_Exemptions" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="CEQA" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -178,44 +188,6 @@
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
     </configuration>
-    <configuration name="List_Fields" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="CEQA" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/List_Fields.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-    </configuration>
-    <configuration name="Rename_Fields" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="CEQA" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Rename_Fields.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-    </configuration>
     <configuration name="Test_Exemptions_Bug" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="CEQA" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -235,20 +207,58 @@
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
     </configuration>
+    <configuration name="arc_objects_get_symbology_from_lyr (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="CEQA" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/arc_objects_get_symbology_from_lyr.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
+    <configuration name="arc_objects_get_symbology_from_lyr" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="CEQA" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="F:/Projects2/ArcObjects_DataBasin/scripts" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="F:/Projects2/ArcObjects_DataBasin/scripts/arc_objects_get_symbology_from_lyr.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
     <list>
       <item itemvalue="Python.Create_Real_Data" />
-      <item itemvalue="Python.Rename_Fields" />
-      <item itemvalue="Python.List_Fields" />
       <item itemvalue="Python.Calculate_CEQA_Requirements_and_Exemptions" />
       <item itemvalue="Python.Test_Exemptions_Bug" />
+      <item itemvalue="Python.arc_objects_get_symbology_from_lyr" />
+      <item itemvalue="Python.arc_objects_get_symbology_from_lyr (1)" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.arc_objects_get_symbology_from_lyr" />
+        <item itemvalue="Python.arc_objects_get_symbology_from_lyr (1)" />
         <item itemvalue="Python.Calculate_CEQA_Requirements_and_Exemptions" />
         <item itemvalue="Python.Test_Exemptions_Bug" />
         <item itemvalue="Python.Create_Real_Data" />
-        <item itemvalue="Python.List_Fields" />
-        <item itemvalue="Python.Rename_Fields" />
       </list>
     </recent_temporary>
   </component>
@@ -286,7 +296,7 @@
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.19106145" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.07932961" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.06503198" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
@@ -768,10 +778,32 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/arc_objects_get_symbology_from_lyr.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="11" column="120" selection-start-line="11" selection-start-column="120" selection-end-line="11" selection-end-column="120" />
+          <folding>
+            <element signature="e#664#704#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://F:/Projects2/ArcObjects_DataBasin/scripts/arc_objects_get_rgb_from_lyr.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-153" />
+      </provider>
+    </entry>
+    <entry file="file://F:/Projects2/ArcObjects_DataBasin/scripts/arc_objects_get_symbology_from_lyr.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2051">
+          <caret line="250" column="51" selection-start-line="250" selection-start-column="51" selection-end-line="250" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1649">
-          <caret line="116" column="31" selection-start-line="116" selection-start-column="31" selection-end-line="116" selection-end-column="31" />
+        <state relative-caret-position="241">
+          <caret line="469" selection-start-line="469" selection-end-line="469" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
             <element signature="e#2432#2764#0" />
@@ -784,6 +816,7 @@
             <element signature="e#18046#18636#0" />
             <element signature="e#18997#23062#0" />
             <element signature="e#22349#23851#0" />
+            <element signature="e#24040#32775#0" />
             <element signature="e#32823#37653#0" />
             <element signature="e#37701#38316#0" />
             <element signature="e#38364#40035#0" />
