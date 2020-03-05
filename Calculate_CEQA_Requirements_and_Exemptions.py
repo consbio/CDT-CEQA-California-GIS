@@ -62,6 +62,12 @@ incorporated_and_unincorporated_fc = r"P:\Projects3\CDT-CEQA_California_2019_mik
 # 2.5
 mpo_boundary_dissolve_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Intermediate.gdb\MPO_boundaries_dissolve"
 
+# 8.5
+rare_threatened_or_endangered_fc = r"Database Connections\CBI Intermediate.sde\cbiintermediate.mike_gough.CA_Rare_Threatened_or_Endangered_Erase_Impervious_del_fields"
+
+# 9.3
+wildfire_hazard_raster = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Inputs.gdb\wildfire_hazard_fthrt_14_2_reclass_3_5"
+
 # 9.4
 flood_plain_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Inputs.gdb\CA_100_Year_FEMA_Floodplain"
 
@@ -109,6 +115,7 @@ requirements = {
     8.2: "riparian_areas_8_2",
     8.3: "special_habitats_8_3",
     8.4: "species_of_concern_8_4",
+    8.5: "rare_threatened_endangered_sp_8_5",
     # Hazards
     9.1: "sea_level_rise_9_1",
     9.2: "earthquake_hazard_zone_9_2",
@@ -136,6 +143,22 @@ exemptions = {
     11: ['21099', 'Resources Code', [3.3]],
     14: ['21159.28', 'Resources Code', [2.5]],
     15: ['15064.3', 'CEQA Guidelines', [[3.1, 3.5, 3.6, 3.7]]]# Remove 3.4. Add 3.5.
+}
+
+#02/13/2020 Adjustments for new requirement additions and other changes made by Helen + fix discrepencies.
+exemptions = {
+ 1: ['21159.24', 'Resources Code', [2.1, 3.1, 8.1, 8.2, 8.3, 9.2, 9.3, 9.4, 9.5, 9.6]],
+ 2: ['21155.1', 'Resources Code', [2.5, [3.2, 3.13, 3.14], 8.1, 8.2, 8.3, 9.2, 9.3, 9.4, 9.5]], # Remove 3.1, 3.4. Add 3.2, 3.13, 3.14
+ 3: ['21155.2', 'Resources Code', [2.5, [3.1, 3.4, 3.9, 3.12]]], # Add 3.9, 3.12
+ 4: ['21155.4', 'Resources Code', [2.5, 2.6, 3.3]],
+ 5: ['21094.5', 'Resources Code', [2.2, [3.1, 3.5, 3.8, 3.10, 3.11]]], # Add 3.10, 3.11
+ 6: ['65457', 'Government Code', [2.6]],
+ 8: ['15332', 'CEQA Guidelines', [2.3]],
+ 9: ['21159.25', 'Resources Code', [2.4, 2.7]],
+ 10: ['15303', 'CEQA Guidelines', [2.1]],
+ 11: ['21099', 'Resources Code', [3.3]],
+ 14: ['21159.28', 'Resources Code', [2.5]],
+ 15: ['15064.3', 'CEQA Guidelines', [[3.1, 3.5, 3.6, 3.7]]]
 }
 
 arcpy.env.workspace = output_ws_dev_team
@@ -220,6 +243,20 @@ def calculate_parcel_requirements(requirements_to_process, start_oid=False, end_
         if not field_to_calc in existing_output_fields:
             arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
         calc_requirement_2_7(field_to_calc)
+
+    if 8.5 in requirements_to_process:
+        print "Calculating requirement 8.5...\n"
+        field_to_calc = requirements[8.5]
+        if not field_to_calc in existing_output_fields:
+            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
+        calc_requirement_8_5(field_to_calc)
+
+    if 9.3 in requirements_to_process:
+        print "Calculating requirement 9.3...\n"
+        field_to_calc = requirements[9.3]
+        if not field_to_calc in existing_output_fields:
+            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
+        calc_requirement_9_3(field_to_calc)
 
     if 9.4 in requirements_to_process:
         print "Calculating requirement 9.4...\n"
@@ -851,6 +888,51 @@ def calc_requirement_2_7(field_to_calc):
     arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
 
 
+def calc_requirement_8_5(field_to_calc):
+
+    """
+        8.5
+        Requirement Long Name:  Rare, Threatened, or Endangered Species
+        Description: Select parcels that intersect the Rare, Threatened, or Endangered Species Dataset. Yes = 0, No = 1
+    """
+    arcpy.MakeFeatureLayer_management(output_parcels_fc, "output_parcels_layer")
+    arcpy.SelectLayerByLocation_management("output_parcels_layer", "INTERSECT", rare_threatened_or_endangered_fc)
+    arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 0, "PYTHON")
+    arcpy.SelectLayerByAttribute_management("output_parcels_layer", "SWITCH_SELECTION")
+    arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 1, "PYTHON")
+
+
+def calc_requirement_9_3(field_to_calc):
+    """
+        9.3
+        Requirement Long Name: Wildfire Hazard
+        Description: Select parcels that intersect the Wildfire Hazard Zones 3-5(High - Extreme)(Yes = 0, No = 1)
+    """
+    print "Calculating Zonal Statistics..."
+    # Calculate zonal stats to get a count of the number of wildfire hazard pixels within each parcel.
+    tmp_zonal_stats_table = scratch_ws + os.sep + "wildfire_hazard_zonal_stats_subset"
+    arcpy.sa.ZonalStatisticsAsTable(output_parcels_fc, "PARCEL_ID", wildfire_hazard_raster, tmp_zonal_stats_table, "", "SUM")
+
+    print "Joining Zonal Stats table to the parcels dataset..."
+    # Join the zonal stats table (just the "COUNT" field) to the parcels feature class.
+    arcpy.JoinField_management(output_parcels_fc, "PARCEL_ID", tmp_zonal_stats_table, "PARCEL_ID", "COUNT")
+
+    # Loop over each row and determine whether or not > 20% of the parcel has a wildfire hazard pixel.
+    uc = arcpy.da.UpdateCursor(output_parcels_fc, ["SHAPE_Area", "COUNT", field_to_calc, "OBJECTID"])
+    for row in uc:
+
+        # If no join record or no pixel, no wildfire hazard
+        if not row[1] or row[1] == 0:
+            row[2] = 1
+
+        else:
+            row[2] = 0
+
+        uc.updateRow(row)
+
+    arcpy.DeleteField_management(output_parcels_fc, "COUNT")
+
+
 def calc_requirement_9_4(field_to_calc):
     """
         9.4
@@ -1028,24 +1110,25 @@ def copy_parcels_fc_with_select_orig_and_requirement_fields():
 #start_oid = sys.argv[1]
 #end_oid = sys.argv[2]
 #calculate_parcel_requirements(requirements_to_process=[2.1], start_oid=start_oid, end_oid=end_oid)
-#calculate_parcel_requirements(requirements_to_process=[2.4, 2.7])
+calculate_parcel_requirements(requirements_to_process=[8.5])
 
 # Join Additional Requirement Fields (From Kai and other staff)
 additional_requirements_table = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\From_Kai\Transit_and_Infill.gdb\Sacramento_Parcels_MG_v5_VMT_Centroid"
 #fields_to_join = ["MajTS_3_1", "HighQualTC_3_4", "HighQualTC_3_2", "StpTC_1_2m_3_5", "Wetlands_8_1", "RipWet_8_2", "Spec_Habitat_8_3", "WildHaz_9_3", "EQFault_9_2", "B15per_RegAv_3_6", "Below_RegAv_3_8"]
-fields_to_join = ["B15per_RegAv_3_6", "B15per_CitAv_3_7", "Below_RegAv_3_8"]
-join_additional_requirements(additional_requirements_table, fields_to_join)
-rename_fields()
+#fields_to_join = ["B15per_RegAv_3_6", "B15per_CitAv_3_7", "Below_RegAv_3_8"]
+
+#join_additional_requirements(additional_requirements_table, fields_to_join)
+#rename_fields()
 
 #create_parcel_fc_dev_team(mask=False)
 
-create_exemption_table_dev_team()
+#create_exemption_table_dev_team()
 
 #create_parcel_exemptions_table_dev_team(mask=False, test_TAXAPN='277-0160-021-0000', test_exemption='21094.5')
 
-create_parcel_exemptions_table_dev_team(mask=False, test_TAXAPN=False, test_exemption=False)
+#create_parcel_exemptions_table_dev_team(mask=False, test_TAXAPN=False, test_exemption=False)
 
-create_requirements_table_dev_team(mask=False)
+#create_requirements_table_dev_team(mask=False)
 
 
 # Extra functions (NOT NEEDED)
