@@ -9,6 +9,10 @@
 # Vector: Single symbol, unique values, or graduated colors
 # Raster: Unique values, classified, stretched, or discrete.
 # Returns results in JSON format.
+# NOTE: on 3/11/2020 started getting an error:  "Typelib newer than module"
+# solution was to pass on the exception on line 40 of this file:
+# C:\Python27\ArcGIS10.6\Lib\site-packages\comtypes\__init__.py
+
 ########################################################################################################################
 
 from comtypes.client import CreateObject
@@ -258,7 +262,7 @@ def getSymbolType(mySymbol):
 
 if __name__ == "__main__":
 
-    for inputLyrFile in glob.glob(inputDir + "/*2107*lyr"):
+    for inputLyrFile in glob.glob(inputDir + "/*21094_5*lyr"):
         inputLyrBasename = os.path.basename(inputLyrFile).split(".")[0]
         outputJSONfile = outputDir + os.sep + inputLyrBasename + ".json"
         main(inputLyrFile, outputJSONfile)
