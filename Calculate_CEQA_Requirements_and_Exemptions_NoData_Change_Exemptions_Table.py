@@ -26,7 +26,7 @@ output_parcels_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQ
 
 # Kai's table
 #additional_requirements_table = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\From_Kai\Transit_and_Infill.gdb\Sacramento_Parcels_MG_v7_3_14"
-additional_requirements_table = r"\\loxodonta\GIS\Projects\CDT-CEQA_California_2019\Workspaces\CDT-CEQA_California_2019_kai_foster\Tasks\General_Tasks\Data\Inputs\Inputs.gdb\Sacramento_Pilot\Sacramento_Parcels_MG"
+join_requirements_table = r"\\loxodonta\GIS\Projects\CDT-CEQA_California_2019\Workspaces\CDT-CEQA_California_2019_kai_foster\Tasks\General_Tasks\Data\Inputs\Inputs.gdb\Sacramento_Pilot\Sacramento_Parcels_MG"
 
 #TEST
 #output_parcels_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Test\Outputs_Check_Exemptions_For_DataBasin.gdb\parcels_to_test_with_requirements_one_parcel"
@@ -413,26 +413,28 @@ def calculate_requirements(requirements_to_process=requirements.keys(), start_oi
             print "No Data"
 
 
-def join_additional_requirements(additional_requirements_table, requirements_to_join):
-    print "Joining additional fields..."
-    all_additional_fields = arcpy.ListFields(additional_requirements_table)
+def join_additional_requirements(join_table, requirements_to_join):
+
+    #Create index on join table once.
+    #arcpy.AddIndex_management(join_table, "parcel_id", "parcel_id_index")
+
     fields_to_join = []
-    for field in all_additional_fields:
-        try:
-            requirement_id = field.name.split("_")[-2] + "." + field.name.split("_")[-1]
-            if requirement_id in requirements_to_join:
-                fields_to_join.append(field.name)
-                # If the standardized field name exists in the output feature class delete it before renaming the new joined field.
-                standardized_field_name = requirements[requirement_id]
-                if standardized_field_name in existing_output_fields:
-                    arcpy.DeleteField_management(output_parcels_fc, standardized_field_name)
-        except:
-            pass
-    print "Fields to join..."
-    print fields_to_join
-    #arcpy.AddIndex_management(additional_requirements_table, "parcel_id", "parcel_id_index")
-    #arcpy.AddIndex_management(output_parcels_fc, "parcel_id", "parcel_id_index")
-    arcpy.JoinField_management(output_parcels_fc, "parcel_id", additional_requirements_table, "parcel_id", fields_to_join)
+    for requirement_id in requirements_to_join:
+        # Find the field name in join_table
+        field_code = requirement_id.replace(".", "_")
+        matching_field = arcpy.ListFields(join_table, "*" + field_code)[0].name
+        print "Field to join: " + matching_field
+        fields_to_join.append(matching_field)
+
+        # Delete standardized field name if it exists.
+        standardized_field_name = requirements[requirement_id]
+        print "Standardized field name: " + standardized_field_name
+        if standardized_field_name in existing_output_fields:
+            print "The standardized field above already exists. Deleting it to avoid conflicts when the rename function is called..."
+            arcpy.DeleteField_management(output_parcels_fc, standardized_field_name)
+
+    print "Performing join of additional fields..."
+    arcpy.JoinField_management(output_parcels_fc, "parcel_id", join_table, "parcel_id", fields_to_join)
 
 
 def rename_fields():
@@ -498,16 +500,18 @@ def rename_fields():
 
 def calculate_exemptions(exemptions_to_calculate=exemptions.keys(), start_oid=False, end_oid=False):
 
-    print "\nCalculating Exemptions...."
+    print "\nCalculating Exemptions..."
 
     existing_output_fields = [field.name for field in arcpy.ListFields(output_parcels_fc)]
 
     if not "exemptions_count" in existing_output_fields:
         print "\nAdding exemptions_count field"
         arcpy.AddField_management(output_parcels_fc, "exemptions_count", "SHORT")
-        arcpy.CalculateField_management(output_parcels_fc, "exemptions_count", 0)
 
-    # Add a field for each exemption to calculate
+    print "Calculating 0's in the 'exemptions_count' field."
+    arcpy.CalculateField_management(output_parcels_fc, "exemptions_count", 0)
+
+    # Add a field for each exemption to calculate if it doesn't already exist.
     for exemption_to_calculate in exemptions_to_calculate:
         # Add a field for the exemption
         exemption_field_name = "E_" + exemption_to_calculate.replace(".", "_")
@@ -1223,17 +1227,20 @@ def list_fields():
 
 # Function Calls #######################################################################################################
 
+# Call once and done ##############
 #copy_parcels_fc()
 #create_parcel_fc_dev_team()
+##################################
 
 #calculate_requirements()
 
 # Join Additional Requirement Fields (From Kai and other staff)
-requirements_to_join = ["3.10", "3.11", "3.12", "3.13"]
-join_additional_requirements(additional_requirements_table, requirements_to_join)
-rename_fields()
+#requirements_to_join = ["3.10", "3.11", "3.12", "3.13"]
+#join_additional_requirements(join_requirements_table, requirements_to_join)
 
-calculate_exemptions()
+#rename_fields()
+
+#calculate_exemptions()
 
 create_requirements_table_dev_team()
 

@@ -8,21 +8,21 @@ arcpy.CheckOutExtension("Spatial")
 create_parcel_points = 0
 
 # Workspaces
+
+input_parcels_gdb = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Parcels_Projected_Delete_Identical.gdb"
+output_gdb_data_basin = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs_for_DataBasin.gdb"
+output_gdb_dev_team = r'P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs_for_DevTeam.gdb'
+
 intermediate_ws = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Intermediate.gdb"
 scratch_ws = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Scratch\Scratch.gdb"
-output_ws_data_basin = r'P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs_for_DataBasin.gdb'
-output_ws_dev_team = r'P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs_for_DevTeam.gdb'
 
-#TEST
-#output_ws_data_basin = r'P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Test\Outputs_for_DataBasin.gdb'
-#output_ws_dev_team = r'P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Test\Outputs_for_DevTeam.gdb'
-#output_ws_data_basin = r'P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Test\Outputs_Check_Exemptions_For_DataBasin.gdb'
-#output_ws_dev_team = r'P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Test\Outputs_Check_Exemptions_For_DevTeam.gdb'
+# Toolbox containing models for processing additional requirements (from Kai).
+statewide_toolbox = r"\\loxodonta\GIS\Projects\CDT-CEQA_California_2019\Workspaces\CDT-CEQA_California_2019_kai_foster\Tasks\General_Tasks\Statewide.tbx"
+arcpy.ImportToolbox(statewide_toolbox)
 
-
-# Input & output parcel feature classes
-input_parcels_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Parcels.gdb\sacramento_parcels"
-output_parcels_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs_for_DataBasin.gdb\sacramento_parcels_requirements"
+# Kai's table
+#additional_requirements_table = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\From_Kai\Transit_and_Infill.gdb\Sacramento_Parcels_MG_v7_3_14"
+join_requirements_table = r"\\loxodonta\GIS\Projects\CDT-CEQA_California_2019\Workspaces\CDT-CEQA_California_2019_kai_foster\Tasks\General_Tasks\Data\Inputs\Inputs.gdb\Sacramento_Pilot\Sacramento_Parcels_MG"
 
 #TEST
 #output_parcels_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Test\Outputs_Check_Exemptions_For_DataBasin.gdb\parcels_to_test_with_requirements_one_parcel"
@@ -86,13 +86,7 @@ local_coastal_zone_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks
 # 9.8
 protected_area_mask_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Inputs.gdb\CA_protected_area_mask"
 
-
-requirements_with_no_data = ["3.9", "3.10", "3.11", "3.12", "3.13"]
-
-parcel_points_fc = scratch_ws + os.sep + "parcels_point"
-
-if create_parcel_points:
-    arcpy.FeatureToPoint_management(output_parcels_fc, parcel_points_fc)
+requirements_with_no_data = ["3.9"]
 
 start_time = datetime.datetime.now()
 print("Start Time: " + str(start_time))
@@ -143,80 +137,30 @@ requirements = {
 #####!!!!! Make sure that all the requirements specified for each exemption e.g., [2.3, 2.4]
 ##### will exist either through a requirement calculation or a join from other staff.
 ##### Otherwise, this script will abort when it calculates the exemptions.
-exemptions = {
-    1: ['21159.24', 'Resources Code', [2.1, 3.1, 8.1, 8.2, 8.3, 9.2, 9.3, 9.4, 9.5, 9.6]],
-    2: ['21155.1', 'Resources Code', [2.5, [3.1, 3.4], 8.1, 8.2, 8.3, 9.2, 9.3, 9.4, 9.5]], # Remove requirement 3.2 and add requirement 3.1
-    3: ['21155.2', 'Resources Code', [2.5, [3.1, 3.4]]],# Added 3.1 and 3.4
-    4: ['21155.4', 'Resources Code', [2.5, 2.6, 3.3]],
-    5: ['21094.5', 'Resources Code', [2.2, [3.1, 3.5, 3.8]]],# Removed 2.6 and 3.4
-    6: ['65457', 'Government Code', [2.6]],# Removed 8.1 - 8.3. Removed 9.2-9.5
-    8: ['15332', 'CEQA Guidelines', [2.3]],
-    9: ['21159.25', 'Resources Code', [2.4, 2.7]],
-    10: ['15303', 'CEQA Guidelines', [2.1]],
-    11: ['21099', 'Resources Code', [3.3]],
-    14: ['21159.28', 'Resources Code', [2.5]],
-    15: ['15064.3', 'CEQA Guidelines', [[3.1, 3.5, 3.6, 3.7]]]# Remove 3.4. Add 3.5.
-}
-
-#02/13/2020 Adjustments for new requirement additions and other changes made by Helen + fix discrepencies.
-exemptions = {
- 1: ['21159.24', 'Resources Code', [2.1, 3.1, 8.1, 8.2, 8.3, 9.2, 9.3, 9.4, 9.5, 9.6]],
- 2: ['21155.1', 'Resources Code', [2.5, [3.2, 3.13, 3.14], 8.1, 8.2, 8.3, 9.2, 9.3, 9.4, 9.5]], # Remove 3.1, 3.4. Add 3.2, 3.13, 3.14
- 3: ['21155.2', 'Resources Code', [2.5, [3.1, 3.4, 3.9, 3.12]]], # Add 3.9, 3.12
- 4: ['21155.4', 'Resources Code', [2.5, 2.6, 3.3]],
- 5: ['21094.5', 'Resources Code', [2.2, [3.1, 3.5, 3.8, 3.10, 3.11]]], # Add 3.10, 3.11
- 6: ['65457', 'Government Code', [2.6]],
- 8: ['15332', 'CEQA Guidelines', [2.3]],
- 9: ['21159.25', 'Resources Code', [2.4, 2.7]],
- 10: ['15303', 'CEQA Guidelines', [2.1]],
- 11: ['21099', 'Resources Code', [3.3]],
- 14: ['21159.28', 'Resources Code', [2.5]],
- 15: ['15064.3', 'CEQA Guidelines', [[3.1, 3.5, 3.6, 3.7]]]
-}
-
-#03/06/2020 Feb 18 version of Criteria Spreadsheet. Includes updates from Helen as well as the addition of the species requirement (8.5). Does not included 3.9 -3.14 (yellow stuff)
-exemptions = {
-    1: ['21159.24', 'Resources Code', [2.1, 3.1, 8.1, 8.2, 8.3, 8.5, 9.2, 9.3, 9.4, 9.5, 9.6]],
-    2: ['21155.1', 'Resources Code', [2.5, [3.2], 8.1, 8.2, 8.3, 8.5, 9.2, 9.3, 9.4, 9.5]],
-    3: ['21155.2', 'Resources Code', [2.5, [3.1, 3.4]]],
-    4: ['21155.4', 'Resources Code', [2.5, 2.6, 3.3]],
-    5: ['21094.5', 'Resources Code', [2.2, [3.1, 3.5, 3.8]]],
-    6: ['65457', 'Government Code', [2.6]],
-    #7: ['15183', ''], # No Requirements
-    8: ['15332', 'CEQA Guidelines', [2.3, 8.5]],
-    9: ['21159.25', 'Resources Code', [2.4, 2.7, 8.5]],
-    #10: ['15303', 'CEQA Guidelines', [2.1]], # No Requirements
-    11: ['21099', 'Resources Code', [3.3]],
-    14: ['21159.28', 'Resources Code', [2.5]],
-    15: ['15064.3', 'CEQA Guidelines', [[3.1, 3.5, 3.6, 3.7]]]
-}
 
 #03/12/2020 Feb 18 version of Criteria Spreadsheet. Includes updates from Helen as well as the addition of the species requirement (8.5). Includes 3.9 -3.14 (yellow stuff)
 exemptions = {
-    1: ["21159.24", "Resources Code", ["2.1", "3.1", "8.1", "8.2", "8.3", "8.5", "9.2", "9.3", "9.4", "9.5", "9.6"]],
-    2: ["21155.1", "Resources Code", ["2.5", ["3.2", "3.13", "3.14"], "8.1", "8.2", "8.3", "8.5", "9.2", "9.3", "9.4", "9.5"]],
-    3: ["21155.2", "Resources Code", ["2.5", ["3.1", "3.4", "3.9", "3.12"]]],
-    4: ["21155.4", "Resources Code", ["2.5", "2.6", "3.3"]],
-    5: ["21094.5", "Resources Code", ["2.2", ["3.1", "3.5", "3.8", "3.10", "3.11"]]],
-    6: ["65457", "Government Code", ["2.6"]],
+    "21159.24": ["2.1", "3.1", "8.1", "8.2", "8.3", "8.5", "9.2", "9.3", "9.4", "9.5", "9.6"],
+    "21155.1": ["2.5", ["3.2", "3.13", "3.14"], "8.1", "8.2", "8.3", "8.5", "9.2", "9.3", "9.4", "9.5"],
+    "21155.2": ["2.5", ["3.1", "3.4", "3.9", "3.12"]],
+    "21155.4": ["2.5", "2.6", "3.3"],
+    "21094.5": ["2.2", ["3.1", "3.5", "3.8", "3.10", "3.11"]],
+    "65457": ["2.6"],
     #7: ["15183"", ""], # No Requirements
-    8: ["15332", "CEQA Guidelines", ["2.3", "8.5"]],
-    9: ["21159.25", "Resources Code", ["2.4", "2.7", "8.5"]],
+    "15332": ["2.3", "8.5"],
+    "21159.25": ["2.4", "2.7", "8.5"],
     #10: ["15303", "CEQA Guidelines", ["2.1"]], # No Requirements
-    11: ["21099", "Resources Code", ["3.3"]],
-    14: ["21159.28", "Resources Code", ["2.5"]],
-    15: ["15064.3", "CEQA Guidelines", [["3.1", "3.5", "3.6", "3.7"]]]
+    "21099": ["3.3"],
+    "21159.28": ["2.5"],
+    "15064.3": [["3.1", "3.5", "3.6", "3.7"]]
 }
 
-arcpy.env.workspace = output_ws_dev_team
-
-if arcpy.Exists(output_parcels_fc):
-    existing_output_fields = [field.name for field in arcpy.ListFields(output_parcels_fc)]
+arcpy.env.workspace = output_gdb_dev_team
 
 # ACTIONS ##############################################################################################################
 
 
-def copy_parcels_fc():
+def copy_parcels_fc(input_parcels_fc, output_parcels_fc):
 
     print "Copying Parcels Feature Class with the following fields..."
 
@@ -241,10 +185,15 @@ def copy_parcels_fc():
 
 
 # Function Handler that calls the INDIVIDUAL REQUIREMENT function for processing.
-def calculate_parcel_requirements(requirements_to_process, start_oid=False, end_oid=False):
+def calculate_requirements(output_parcels_fc, requirements_to_process=requirements.keys(), start_oid=False, end_oid=False):
 
-    if arcpy.Exists(output_parcels_fc):
-        existing_output_fields = [field.name for field in arcpy.ListFields(output_parcels_fc)]
+    existing_output_fields = [field.name for field in arcpy.ListFields(output_parcels_fc)]
+
+    # Add a field for each of the requirements with "No Data". Will get set to <NULL> but default.
+    for requirement_with_no_data in requirements_with_no_data:
+        field_to_calc = requirements[requirement_with_no_data]
+        if not field_to_calc in existing_output_fields:
+            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
 
     print "\nCalculating 1's and 0's for spatial requirements...."
 
@@ -302,11 +251,21 @@ def calculate_parcel_requirements(requirements_to_process, start_oid=False, end_
 
     if "2.5" in requirements_to_process:
         print "Calculating requirement 2.5...\n"
-        field_to_calc = requirements[2.5]
+        field_to_calc = requirements["2.5"]
         if not field_to_calc in existing_output_fields:
             arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
         if "2.5" not in requirements_with_no_data:
             calc_requirement_2_5(field_to_calc)
+        else:
+            print "No Data"
+
+    if "2.6" in requirements_to_process:
+        print "Calculating requirement 2.6...\n"
+        field_to_calc = requirements["2.6"]
+        if not field_to_calc in existing_output_fields:
+            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
+        if "2.6" not in requirements_with_no_data:
+            calc_requirement_2_6(output_parcels_fc, field_to_calc)
         else:
             print "No Data"
 
@@ -451,26 +410,28 @@ def calculate_parcel_requirements(requirements_to_process, start_oid=False, end_
             print "No Data"
 
 
-def join_additional_requirements(additional_requirements_table, requirements_to_join):
-    print "Joining additional fields..."
-    all_additional_fields = arcpy.ListFields(additional_requirements_table)
+def join_additional_requirements(join_table, requirements_to_join):
+
+    #Create index on join table once.
+    #arcpy.AddIndex_management(join_table, "parcel_id", "parcel_id_index")
+
     fields_to_join = []
-    for field in all_additional_fields:
-        try:
-            requirement_id = float(field.name.split("_")[-2] + "." + field.name.split("_")[-1])
-            if requirement_id in requirements_to_join:
-                fields_to_join.append(field.name)
-                # If the standardized field name exists in the output feature class delete it before renaming the new joined field.
-                standardized_field_name = requirements[requirement_id]
-                if standardized_field_name in existing_output_fields:
-                    arcpy.DeleteField_management(output_parcels_fc, standardized_field_name)
-        except:
-            pass
-    print "Fields to join..."
-    print fields_to_join
-    #arcpy.AddIndex_management(additional_requirements_table, "parcel_id", "parcel_id_index")
-    #arcpy.AddIndex_management(output_parcels_fc, "parcel_id", "parcel_id_index")
-    arcpy.JoinField_management(output_parcels_fc, "parcel_id", additional_requirements_table, "parcel_id", fields_to_join)
+    for requirement_id in requirements_to_join:
+        # Find the field name in join_table
+        field_code = requirement_id.replace(".", "_")
+        matching_field = arcpy.ListFields(join_table, "*" + field_code)[0].name
+        print "Field to join: " + matching_field
+        fields_to_join.append(matching_field)
+
+        # Delete standardized field name if it exists.
+        standardized_field_name = requirements[requirement_id]
+        print "Standardized field name: " + standardized_field_name
+        if standardized_field_name in existing_output_fields:
+            print "The standardized field above already exists. Deleting it to avoid conflicts when the rename function is called..."
+            arcpy.DeleteField_management(output_parcels_fc, standardized_field_name)
+
+    print "Performing join of additional fields..."
+    arcpy.JoinField_management(output_parcels_fc, "parcel_id", join_table, "parcel_id", fields_to_join)
 
 
 def rename_fields():
@@ -534,194 +495,173 @@ def rename_fields():
                               input_field.split("_")[-2] + "_" + input_field.split("_")[-1] + " on the end."
 
 
-def create_parcel_masked_data_basin():
-    expression = "protected_area_mask_9_8 = 1"
-    arcpy.Select_analysis(output_parcels_fc, output_parcels_fc_mask, expression)
+def calculate_exemptions(exemptions_to_calculate=exemptions.keys(), start_oid=False, end_oid=False):
+
+    print "\nCalculating Exemptions..."
+
+    existing_output_fields = [field.name for field in arcpy.ListFields(output_parcels_fc)]
+
+    if not "exemptions_count" in existing_output_fields:
+        print "\nAdding exemptions_count field"
+        arcpy.AddField_management(output_parcels_fc, "exemptions_count", "SHORT")
+
+    print "Calculating 0's in the 'exemptions_count' field."
+    arcpy.CalculateField_management(output_parcels_fc, "exemptions_count", 0)
+
+    # Add a field for each exemption to calculate if it doesn't already exist.
+    for exemption_to_calculate in exemptions_to_calculate:
+        # Add a field for the exemption
+        exemption_field_name = "E_" + exemption_to_calculate.replace(".", "_")
+        if not exemption_field_name in existing_output_fields:
+            print "\nAdding exemption field " + exemption_field_name
+            arcpy.AddField_management(output_parcels_fc, exemption_field_name, "SHORT")
+
+    # Create an update cursor on the parcels feature class
+    with arcpy.da.UpdateCursor(output_parcels_fc, "*") as uc:
+
+        # For Every Row in the parcels table...
+        print "\nStarting update cursor loop to calculate exemptions..."
+        for row in uc:
+            exemptions_count = row[uc.fields.index("exemptions_count")]
+
+            # Do this for each exemption.
+            for exemption_to_calculate in exemptions_to_calculate:
+
+                exemption_field_name = "E_" + exemption_to_calculate.replace(".", "_")
+
+                # Get a list of the requirement ids for the exemption
+                requirement_ids = exemptions[exemption_to_calculate]
+
+                check_requirements = []
+
+                # For each Requirement, pull the values for these requirements out of the attribute table.
+                # Make one list for the ORs, and one list of the Ands
+                for requirement_id in requirement_ids:
+                    #ORs
+                    if type(requirement_id) == list:
+                        or_values = []
+                        for or_id in requirement_id:
+                            requirement_field_name = requirements[or_id]
+                            field_value = row[uc.fields.index(requirement_field_name)]
+                            or_values.append(field_value)
+
+                        # If any of the OR requirements are met
+                        if any(or_values):
+                            check_requirements.append(1)
+                        # If there is a NULL value for one of the requirements, and no 1's, we can't be certain.
+                        elif None in or_values:
+                            check_requirements.append(None)
+                        # Otherwise all the OR requirements are zeros.
+                        else:
+                            check_requirements.append(0)
+
+                    #ANDs
+                    else:
+                        requirement_field_name = requirements[requirement_id]
+                        field_value = row[uc.fields.index(requirement_field_name)]
+                        check_requirements.append(field_value)
+
+                # ALL 1's. All requirements met.
+                if all(check_requirements):
+                    exemptions_count += 1
+                    exemption_status = 1
+
+                # At least one 0. Requirements not met.
+                elif 0 in check_requirements:
+                    exemption_status = 0
+
+                # No 0's, but didn't meet ALL condition, so there's a None in there.
+                else:
+                    exemption_status = None
+
+                # Insert exemption status.
+                row[uc.fields.index(exemption_field_name)] = exemption_status
+                row[uc.fields.index("exemptions_count")] = exemptions_count
+                uc.updateRow(row)
+
 
 # TABLES FOR DEV TEAM
 
-
-def create_parcel_fc_dev_team(mask):
+def create_parcels_fc_dev_team(output_parcels_fc):
     """ Create the parcels feature class for the dev team.
         If mask is true, it will copy the masked version with protected areas removed.
         If mask is false, it will copy the unmasked version without protected areas removed.
         It will have the same fields as the original input feature class.
     """
 
+    print "Copying Parcels Feature Class with the following fields..."
+
     # Only copy the original select input fields.
     mapS = arcpy.FieldMappings()
     # for each field, create an individual field map, and add it to the field mapping object
     for field in original_fields_to_keep:
+        print field
         map = arcpy.FieldMap()
         map.addInputField(input_parcels_fc, field)
         mapS.addFieldMap(map)
 
-    if mask:
-        input_fc = output_parcels_fc_mask
-        base_name = os.path.basename(input_parcels_fc) + "_mask"
-    else:
-        input_fc = output_parcels_fc
-        base_name = os.path.basename(input_parcels_fc)
-
-    out_folder = output_ws_dev_team
-
-    print "Copying Parcels Feature Class..."
+    base_name = os.path.basename(output_parcels_fc)
 
     # Create the empty parcels feature class with the subset of original fields to keep
     arcpy.FeatureClassToFeatureClass_conversion(
-        in_features=input_fc,
-        out_path=out_folder, out_name=base_name, where_clause="",
+        in_features=input_parcels_fc,
+        out_path=output_gdb_dev_team, out_name=base_name, where_clause="",
         field_mapping=mapS,
         config_keyword="")
 
 
-def create_exemption_table_dev_team():
-    print "Creating exemptions table..."
-
-    # Create the exemptions table
-    arcpy.CreateTable_management(output_ws_dev_team, "exemptions")
-    arcpy.AddField_management("exemptions", "exemption_id", "SHORT")
-    arcpy.AddField_management("exemptions", "exemption_code", "TEXT")
-    arcpy.AddField_management("exemptions", "exemption_source", "TEXT")
-
-    print "Populating the exemptions table..."
-
-    ic = arcpy.da.InsertCursor("exemptions", ["exemption_id", "exemption_code", "exemption_source"])
-
-    for k, v in exemptions.iteritems():
-        ic.insertRow([k, v[0], v[1]])
-
-    del ic
-
-
-def create_parcel_exemptions_table_dev_team(mask, test_TAXAPN=False, test_exemption=False):
-    """ Performs these functions:
-        Creates the parcel_exemptions junction table.
-        Populates the parcel_exemptions junction table.
-        Populates the exemptions_count field in the requirements table.
-    """
-
-    arcpy.AddField_management(output_parcels_fc, "exemptions_count", "SHORT")
-
-    if mask:
-        parcel_exemptions_table = "parcel_exemptions_mask"
-    else:
-        parcel_exemptions_table = "parcel_exemptions"
-
-    # Create the parcel - exemptions table (junction table)
-    arcpy.CreateTable_management(output_ws_dev_team, parcel_exemptions_table)
-    arcpy.AddField_management(parcel_exemptions_table, "parcel_id", "TEXT")
-    arcpy.AddField_management(parcel_exemptions_table, "exemption_id", "LONG")
-    arcpy.AddField_management(parcel_exemptions_table, "status", "SHORT")
-
-    # This fixed the following error: RuntimeError: workspace already in transaction mode
-    # Be sure to stop editing at the end
-    edit = arcpy.da.Editor(arcpy.env.workspace)
-    edit.startEditing(False, False)
-
-    print "Calculating parcel exemptions based on requirements (output stored in the junction table (parcel_exemptions))."
-    
-    requirements_uc = arcpy.da.UpdateCursor(output_parcels_fc, "*")
-    exemptions_ic = arcpy.da.InsertCursor(parcel_exemptions_table, ['parcel_id', 'exemption_id', 'status'])
-
-    # Iterate over each parcel.
-    count = 1
-    for row in requirements_uc:
-        if 10000 % 1:
-            print "Parcel #: " + str(count)
-        count += 1
-        parcel_id = row[requirements_uc.fields.index('PARCEL_ID')]
-        parcel_apn = row[requirements_uc.fields.index('TAXAPN')]
-        count_exemptions = 0
-        
-        # For each exemption, iterate over the list of requirements
-        for k, v in exemptions.iteritems():
-            # build a list to see if this parcel meets all the requirements for this exemption, e.g., [1,1,1,1,1,0]
-            check_requirements = []
-            for requirement_id in v[2]:
-
-                # IF IT'S A LIST OF OR REQUIREMENTS...Make Sure at least one of them is a 1.
-                if type(requirement_id) == list:
-                    check_requirements_or_list = []
-                    for or_id in requirement_id:
-                        r_field_name = requirements[or_id]
-                        r_field_value = row[requirements_uc.fields.index(r_field_name)]
-                        check_requirements_or_list.append(r_field_value)
-
-                    # If any of the OR requirements are met
-                    if any(check_requirements_or_list):
-                        check_requirements.append(1)
-                    # If there is a NULL value for one of the requirements, and no 1's, we can't be certain.
-                    elif None in check_requirements_or_list:
-                        check_requirements.append(None)
-                    # Otherwise all the OR requirements are zeros.
-                    else:
-                        check_requirements.append(0)
-
-                # SINGLE REQUIREMENT
-                else:
-                    r_field_name = requirements[requirement_id]
-                    try:
-                        r_field_value = row[requirements_uc.fields.index(r_field_name)]
-                    except:
-                        print "Requirement Missing from attribute table: " + r_field_name
-                        print "ABORTING...."
-                        exit()
-                    check_requirements.append(r_field_value)
-                    
-            print check_requirements
-
-            # ALL 1's. All requirements met.
-            if all(check_requirements):
-                count_exemptions += 1
-                exemption_status = 1
-                print "all"
-
-            # At least one 0. Requirements not met.
-            elif 0 in check_requirements:
-                exemption_status = 0
-                print "0"
-
-            # No 0's, but didn't meet ALL condition, so there's a None in there.
-            else:
-                exemption_status = None
-                print "?"
-
-            exemptions_ic.insertRow([parcel_id, k, exemption_status])
-
-            # If this parcel meets all the requirements for this exemption (e.g, check_requirements == [1,1,1,1]), add a record to the junction table.
-            # ...and add one to the exemption count.
-            if test_TAXAPN and test_exemption:
-                if parcel_apn == test_TAXAPN and exemptions[k][0] == test_exemption:
-                    print "\n"
-                    print "Parcel TAXAPN: " + parcel_apn
-                    print "Parcel ID: " + parcel_id
-                    print "Exemption Code: " + test_exemption
-                    print "Exemption ID: " + str(k)
-                    print "Requirements: " + str(exemptions[k][2])
-                    print "Check Requirements: " + str(check_requirements)
-                    print ("NOTE: A value of 1 means it meets the requirement at the same index as above. For OR conditions, the value represents the number of requirements it meets")
-                    print "\n"
-
-        # Add the count of the number of exemptions to the parcels feature class.
-        row[requirements_uc.fields.index("exemptions_count")] = count_exemptions
-        requirements_uc.updateRow(row)
-
-    edit.stopEditing(True)
-
-
-def create_requirements_table_dev_team(mask):
+def create_exemptions_table_dev_team():
     """ Creates the requirements table & adds the exemptions_count field"""
 
     if arcpy.Exists(output_parcels_fc):
         existing_output_fields = [field.name for field in arcpy.ListFields(output_parcels_fc)]
 
-    if mask:
-        input_parcels_fc = output_parcels_fc_mask
-        output_requirements_table_name = "requirements_mask"
-    else:
-        input_parcels_fc = output_parcels_fc
-        output_requirements_table_name = "requirements"
+    input_parcels_fc = output_parcels_fc
+    output_exemptions_table_name = "exemptions"
+
+    print "Fields to Keep..."
+
+    # Add a field for each exemption to calculate
+    exemption_fields = []
+    for exemption in exemptions.keys():
+        # Add a field for the exemption
+        exemption_field_name = "E_" + exemption.replace(".", "_")
+        exemption_fields.append(exemption_field_name)
+
+    # Keep PARCEL_ID field plus any requirement fields
+    fields_to_keep = ["PARCEL_ID"]
+    for field in existing_output_fields:
+        if field in exemption_fields:
+            fields_to_keep.append(field)
+    fields_to_keep.append("exemptions_count")
+
+    # create an empty field mapping object
+    mapS = arcpy.FieldMappings()
+    # for each field, create an individual field map, and add it to the field mapping object
+    for field in fields_to_keep:
+        print field
+        map = arcpy.FieldMap()
+        map.addInputField(input_parcels_fc, field)
+        mapS.addFieldMap(map)
+
+    print "\nCreating Exemptions table..."
+
+    # Create the empty parcels feature class with the subset of original fields to keep
+    arcpy.TableToTable_conversion(
+        in_rows=input_parcels_fc,
+        out_path=output_gdb_dev_team, out_name=output_exemptions_table_name, where_clause="",
+        field_mapping=mapS,
+        config_keyword="")
+
+
+def create_requirements_table_dev_team():
+    """ Creates the requirements table & adds the exemptions_count field"""
+
+    if arcpy.Exists(output_parcels_fc):
+        existing_output_fields = [field.name for field in arcpy.ListFields(output_parcels_fc)]
+
+    input_parcels_fc = output_parcels_fc
+    output_requirements_table_name = "requirements"
 
     print "Fields to Keep..."
 
@@ -732,7 +672,7 @@ def create_requirements_table_dev_team(mask):
             fields_to_keep.append(field)
 
     # Want this here in order to keep the exemptions count field at the end
-    fields_to_keep.append("exemptions_count")
+    #fields_to_keep.append("exemptions_count")
 
     # create an empty field mapping object
     mapS = arcpy.FieldMappings()
@@ -748,9 +688,10 @@ def create_requirements_table_dev_team(mask):
     # Create the empty parcels feature class with the subset of original fields to keep
     arcpy.TableToTable_conversion(
         in_rows=input_parcels_fc,
-        out_path=output_ws_dev_team, out_name=output_requirements_table_name, where_clause="",
+        out_path=output_gdb_dev_team, out_name=output_requirements_table_name, where_clause="",
         field_mapping=mapS,
         config_keyword="")
+
 
 # INDIVIDUAL REQUIREMENTS ##############################################################################################
 
@@ -1095,6 +1036,15 @@ def calc_requirement_2_5(field_to_calc):
     arcpy.SelectLayerByAttribute_management("output_parcels_layer", "SWITCH_SELECTION")
     arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 0, "PYTHON")
 
+def calc_requirement_2_6(output_parcels_fc, field_to_calc):
+    """
+        2.6
+        Requirement Long Name: Within a Specific Plan boundary
+        Description: Select parcels that intersect a specific plan boundary. Yes = 1, No = 0
+    """
+    #arcpy.ModelName_ToolboxAlias() #Note that it's ModelName not Label.
+    arcpy.SpecificPlan26_Statewide(output_parcels_fc, field_to_calc)
+
 
 def calc_requirement_2_7(field_to_calc):
     """
@@ -1260,25 +1210,6 @@ def calc_requirement_9_8(field_to_calc):
 
 # EXTRA FUNCTIONS ######################################################################################################
 
-
-def create_parcels_fc_for_data_basin():
-    #### !!!!!!!!!!!!!!!!! MAYBE NOT NEEDED. Only use if Original requirements_mask fc is too large to upload.
-    """ This function prepares a dataset for Data Basin upload by deleting all the select fields and removing
-    any parcels that are within the protected area mask (requirement 9.8)
-    """
-    print "Creating masked parcel layer for Data Basin"
-    expression = '"protected_area_mask_9_8" = 1'
-    arcpy.Select_analysis(output_parcels_fc, output_parcels_fc_mask, expression)
-
-    all_fields = [field.name for field in arcpy.ListFields(output_parcels_fc)]
-    fields_to_keep = ["OBJECTID", "PARCEL_APN", "PARCEL_ID", "SHAPE", "SHAPE_Area", "SHAPE_Length"]
-    fields_to_keep.extend(requirements.values())
-    fields_to_delete = list(set(all_fields) - set(fields_to_keep))
-
-    print "Deleting fields"
-    arcpy.DeleteField_management(output_parcels_fc, fields_to_delete)
-
-
 def list_fields():
     field_dict = {}
 
@@ -1294,77 +1225,48 @@ def list_fields():
         print str(field[0]) + ": " + field[1]
 
 
-def copy_parcels_fc_with_select_orig_and_requirement_fields():
-
-        input_parcels_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs_for_DataBasin.gdb\sacramento_parcels_requirements"
-
-        output_base_name = "sacramento_parcels_requirements_del_fields"
-
-        fields_to_keep = original_fields_to_keep
-
-        for field in existing_output_fields:
-            if field in requirements.values():
-                fields_to_keep.append(field)
-
-        # create an empty field mapping object
-        mapS = arcpy.FieldMappings()
-        # for each field, create an individual field map, and add it to the field mapping object
-        for field in fields_to_keep:
-            print field
-            map = arcpy.FieldMap()
-            map.addInputField(input_parcels_fc, field)
-            mapS.addFieldMap(map)
-
-        print "Copying Parcels Feature Class (for Dev team) with the following fields..."
-
-        out_folder = os.path.dirname(output_parcels_fc)
-
-        # Create the empty parcels feature class with the subset of original fields to keep
-        arcpy.FeatureClassToFeatureClass_conversion(
-            in_features=input_parcels_fc,
-            out_path=out_folder, out_name=output_base_name, where_clause="",
-            field_mapping=mapS,
-            config_keyword="")
-
-
 # Function Calls #######################################################################################################
 
-#copy_parcels_fc()
+input_parcels_fc_list = arcpy.ListFeatureClasses(input_parcels_gdb)
 
-# Requirements: If called multiple times from batch script to increase performance, get oids from batch file.
-#start_oid = sys.argv[1]
-#end_oid = sys.argv[2]
-#calculate_parcel_requirements(requirements_to_process=[2.1], start_oid=start_oid, end_oid=end_oid)
-#calculate_parcel_requirements(requirements_to_process=["3.9", "3.10", "3.11", "3.12", "3.13"])
+input_parcels_fc_list = ["ALAMEDA_Parcels", "ALPINE_Parcels"]
 
-# Join Additional Requirement Fields (From Kai and other staff)
-#fields_to_join = ["MajTS_3_1", "HighQualTC_3_4", "HighQualTC_3_2", "StpTC_1_2m_3_5", "Wetlands_8_1", "RipWet_8_2", "Spec_Habitat_8_3", "WildHaz_9_3", "EQFault_9_2", "B15per_RegAv_3_6", "Below_RegAv_3_8"]
-#fields_to_join = ["RipVeg_8_2", "B15per_RegAv_3_6", "Below_RegAv_3_8"]
-#fields_to_join = ["HighQualTC_3_2", "HighQualTC_3_4", "StpTC_1_2m_3_5", "TS_FT_1_2m_3_14"]
-#additional_requirements_table = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\From_Kai\Transit_and_Infill.gdb\Sacramento_Parcels_MG_v7_3_14"
-##requirements_to_join = [8.2, 3.6, 3.8, 3.2, 3.4, 3.5, 3.14]
-#join_additional_requirements(additional_requirements_table, requirements_to_join)
-#rename_fields()
+for input_parcels_fc_name in input_parcels_fc_list:
+    print "Processing parcels: " + input_parcels_fc_name
 
-#create_parcel_fc_dev_team(mask=False)
+    input_parcels_fc = input_parcels_gdb + os.sep + input_parcels_fc_name
+    output_parcels_fc = output_gdb_data_basin + os.sep + input_parcels_fc_name.lower() + "_" + "requirements_and_exemptions"
+    output_parcels_fc_dev_team = output_gdb_dev_team + os.sep + input_parcels_fc_name.lower()
 
-#create_exemption_table_dev_team()
+    # Call once and done ##############
+    if not arcpy.Exists(output_parcels_fc):
+        copy_parcels_fc(input_parcels_fc, output_parcels_fc)
+    if not arcpy.Exists(output_parcels_fc_dev_team):
+        create_parcels_fc_dev_team(output_parcels_fc)
+    ###################################
 
-#create_parcel_exemptions_table_dev_team(mask=False, test_TAXAPN=False, test_exemption=False)
+    existing_output_fields = [field.name for field in arcpy.ListFields(output_parcels_fc)]
 
-create_requirements_table_dev_team(mask=False)
+    calculate_requirements(output_parcels_fc=output_parcels_fc, requirements_to_process=["2.3"])
 
+    # Join Additional Requirement Fields (From Kai and other staff)
+    #requirements_to_join = ["3.10", "3.11", "3.12", "3.13"]
+    #join_additional_requirements(join_requirements_table, requirements_to_join)
 
-# Extra functions (NOT NEEDED)
+    #rename_fields()
 
-#create_parcel_masked_data_basin()
-#copy_parcels_fc_with_select_orig_and_requirement_fields()
-#list_fields()
+    #calculate_exemptions()
 
-end_time = datetime.datetime.now()
-duration = end_time - start_time
+    #create_requirements_table_dev_team()
 
-print("Start Time: " + str(start_time))
-print("End Time: " + str(end_time))
-print("Duration: " + str(duration))
+    #create_exemptions_table_dev_team()
+
+    #list_fields()
+
+    end_time = datetime.datetime.now()
+    duration = end_time - start_time
+
+    print("Start Time: " + str(start_time))
+    print("End Time: " + str(end_time))
+    print("Duration: " + str(duration))
 
