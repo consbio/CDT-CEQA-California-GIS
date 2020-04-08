@@ -262,7 +262,7 @@ def getSymbolType(mySymbol):
 
 if __name__ == "__main__":
 
-    for inputLyrFile in glob.glob(inputDir + "/3_5_Stop*lyr"):
+    for inputLyrFile in glob.glob(inputDir + "/3_2_3_4*lyr"):
         inputLyrBasename = os.path.basename(inputLyrFile).split(".")[0]
         outputJSONfile = outputDir + os.sep + inputLyrBasename + ".json"
         main(inputLyrFile, outputJSONfile)
