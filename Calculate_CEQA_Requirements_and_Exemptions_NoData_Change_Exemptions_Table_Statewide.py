@@ -2,14 +2,12 @@ import os
 import arcpy
 import datetime
 arcpy.env.overwriteOutput = True
-
 arcpy.CheckOutExtension("Spatial")
 
 # Parcel Feature Classes to process. Use "*" to process all parcels.
 input_parcels_fc_list = ["ALAMEDA_Parcels", "ALPINE_Parcels"]
 # Requirements to process. Use "*" to process all parcels.
 requirements_to_process = ["0.1", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "8.1", "8.2", "8.3", "8.4", "8.5", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8"]
-#requirements_to_process = "*"
 
 # Workspaces
 input_parcels_gdb = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Parcels_Projected_Delete_Identical.gdb"
@@ -26,9 +24,7 @@ arcpy.ImportToolbox(statewide_toolbox)
 #additional_requirements_table = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\From_Kai\Transit_and_Infill.gdb\Sacramento_Parcels_MG_v7_3_14"
 join_requirements_table = r"\\loxodonta\GIS\Projects\CDT-CEQA_California_2019\Workspaces\CDT-CEQA_California_2019_kai_foster\Tasks\General_Tasks\Data\Inputs\Inputs.gdb\Sacramento_Pilot\Sacramento_Parcels_MG"
 
-#TEST
-#output_parcels_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Test\Outputs_Check_Exemptions_For_DataBasin.gdb\parcels_to_test_with_requirements_one_parcel"
-
+# Fields from the original parcels feature class to keep in the output parcels for Data Basin & Dev.
 original_fields_to_keep = [
     "PARCEL_APN",
     "FIPS_CODE",
@@ -812,9 +808,6 @@ def create_requirements_table_dev_team():
         if field in requirements.values():
             fields_to_keep.append(field)
 
-    # Want this here in order to keep the exemptions count field at the end
-    #fields_to_keep.append("exemptions_count")
-
     # create an empty field mapping object
     mapS = arcpy.FieldMappings()
     # for each field, create an individual field map, and add it to the field mapping object
@@ -849,6 +842,7 @@ def list_fields():
 
     for field in sorted_list:
         print str(field[0]) + ": " + field[1]
+
 
 # BEGIN PROCESSING #####################################################################################################
 
