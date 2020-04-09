@@ -9,6 +9,7 @@ arcpy.CheckOutExtension("Spatial")
 input_parcels_fc_list = ["ALAMEDA_Parcels", "ALPINE_Parcels"]
 # Requirements to process. Use "*" to process all parcels.
 requirements_to_process = ["0.1", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "8.1", "8.2", "8.3", "8.4", "8.5", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8"]
+#requirements_to_process = "*"
 
 # Workspaces
 input_parcels_gdb = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Parcels_Projected_Delete_Identical.gdb"
@@ -149,6 +150,7 @@ exemptions = {
     "15064.3": [["3.1", "3.5", "3.6", "3.7"]]
 }
 
+# If county is missing data for a requirement (as indicated below), a field will be added to the county for that requirement with null values in it.
 requirements_with_no_data = {
     #"ALL_COUNTIES": ["3.9"],
     "ALL_COUNTIES": ["3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "8.1", "8.2", "8.3", "9.2"],
@@ -248,6 +250,13 @@ def calculate_requirements(output_parcels_fc, requirements_to_process):
     # Get a list of all the requirements that this county  doesn't have data for.
     requirements_with_no_data_this_county = requirements_with_no_data[county_name] + requirements_with_no_data["ALL_COUNTIES"]
 
+    # Add a field for each of the requirements with "No Data". Will get set to <null> but default.
+    for requirement_with_no_data_this_county in requirements_with_no_data_this_county:
+        field_to_calc = requirements[requirement_with_no_data_this_county]
+        if field_to_calc not in existing_output_fields:
+            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
+            existing_output_fields.append(field_to_calc)
+
     # Create an object that contains all the requirement processing functions.
     requirement_functions = RequirementFunctions()
 
@@ -255,14 +264,14 @@ def calculate_requirements(output_parcels_fc, requirements_to_process):
     for requirement in requirements_to_process:
         print "\nProcessing requirement: " + requirement
         field_to_calc = requirements[requirement]
-        if not field_to_calc in existing_output_fields:
+        if field_to_calc not in existing_output_fields:
             print "Adding field: " + field_to_calc
             arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
         if requirement not in requirements_with_no_data_this_county:
             print "Calling function to calculate values for this requirement..."
             requirement_functions.do_command(requirement, output_parcels_fc, field_to_calc)
         else:
-            print "No data for this requirement. Field added with <null> values."
+            print "No data for this requirement. A field has been added with <null> values."
 
 
 class RequirementFunctions(object):
@@ -696,7 +705,7 @@ def calculate_exemptions(exemptions_to_calculate=exemptions.keys(), start_oid=Fa
                                 field_value = row[uc.fields.index(requirement_field_name)]
                             except:
                                 print "Missing field for requirement " + requirement_field_name
-                                print "If data is missing for this requirement, be sure it's listed in the requirements_with_no_data dictionary, and then run the calculate requirements for this function in order to create the field and set the values to <null>"
+                                print "Either add it to the requirements_with_no_data dictionary (if this county is missing data for this requirement), or run the calculate_requirements function on it."
                                 exit()
                             or_values.append(field_value)
 
@@ -717,7 +726,7 @@ def calculate_exemptions(exemptions_to_calculate=exemptions.keys(), start_oid=Fa
                             field_value = row[uc.fields.index(requirement_field_name)]
                         except:
                             print "Missing field for requirement " + requirement_field_name
-                            print "If data is missing for this requirement, be sure it's listed in the requirements_with_no_data dictionary, and then run the calculate requirements for this function in order to create the field and set the values to <null>"
+                            print "Either add it to the requirements_with_no_data dictionary (if this county is missing data for this requirement), or run the calculate_requirements function on it."
                             exit()
                         check_requirements.append(field_value)
 
