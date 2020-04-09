@@ -766,7 +766,7 @@ def create_exemptions_table_dev_team():
         exemption_fields.append(exemption_field_name)
 
     # Keep PARCEL_ID field plus any requirement fields
-    fields_to_keep = ["PARCEL_ID"]
+    fields_to_keep = ["PARCEL_ID", "COUNTYNAME"]
     for field in existing_output_fields:
         if field in exemption_fields:
             fields_to_keep.append(field)
@@ -783,12 +783,24 @@ def create_exemptions_table_dev_team():
 
     print "\nCreating Exemptions table..."
 
-    # Create the empty parcels feature class with the subset of original fields to keep
-    arcpy.TableToTable_conversion(
-        in_rows=input_parcels_fc,
-        out_path=output_gdb_dev_team, out_name=output_exemptions_table_name, where_clause="",
-        field_mapping=mapS,
-        config_keyword="")
+    output_table = output_gdb_dev_team + os.sep + output_exemptions_table_name
+
+    # If no requirements table exists, create it.
+    if not arcpy.Exists(output_table):
+        arcpy.TableToTable_conversion(
+            in_rows=input_parcels_fc,
+            out_path=output_gdb_dev_team, out_name=output_exemptions_table_name, where_clause="",
+            field_mapping=mapS,
+            config_keyword="")
+
+    # Otherwise, append the rows
+    else:
+        arcpy.Append_management(
+            inputs=input_parcels_fc,
+            target=output_table,
+            schema_type="NO_TEST",
+            field_mapping=mapS,
+            subtype="")
 
 
 def create_requirements_table_dev_team():
@@ -803,7 +815,7 @@ def create_requirements_table_dev_team():
     print "Fields to Keep..."
 
     # Keep PARCEL_ID field plus any requirement fields
-    fields_to_keep = ["PARCEL_ID"]
+    fields_to_keep = ["PARCEL_ID", "COUNTYNAME"]
     for field in existing_output_fields:
         if field in requirements.values():
             fields_to_keep.append(field)
@@ -819,12 +831,24 @@ def create_requirements_table_dev_team():
 
     print "\nCreating Requirements table..."
 
-    # Create the empty parcels feature class with the subset of original fields to keep
-    arcpy.TableToTable_conversion(
-        in_rows=input_parcels_fc,
-        out_path=output_gdb_dev_team, out_name=output_requirements_table_name, where_clause="",
-        field_mapping=mapS,
-        config_keyword="")
+    output_table = output_gdb_dev_team + os.sep + output_requirements_table_name
+
+    # If no requirements table exists, create it.
+    if not arcpy.Exists(output_table):
+        arcpy.TableToTable_conversion(
+            in_rows=input_parcels_fc,
+            out_path=output_gdb_dev_team, out_name=output_requirements_table_name, where_clause="",
+            field_mapping=mapS,
+            config_keyword="")
+
+    # Otherwise, append the rows
+    else:
+        arcpy.Append_management(
+            inputs=input_parcels_fc,
+            target=output_table,
+            schema_type="NO_TEST",
+            field_mapping=mapS,
+            subtype="")
 
 
 # EXTRA FUNCTIONS ######################################################################################################

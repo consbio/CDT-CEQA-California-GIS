@@ -109,8 +109,8 @@
       <file leaf-file-name="Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table_Statewide.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table_Statewide.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-767">
-              <caret line="810" selection-start-line="810" selection-end-line="810" />
+            <state relative-caret-position="-1182">
+              <caret line="768" column="45" selection-start-line="768" selection-start-column="45" selection-end-line="768" selection-end-column="45" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
                 <element signature="e#1776#2108#0" />
@@ -135,7 +135,7 @@
                 <element signature="e#18234#19313#0" />
                 <element signature="e#19341#22927#0" />
                 <element signature="e#32635#37353#0" />
-                <element signature="e#26998#28546#0" />
+                <element signature="e#39463#41248#0" />
                 <element signature="e#55840#56264#0" />
               </folding>
             </state>
@@ -721,8 +721,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table_Statewide.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-767">
-          <caret line="810" selection-start-line="810" selection-end-line="810" />
+        <state relative-caret-position="-1182">
+          <caret line="768" column="45" selection-start-line="768" selection-start-column="45" selection-end-line="768" selection-end-column="45" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
             <element signature="e#1776#2108#0" />
@@ -747,7 +747,7 @@
             <element signature="e#18234#19313#0" />
             <element signature="e#19341#22927#0" />
             <element signature="e#32635#37353#0" />
-            <element signature="e#26998#28546#0" />
+            <element signature="e#39463#41248#0" />
             <element signature="e#55840#56264#0" />
           </folding>
         </state>
