@@ -5,11 +5,15 @@ arcpy.env.overwriteOutput = True
 
 arcpy.CheckOutExtension("Spatial")
 
+# Parcel Feature Classes to process. Use "*" to process all parcels.
+input_parcels_fc_list = ["ALAMEDA_Parcels", "ALPINE_Parcels"]
+# Requirements to process. Use "*" to process all parcels.
+requirements_to_process = ["0.1", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "8.1", "8.2", "8.3", "8.4", "8.5", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8"]
+
 # Workspaces
 input_parcels_gdb = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Parcels_Projected_Delete_Identical.gdb"
 output_gdb_data_basin = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs_for_DataBasin.gdb"
 output_gdb_dev_team = r'P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Outputs\Outputs_for_DevTeam.gdb'
-
 intermediate_ws = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Intermediate.gdb"
 scratch_ws = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Scratch\Scratch.gdb"
 
@@ -44,7 +48,6 @@ original_fields_to_keep = [
     "SHAPE_Length",
     "SHAPE_Area"
 ]
-
 
 # Datasets used in calculating requirements:
 # 0.1, 2.1
@@ -85,9 +88,6 @@ local_coastal_zone_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks
 
 # 9.8
 protected_area_mask_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Inputs.gdb\CA_protected_area_mask"
-
-start_time = datetime.datetime.now()
-print("Start Time: " + str(start_time))
 
 # Requirements that begin with 0 aren't applicable to any exemptions
 requirements = {
@@ -132,11 +132,7 @@ requirements = {
     "9.8": "protected_area_mask_9_8",
 }
 
-#####!!!!! Make sure that all the requirements specified for each exemption e.g., [2.3, 2.4]
-##### will exist either through a requirement calculation or a join from other staff.
-##### Otherwise, this script will abort when it calculates the exemptions.
-
-#03/12/2020 Feb 18 version of Criteria Spreadsheet. Includes updates from Helen as well as the addition of the species requirement (8.5). Includes 3.9 -3.14 (yellow stuff)
+# 03/12/2020 Feb 18 version of Criteria Spreadsheet. Includes updates from Helen as well as the addition of the species requirement (8.5). Includes 3.9 -3.14 (yellow stuff)
 exemptions = {
     "21159.24": ["2.1", "3.1", "8.1", "8.2", "8.3", "8.5", "9.2", "9.3", "9.4", "9.5", "9.6"],
     "21155.1": ["2.5", ["3.2", "3.13", "3.14"], "8.1", "8.2", "8.3", "8.5", "9.2", "9.3", "9.4", "9.5"],
@@ -216,10 +212,7 @@ requirements_with_no_data = {
     "yuba": [],
 }
 
-arcpy.env.workspace = output_gdb_dev_team
-
-# ACTIONS ##############################################################################################################
-
+# DATA PROCESSING FUNCTIONS ############################################################################################
 
 def copy_parcels_fc(input_parcels_fc, output_parcels_fc):
     """ Copies the original parcels feature class with only a subset of the original fields.
@@ -227,13 +220,12 @@ def copy_parcels_fc(input_parcels_fc, output_parcels_fc):
         as well as the Parcels Feature Class for the Dev Team without the requirements and exemptions fields.
     """
 
-    print "Copying original parcels Feature Class with only the following fields..."
+    print "Copying the original parcels Feature Class with only the user specified fields to keep..."
 
     # create an empty field mapping object
     mapS = arcpy.FieldMappings()
     # for each field, create an individual field map, and add it to the field mapping object
     for field in original_fields_to_keep:
-        print field
         map = arcpy.FieldMap()
         map.addInputField(input_parcels_fc, field)
         mapS.addFieldMap(map)
@@ -249,231 +241,323 @@ def copy_parcels_fc(input_parcels_fc, output_parcels_fc):
         config_keyword="")
 
 
-# Function Handler that calls the INDIVIDUAL REQUIREMENT function for processing.
-def calculate_requirements(output_parcels_fc, requirements_to_process=requirements.keys()):
+def calculate_requirements(output_parcels_fc, requirements_to_process):
 
     county_name = os.path.basename(output_parcels_fc).split("_")[0].lower()
+
+    # Get a list of all the requirements that this county  doesn't have data for.
     requirements_with_no_data_this_county = requirements_with_no_data[county_name] + requirements_with_no_data["ALL_COUNTIES"]
 
-    # Add a field for each of the requirements with "No Data". Will get set to <NULL> but default.
-    for requirement_with_no_data_this_county in requirements_with_no_data_this_county:
-        field_to_calc = requirements[requirement_with_no_data_this_county]
-        if not field_to_calc in existing_output_fields:
-            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
+    # Create an object that contains all the requirement processing functions.
+    requirement_functions = RequirementFunctions()
 
-    print "\nCalculating 1's and 0's for spatial requirements...."
-
-    # For requirements requiring an update cursor
-    if "0.1" in requirements_to_process:
-        print "Calculating requirement 0.1...\n"
-        field_to_calc = requirements["0.1"]
+    # For each requirement passed in...
+    for requirement in requirements_to_process:
+        print "\nProcessing requirement: " + requirement
+        field_to_calc = requirements[requirement]
         if not field_to_calc in existing_output_fields:
+            print "Adding field: " + field_to_calc
             arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
-        if "0.1" not in requirements_with_no_data_this_county:
-            calc_requirement_0_1(output_parcels_fc, field_to_calc)
+        if requirement not in requirements_with_no_data_this_county:
+            print "Calling function to calculate values for this requirement..."
+            requirement_functions.do_command(requirement, output_parcels_fc, field_to_calc)
         else:
-            print "No Data"
+            print "No data for this requirement. Field added with <null> values."
 
-    # For requirements requiring an update cursor
-    if "2.1" in requirements_to_process:
-        print "Calculating requirement 2.1...\n"
-        field_to_calc = requirements["2.1"]
-        if not field_to_calc in existing_output_fields:
-            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
-        if "2.1" not in requirements_with_no_data_this_county:
-            calc_requirement_2_1(output_parcels_fc, field_to_calc)
-        else:
-            print "No Data"
 
-    if "2.2" in requirements_to_process:
-        print "Calculating requirement 2.2...\n"
-        field_to_calc = requirements["2.2"]
-        if not field_to_calc in existing_output_fields:
-            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
-        if "2.2" not in requirements_with_no_data_this_county:
-            calc_requirement_2_2(output_parcels_fc, field_to_calc)
-        else:
-            print "No Data"
+class RequirementFunctions(object):
 
-    if "2.3" in requirements_to_process:
-        print "Calculating requirement 2.3...\n"
-        field_to_calc = requirements["2.3"]
-        if not field_to_calc in existing_output_fields:
-            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
-        if "2.3" not in requirements_with_no_data_this_county:
-            calc_requirement_2_3(output_parcels_fc, field_to_calc)
-        else:
-            print "No Data"
 
-    if "2.4" in requirements_to_process:
-        print "Calculating requirement 2.4...\n"
-        field_to_calc = requirements["2.4"]
-        if not field_to_calc in existing_output_fields:
-            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
-        if "2.4" not in requirements_with_no_data_this_county:
-            calc_requirement_2_4(output_parcels_fc, field_to_calc)
-        else:
-            print "No Data"
+    def calc_requirement_0_1(self, output_parcels_fc, field_to_calc):
+        """
+            0.1
+            Requirements that begin with 0 aren't applicable to any exemptions
+            Requirement Long Name: Urbanized Area Prc 21071 Unincorporated
+            Description: Select parcels that have their centers in the unincorporated islands of requirement 2.1. Yes = 1, No = 0
+        """
+        output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
+        # Select Light Green areas, unincorporated areas meeting prc_21071
+        expression = "community_type = 'Unincorporated Island' AND urbanized_area_prc_21071 = 1"
+        urbanized_area_prc_21071_layer = arcpy.MakeFeatureLayer_management(urbanized_area_prc_21071_fc)
+        urbanized_area_prc_21071_unincorporated_layer = arcpy.SelectLayerByAttribute_management(urbanized_area_prc_21071_layer, "NEW_SELECTION", expression)
+        # Select parcels within the green areas
+        arcpy.SelectLayerByLocation_management(output_parcels_layer, "HAVE_THEIR_CENTER_IN", urbanized_area_prc_21071_unincorporated_layer)
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
+        arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
 
-    if "2.5" in requirements_to_process:
-        print "Calculating requirement 2.5...\n"
-        field_to_calc = requirements["2.5"]
-        if not field_to_calc in existing_output_fields:
-            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
-        if "2.5" not in requirements_with_no_data_this_county:
-            calc_requirement_2_5(output_parcels_fc, field_to_calc)
-        else:
-            print "No Data"
 
-    if "2.6" in requirements_to_process:
-        print "Calculating requirement 2.6...\n"
-        field_to_calc = requirements["2.6"]
-        if not field_to_calc in existing_output_fields:
-            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
-        if "2.6" not in requirements_with_no_data_this_county:
-            calc_requirement_from_model(output_parcels_fc, "2.6")
-        else:
-            print "No Data"
+    def calc_requirement_2_1(self, output_parcels_fc, field_to_calc):
+        """
+            2.1
+            Requirement Long Name: Urbanized Area PRC 21071
+            Description: Complicated, see description here:
+            https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=PRC&sectionNum=21071.
+            The basic idea is that we iterate over each parcel, pass the OID to a subfunction which determines whether or
+            not it meets the requirements in the the link above.
+        """
 
-    if "2.7" in requirements_to_process:
-        print "Calculating requirement 2.7...\n"
-        field_to_calc = requirements["2.7"]
-        if not field_to_calc in existing_output_fields:
-            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
-        if "2.7" not in requirements_with_no_data_this_county:
-            calc_requirement_2_7(output_parcels_fc, field_to_calc)
-        else:
-            print "No Data"
+        output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
 
-    if "3.9" in requirements_to_process:
-        print "Calculating requirement 3.9...\n"
-        field_to_calc = requirements["3.9"]
-        if not field_to_calc in existing_output_fields:
-            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
-        if "3.9" not in requirements_with_no_data_this_county:
-            calc_requirement_3_9(output_parcels_fc, field_to_calc)
-        else:
-            print "No Data"
+        urbanized_area_prc_21071_layer = arcpy.MakeFeatureLayer_management(urbanized_area_prc_21071_fc)
 
-    if "3.10" in requirements_to_process:
-        print "Calculating requirement 3.10...\n"
-        field_to_calc = requirements["3.10"]
-        if not field_to_calc in existing_output_fields:
-            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
-        if "3.10" not in requirements_with_no_data_this_county:
-            calc_requirement_3_10(output_parcels_fc, field_to_calc)
-        else:
-            print "No Data"
+        query = "urbanized_area_prc_21071 = 1"
+        urbanized_area_prc_21071_layer_1s = arcpy.SelectLayerByAttribute_management(urbanized_area_prc_21071_layer, "NEW_SELECTION", query)
 
-    if "3.11" in requirements_to_process:
-        print "Calculating requirement 3.11...\n"
-        field_to_calc = requirements["3.11"]
-        if not field_to_calc in existing_output_fields:
-            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
-        if "3.11" not in requirements_with_no_data_this_county:
-            calc_requirement_3_11(output_parcels_fc, field_to_calc)
-        else:
-            print "No Data"
+        arcpy.SelectLayerByLocation_management(output_parcels_layer, "HAVE_THEIR_CENTER_IN", urbanized_area_prc_21071_layer_1s)
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
+        arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
 
-    if "3.12" in requirements_to_process:
-        print "Calculating requirement 3.12...\n"
-        field_to_calc = requirements["3.12"]
-        if not field_to_calc in existing_output_fields:
-            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
-        if "3.12" not in requirements_with_no_data_this_county:
-            calc_requirement_3_12(output_parcels_fc, field_to_calc)
-        else:
-            print "No Data"
 
-    if "3.13" in requirements_to_process:
-        print "Calculating requirement 3.13...\n"
-        field_to_calc = requirements["3.13"]
-        if not field_to_calc in existing_output_fields:
-            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
-        if "3.13" not in requirements_with_no_data_this_county:
-            calc_requirement_3_13(output_parcels_fc, field_to_calc)
-        else:
-            print "No Data"
+    def calc_requirement_2_2(self, output_parcels_fc, field_to_calc):
+        """
+            2.2
+            Requirement Long Name: Urban Area PRC 21094.5
+            Description: Select parcels WITHIN a city. Yes = 1, No = 0
+            If not in a city, check to see if WITHIN an unincorporated island
+            If within an unincorporated island, check to see if the unincorporated island it's in meets both of the following requirements:
+                (A) The population of the unincorporated area and the population of the surrounding incorporated cities equal a population of 100,000 or more.
+                (B) The population density of the unincorporated area is equal to, or greater than, the population density of the surrounding cities.
+        """
 
-    if "3.14" in requirements_to_process:
-        print "Calculating requirement 3.14...\n"
-        field_to_calc = requirements["3.14"]
-        if not field_to_calc in existing_output_fields:
-            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
-        if "3.14" not in requirements_with_no_data_this_county:
-            calc_requirement_3_14(output_parcels_fc, field_to_calc)
-        else:
-            print "No Data"
+        output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
 
-    if "8.5" in requirements_to_process:
-        print "Calculating requirement 8.5...\n"
-        field_to_calc = requirements["8.5"]
-        if not field_to_calc in existing_output_fields:
-            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
-        if "8.5" not in requirements_with_no_data_this_county:
-            calc_requirement_8_5(output_parcels_fc, field_to_calc)
-        else:
-            print "No Data"
+        urban_area_prc_21094_5_layer = arcpy.MakeFeatureLayer_management(urban_area_prc_21094_5_fc)
 
-    if "9.3" in requirements_to_process:
-        print "Calculating requirement 9.3...\n"
-        field_to_calc = requirements["9.3"]
-        if not field_to_calc in existing_output_fields:
-            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
-        if "9.3" not in requirements_with_no_data_this_county:
-            calc_requirement_9_3(output_parcels_fc, field_to_calc)
-        else:
-            print "No Data"
+        query = "urban_area_prc_21094_5 = 1"
+        urban_area_prc_21094_5_layer_1s = arcpy.SelectLayerByAttribute_management(urban_area_prc_21094_5_layer, "NEW_SELECTION", query)
 
-    if "9.4" in requirements_to_process:
-        print "Calculating requirement 9.4...\n"
-        field_to_calc = requirements["9.4"]
-        if not field_to_calc in existing_output_fields:
-            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
-        if "9.4" not in requirements_with_no_data_this_county:
-            calc_requirement_9_4(output_parcels_fc, field_to_calc)
-        else:
-            print "No Data"
+        arcpy.SelectLayerByLocation_management(output_parcels_layer, "HAVE_THEIR_CENTER_IN", urban_area_prc_21094_5_layer_1s)
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
+        arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
 
-    if "9.5" in requirements_to_process:
-        print "Calculating requirement 9.5...\n"
-        field_to_calc = requirements["9.5"]
-        if not field_to_calc in existing_output_fields:
-            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
-        if "9.5" not in requirements_with_no_data_this_county:
-            calc_requirement_9_5(output_parcels_fc, field_to_calc)
-        else:
-            print "No Data"
 
-    if "9.6" in requirements_to_process:
-        print "Calculating requirement 9.6...\n"
-        field_to_calc = requirements["9.6"]
-        if not field_to_calc in existing_output_fields:
-            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
-        if "9.6" not in requirements_with_no_data_this_county:
-            calc_requirement_9_6(output_parcels_fc, field_to_calc)
-        else:
-            print "No Data"
+    def calc_requirement_2_3(self, output_parcels_fc, field_to_calc):
+        """
+            2.3
+            Requirement Long Name: Within City Limit
+            Description: Select parcels that have their centers in a city boundary. Yes = 1, No = 0
+        """
+        output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
+        arcpy.SelectLayerByLocation_management(output_parcels_layer, "HAVE_THEIR_CENTER_IN", city_boundaries_fc)
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
+        arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
 
-    if "9.7" in requirements_to_process:
-        print "Calculating requirement 9.7...\n"
-        field_to_calc = requirements["9.7"]
-        if not field_to_calc in existing_output_fields:
-            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
-        if "9.7" not in requirements_with_no_data_this_county:
-            calc_requirement_9_7(output_parcels_fc, field_to_calc)
-        else:
-            print "No Data"
 
-    if "9.8" in requirements_to_process:
-        print "Calculating requirement 9.8...\n"
-        field_to_calc = requirements["9.8"]
-        if not field_to_calc in existing_output_fields:
-            arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
-        if "9.8" not in requirements_with_no_data_this_county:
-            calc_requirement_9_8(output_parcels_fc, field_to_calc)
-        else:
-            print "No Data"
+    def calc_requirement_2_4(self, output_parcels_fc, field_to_calc):
+        """
+            2.4
+            Requirement Long Name: Unincorporated
+            Select parcels where the CITY = Unincorporated
+            Select parcels that HAVE THEIR CENTERS IN this layer
+        """
+
+        # Unincorporated areas
+        incorporated_and_unincorporated_layer = arcpy.MakeFeatureLayer_management(incorporated_and_unincorporated_fc)
+        unincorporated_layer = arcpy.SelectLayerByAttribute_management(incorporated_and_unincorporated_layer, "NEW_SELECTION", "CITY = 'Unincorporated'")
+
+        # Select parcels that HAVE THEIR CENTERS IN the unincorporated area
+        output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
+        arcpy.SelectLayerByLocation_management(output_parcels_layer, "HAVE_THEIR_CENTER_IN", unincorporated_layer)
+
+        # Calculate 1's and 0's
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
+        arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
+
+
+    def calc_requirement_2_5(self, output_parcels_fc, field_to_calc):
+        """
+            2.5
+            Requirement Long Name: Within a Metropolitan Planning Organization boundary
+            Description: Select parcels that HAVE THEIR CENTERS IN an MPO boundary. Yes = 1, No = 0
+        """
+        arcpy.MakeFeatureLayer_management(output_parcels_fc, "output_parcels_layer")
+        arcpy.SelectLayerByLocation_management("output_parcels_layer", "HAVE_THEIR_CENTER_IN", mpo_boundary_dissolve_fc)
+        arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 1, "PYTHON")
+        arcpy.SelectLayerByAttribute_management("output_parcels_layer", "SWITCH_SELECTION")
+        arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 0, "PYTHON")
+
+
+    def calc_requirement_2_6(self, output_parcels_fc, field_to_calc):
+        """
+            2.6
+            Requirement Long Name: Within a Specific Plan boundary
+            Description: Select parcels that intersect a specific plan boundary. Yes = 1, No = 0
+        """
+        #arcpy.ModelName_ToolboxAlias() #Note that it's ModelName not Label.
+        arcpy.SpecificPlan26_Statewide(output_parcels_fc, field_to_calc)
+
+
+    def calc_requirement_2_7(self, output_parcels_fc, field_to_calc):
+        """
+            2.7
+            Requirement Long Name: Urbanized area or urban cluster
+            Select parcels that HAVE THEIR CENTERS IN this layer.
+        """
+
+        # Select parcels that HAVE THEIR CENTERS IN the unincorporated urbanized area or urban cluster
+        output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
+        arcpy.SelectLayerByLocation_management(output_parcels_layer, "HAVE_THEIR_CENTER_IN", urbanized_area_urban_cluster_fc)
+
+        # Calculate 1's and 0's
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
+        arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
+
+
+    def calc_requirement_8_5(self, output_parcels_fc, field_to_calc):
+
+        """
+            8.5
+            Requirement Long Name:  Rare, Threatened, or Endangered Species
+            Description: Select parcels that intersect the Rare, Threatened, or Endangered Species Dataset. Yes = 0, No = 1
+        """
+        output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
+        arcpy.SelectLayerByLocation_management(output_parcels_layer, "INTERSECT", rare_threatened_or_endangered_fc)
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
+        arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
+
+
+    def calc_requirement_9_3(self, output_parcels_fc, field_to_calc):
+        """
+            9.3
+            Requirement Long Name: Wildfire Hazard
+            Description: Select parcels that intersect the Wildfire Hazard Zones 3-5(output_parcels_fc, High - Extreme)(Yes = 0, No = 1)
+            """
+        print "Calculating Zonal Statistics..."
+        # Calculate zonal stats to get a count of the number of wildfire hazard pixels within each parcel.
+        tmp_zonal_stats_table = scratch_ws + os.sep + "wildfire_hazard_zonal_stats_subset"
+        arcpy.sa.ZonalStatisticsAsTable(output_parcels_fc, "PARCEL_ID", wildfire_hazard_raster, tmp_zonal_stats_table, "", "SUM")
+
+        print "Joining Zonal Stats table to the parcels dataset..."
+        # Join the zonal stats table (output_parcels_fc, just the "COUNT" field) to the parcels feature class.
+        arcpy.JoinField_management(output_parcels_fc, "PARCEL_ID", tmp_zonal_stats_table, "PARCEL_ID", "COUNT")
+
+        # Loop over each row and determine whether or not > 20% of the parcel has a wildfire hazard pixel.
+        uc = arcpy.da.UpdateCursor(output_parcels_fc, ["SHAPE_Area", "COUNT", field_to_calc, "OBJECTID"])
+        for row in uc:
+
+            # If no join record or no pixel, no wildfire hazard
+            if not row[1] or row[1] == 0:
+                row[2] = 1
+
+            else:
+                row[2] = 0
+
+            uc.updateRow(row)
+
+        arcpy.DeleteField_management(output_parcels_fc, "COUNT")
+
+
+    def calc_requirement_9_4(self, output_parcels_fc, field_to_calc):
+        """
+            9.4
+            Requirement Long Name: Flood Plain
+            Description: Select parcels that intersect the 100 Year Floodplain. Yes = 0, No = 1
+            Field Values defining the floodplain come from here: https://waterresources.saccounty.net/stormready/PublishingImages/100-year-floodplain-map-small.jpg
+        """
+        output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
+        arcpy.SelectLayerByLocation_management(output_parcels_layer, "INTERSECT", flood_plain_fc)
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
+        arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
+
+
+    def calc_requirement_9_5(self, output_parcels_fc, field_to_calc):
+        """
+            9.5
+            Requirement Long Name: Landslide Hazard
+            Description: Select parcels that intersect the Landslide Hazard dataset. Yes = 0, No = 1
+        """
+        # Get the resolution of the landslide hazard raster
+        landslide_hazard_raster_resolution = float(arcpy.GetRasterProperties_management(landslide_hazard_raster, "CELLSIZEX")[0])
+
+        print "Calculating Zonal Statistics..."
+        # Calculate zonal stats to get a count of the number of landslide hazard pixels within each parcel.
+        tmp_zonal_stats_table = scratch_ws + os.sep + "landslide_hazard_zonal_stats_subset"
+        arcpy.sa.ZonalStatisticsAsTable(output_parcels_fc, "PARCEL_ID", landslide_hazard_raster, tmp_zonal_stats_table, "", "SUM")
+
+        print "Joining Zonal Stats table to the parcels dataset..."
+        # Join the zonal stats table (output_parcels_fc, just the "COUNT" field) to the parcels feature class.
+        arcpy.JoinField_management(output_parcels_fc, "PARCEL_ID", tmp_zonal_stats_table, "PARCEL_ID", "COUNT")
+
+        # Loop over each row and determine whether or not > 20% of the parcel has a landslide hazard pixel.
+        uc = arcpy.da.UpdateCursor(output_parcels_fc, ["SHAPE_Area", "COUNT", field_to_calc, "OBJECTID"])
+        for row in uc:
+
+            # If no join record, no pixel, no landslide hazard
+            if not row[1]:
+                row[2] = 1
+
+            # Otherwise see if the parcel is > the 20% threshold.
+            else:
+                #Calculate the area of the landslide hazard pixels.
+                landslide_hazard_sq_meters = row[1] * pow(landslide_hazard_raster_resolution, 2)
+                parcel_area = row[0]
+
+                #Calculate the percent of the landslide hazard pixels with the parcel
+                percent_high_landslide = (float(landslide_hazard_sq_meters) / parcel_area) * 100
+
+                # If it's > the threshold, it's not elligible.
+                if percent_high_landslide >= landslide_area_percent_threshold:
+                    row[2] = 0
+
+                else:
+                    row[2] = 1
+
+            uc.updateRow(row)
+
+        arcpy.DeleteField_management(output_parcels_fc, "COUNT")
+
+
+    def calc_requirement_9_6(self, output_parcels_fc, field_to_calc):
+        """
+            9.6
+            Requirement Long Name: State Conservancy
+            Description: Select parcels that intersect the State Conservancy Dataset. Yes = 0, No = 1
+        """
+        output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
+        arcpy.SelectLayerByLocation_management(output_parcels_layer, "INTERSECT", state_conservancy_fc)
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
+        arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
+
+
+    def calc_requirement_9_7(self, output_parcels_fc, field_to_calc):
+        """
+            9.7
+            Requirement Long Name: Local Coastal Zone
+            Description: Select parcels that intersect the Local Coastal Zone Dataset. Yes = 0, No = 1
+        """
+        output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
+        arcpy.SelectLayerByLocation_management(output_parcels_layer, "INTERSECT", local_coastal_zone_fc)
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
+        arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
+
+
+    def calc_requirement_9_8(self, output_parcels_fc, field_to_calc):
+        """
+            9.8
+            Requirement Long Name: Protected Area Mask
+            Description: Select parcels that intersect the Protected Area Mask Dataset. Yes = 0, No = 1
+        """
+        output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
+        arcpy.SelectLayerByLocation_management(output_parcels_layer, "INTERSECT", protected_area_mask_fc)
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
+        arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
+
+    def default_function(self, *args):
+        print "Command not recognized"
+
+    def do_command(self, requirement_id, *args):
+        return getattr(self, "calc_requirement_" + requirement_id.replace(".", "_"), self.default_function)(*args)
 
 
 def join_additional_requirements(join_table, requirements_to_join):
@@ -612,6 +696,7 @@ def calculate_exemptions(exemptions_to_calculate=exemptions.keys(), start_oid=Fa
                                 field_value = row[uc.fields.index(requirement_field_name)]
                             except:
                                 print "Missing field for requirement " + requirement_field_name
+                                print "If data is missing for this requirement, be sure it's listed in the requirements_with_no_data dictionary, and then run the calculate requirements for this function in order to create the field and set the values to <null>"
                                 exit()
                             or_values.append(field_value)
 
@@ -632,6 +717,7 @@ def calculate_exemptions(exemptions_to_calculate=exemptions.keys(), start_oid=Fa
                             field_value = row[uc.fields.index(requirement_field_name)]
                         except:
                             print "Missing field for requirement " + requirement_field_name
+                            print "If data is missing for this requirement, be sure it's listed in the requirements_with_no_data dictionary, and then run the calculate requirements for this function in order to create the field and set the values to <null>"
                             exit()
                         check_requirements.append(field_value)
 
@@ -654,7 +740,7 @@ def calculate_exemptions(exemptions_to_calculate=exemptions.keys(), start_oid=Fa
                 uc.updateRow(row)
 
 
-# TABLES FOR DEV TEAM
+# TABLES FOR DEV TEAM ##################################################################################################
 
 def create_exemptions_table_dev_team():
     """ Creates the requirements table & adds the exemptions_count field"""
@@ -739,302 +825,6 @@ def create_requirements_table_dev_team():
         config_keyword="")
 
 
-# INDIVIDUAL REQUIREMENTS ##############################################################################################
-
-
-def calc_requirement_from_model(output_parcels_fc, requirement_id):
-
-    model_id = requirement_id.replace(".", "")
-    model_name = arcpy.ListTools("*"+model_id)[0]
-    arcpy.model_name(output_parcels_fc, requirement_id)
-
-
-def calc_requirement_0_1(output_parcels_fc, field_to_calc):
-    """
-        0.1
-        Requirements that begin with 0 aren't applicable to any exemptions
-        Requirement Long Name: Urbanized Area Prc 21071 Unincorporated
-        Description: Select parcels that have their centers in the unincorporated islands of requirement 2.1. Yes = 1, No = 0
-    """
-    output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
-    # Select Light Green areas, unincorporated areas meeting prc_21071
-    expression = "community_type = 'Unincorporated Island' AND urbanized_area_prc_21071 = 1"
-    urbanized_area_prc_21071_layer = arcpy.MakeFeatureLayer_management(urbanized_area_prc_21071_fc)
-    urbanized_area_prc_21071_unincorporated_layer = arcpy.SelectLayerByAttribute_management(urbanized_area_prc_21071_layer, "NEW_SELECTION", expression)
-    # Select parcels within the green areas
-    arcpy.SelectLayerByLocation_management(output_parcels_layer, "HAVE_THEIR_CENTER_IN", urbanized_area_prc_21071_unincorporated_layer)
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
-    arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
-
-
-def calc_requirement_2_1(output_parcels_fc, field_to_calc):
-    """
-        2.1
-        Requirement Long Name: Urbanized Area PRC 21071
-        Description: Complicated, see description here:
-        https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=PRC&sectionNum=21071.
-        The basic idea is that we iterate over each parcel, pass the OID to a subfunction which determines whether or
-        not it meets the requirements in the the link above.
-    """
-
-    output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
-
-    urbanized_area_prc_21071_layer = arcpy.MakeFeatureLayer_management(urbanized_area_prc_21071_fc)
-
-    query = "urbanized_area_prc_21071 = 1"
-    urbanized_area_prc_21071_layer_1s = arcpy.SelectLayerByAttribute_management(urbanized_area_prc_21071_layer, "NEW_SELECTION", query)
-
-    arcpy.SelectLayerByLocation_management(output_parcels_layer, "HAVE_THEIR_CENTER_IN", urbanized_area_prc_21071_layer_1s)
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
-    arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
-
-
-def calc_requirement_2_2(output_parcels_fc, field_to_calc):
-    """
-        2.2
-        Requirement Long Name: Urban Area PRC 21094.5
-        Description: Select parcels WITHIN a city. Yes = 1, No = 0
-        If not in a city, check to see if WITHIN an unincorporated island
-        If within an unincorporated island, check to see if the unincorporated island it's in meets both of the following requirements:
-            (A) The population of the unincorporated area and the population of the surrounding incorporated cities equal a population of 100,000 or more.
-            (B) The population density of the unincorporated area is equal to, or greater than, the population density of the surrounding cities.
-    """
-
-    output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
-
-    urban_area_prc_21094_5_layer = arcpy.MakeFeatureLayer_management(urban_area_prc_21094_5_fc)
-
-    query = "urban_area_prc_21094_5 = 1"
-    urban_area_prc_21094_5_layer_1s = arcpy.SelectLayerByAttribute_management(urban_area_prc_21094_5_layer, "NEW_SELECTION", query)
-
-    arcpy.SelectLayerByLocation_management(output_parcels_layer, "HAVE_THEIR_CENTER_IN", urban_area_prc_21094_5_layer_1s)
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
-    arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
-
-
-def calc_requirement_2_3(output_parcels_fc, field_to_calc):
-    """
-        2.3
-        Requirement Long Name: Within City Limit
-        Description: Select parcels that have their centers in a city boundary. Yes = 1, No = 0
-    """
-    output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
-    arcpy.SelectLayerByLocation_management(output_parcels_layer, "HAVE_THEIR_CENTER_IN", city_boundaries_fc)
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
-    arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
-
-
-def calc_requirement_2_4(output_parcels_fc, field_to_calc):
-    """
-        2.4
-        Requirement Long Name: Unincorporated
-        Select parcels where the CITY = Unincorporated
-        Select parcels that HAVE THEIR CENTERS IN this layer
-    """
-
-    # Unincorporated areas
-    incorporated_and_unincorporated_layer = arcpy.MakeFeatureLayer_management(incorporated_and_unincorporated_fc)
-    unincorporated_layer = arcpy.SelectLayerByAttribute_management(incorporated_and_unincorporated_layer, "NEW_SELECTION", "CITY = 'Unincorporated'")
-
-    # Select parcels that HAVE THEIR CENTERS IN the unincorporated area
-    output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
-    arcpy.SelectLayerByLocation_management(output_parcels_layer, "HAVE_THEIR_CENTER_IN", unincorporated_layer)
-
-    # Calculate 1's and 0's
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
-    arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
-
-
-def calc_requirement_2_5(output_parcels_fc, field_to_calc):
-    """
-        2.5
-        Requirement Long Name: Within a Metropolitan Planning Organization boundary
-        Description: Select parcels that HAVE THEIR CENTERS IN an MPO boundary. Yes = 1, No = 0
-    """
-    arcpy.MakeFeatureLayer_management(output_parcels_fc, "output_parcels_layer")
-    arcpy.SelectLayerByLocation_management("output_parcels_layer", "HAVE_THEIR_CENTER_IN", mpo_boundary_dissolve_fc)
-    arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 1, "PYTHON")
-    arcpy.SelectLayerByAttribute_management("output_parcels_layer", "SWITCH_SELECTION")
-    arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 0, "PYTHON")
-
-
-def calc_requirement_2_6(output_parcels_fc, field_to_calc):
-    """
-        2.6
-        Requirement Long Name: Within a Specific Plan boundary
-        Description: Select parcels that intersect a specific plan boundary. Yes = 1, No = 0
-    """
-    #arcpy.ModelName_ToolboxAlias() #Note that it's ModelName not Label.
-    arcpy.SpecificPlan26_Statewide(output_parcels_fc, field_to_calc)
-
-
-def calc_requirement_2_7(output_parcels_fc, field_to_calc):
-    """
-        2.7
-        Requirement Long Name: Urbanized area or urban cluster
-        Select parcels that HAVE THEIR CENTERS IN this layer.
-    """
-
-    # Select parcels that HAVE THEIR CENTERS IN the unincorporated urbanized area or urban cluster
-    output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
-    arcpy.SelectLayerByLocation_management(output_parcels_layer, "HAVE_THEIR_CENTER_IN", urbanized_area_urban_cluster_fc)
-
-    # Calculate 1's and 0's
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
-    arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
-
-
-def calc_requirement_8_5(output_parcels_fc, field_to_calc):
-
-    """
-        8.5
-        Requirement Long Name:  Rare, Threatened, or Endangered Species
-        Description: Select parcels that intersect the Rare, Threatened, or Endangered Species Dataset. Yes = 0, No = 1
-    """
-    output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
-    arcpy.SelectLayerByLocation_management(output_parcels_layer, "INTERSECT", rare_threatened_or_endangered_fc)
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
-    arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
-
-
-def calc_requirement_9_3(output_parcels_fc, field_to_calc):
-    """
-        9.3
-        Requirement Long Name: Wildfire Hazard
-        Description: Select parcels that intersect the Wildfire Hazard Zones 3-5(output_parcels_fc, High - Extreme)(Yes = 0, No = 1)
-    """
-    print "Calculating Zonal Statistics..."
-    # Calculate zonal stats to get a count of the number of wildfire hazard pixels within each parcel.
-    tmp_zonal_stats_table = scratch_ws + os.sep + "wildfire_hazard_zonal_stats_subset"
-    arcpy.sa.ZonalStatisticsAsTable(output_parcels_fc, "PARCEL_ID", wildfire_hazard_raster, tmp_zonal_stats_table, "", "SUM")
-
-    print "Joining Zonal Stats table to the parcels dataset..."
-    # Join the zonal stats table (output_parcels_fc, just the "COUNT" field) to the parcels feature class.
-    arcpy.JoinField_management(output_parcels_fc, "PARCEL_ID", tmp_zonal_stats_table, "PARCEL_ID", "COUNT")
-
-    # Loop over each row and determine whether or not > 20% of the parcel has a wildfire hazard pixel.
-    uc = arcpy.da.UpdateCursor(output_parcels_fc, ["SHAPE_Area", "COUNT", field_to_calc, "OBJECTID"])
-    for row in uc:
-
-        # If no join record or no pixel, no wildfire hazard
-        if not row[1] or row[1] == 0:
-            row[2] = 1
-
-        else:
-            row[2] = 0
-
-        uc.updateRow(row)
-
-    arcpy.DeleteField_management(output_parcels_fc, "COUNT")
-
-
-def calc_requirement_9_4(output_parcels_fc, field_to_calc):
-    """
-        9.4
-        Requirement Long Name: Flood Plain
-        Description: Select parcels that intersect the 100 Year Floodplain. Yes = 0, No = 1
-        Field Values defining the floodplain come from here: https://waterresources.saccounty.net/stormready/PublishingImages/100-year-floodplain-map-small.jpg
-    """
-    output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
-    arcpy.SelectLayerByLocation_management(output_parcels_layer, "INTERSECT", flood_plain_fc)
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
-    arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
-
-
-def calc_requirement_9_5(output_parcels_fc, field_to_calc):
-    """
-        9.5
-        Requirement Long Name: Landslide Hazard
-        Description: Select parcels that intersect the Landslide Hazard dataset. Yes = 0, No = 1
-    """
-    # Get the resolution of the landslide hazard raster
-    landslide_hazard_raster_resolution = float(arcpy.GetRasterProperties_management(landslide_hazard_raster, "CELLSIZEX")[0])
-
-    print "Calculating Zonal Statistics..."
-    # Calculate zonal stats to get a count of the number of landslide hazard pixels within each parcel.
-    tmp_zonal_stats_table = scratch_ws + os.sep + "landslide_hazard_zonal_stats_subset"
-    arcpy.sa.ZonalStatisticsAsTable(output_parcels_fc, "PARCEL_ID", landslide_hazard_raster, tmp_zonal_stats_table, "", "SUM")
-
-    print "Joining Zonal Stats table to the parcels dataset..."
-    # Join the zonal stats table (output_parcels_fc, just the "COUNT" field) to the parcels feature class.
-    arcpy.JoinField_management(output_parcels_fc, "PARCEL_ID", tmp_zonal_stats_table, "PARCEL_ID", "COUNT")
-
-    # Loop over each row and determine whether or not > 20% of the parcel has a landslide hazard pixel.
-    uc = arcpy.da.UpdateCursor(output_parcels_fc, ["SHAPE_Area", "COUNT", field_to_calc, "OBJECTID"])
-    for row in uc:
-
-        # If no join record, no pixel, no landslide hazard
-        if not row[1]:
-            row[2] = 1
-
-        # Otherwise see if the parcel is > the 20% threshold.
-        else:
-            #Calculate the area of the landslide hazard pixels.
-            landslide_hazard_sq_meters = row[1] * pow(landslide_hazard_raster_resolution, 2)
-            parcel_area = row[0]
-
-            #Calculate the percent of the landslide hazard pixels with the parcel
-            percent_high_landslide = (float(landslide_hazard_sq_meters) / parcel_area) * 100
-
-            # If it's > the threshold, it's not elligible.
-            if percent_high_landslide >= landslide_area_percent_threshold:
-                row[2] = 0
-
-            else:
-                row[2] = 1
-
-        uc.updateRow(row)
-
-    arcpy.DeleteField_management(output_parcels_fc, "COUNT")
-
-
-def calc_requirement_9_6(output_parcels_fc, field_to_calc):
-    """
-        9.6
-        Requirement Long Name: State Conservancy
-        Description: Select parcels that intersect the State Conservancy Dataset. Yes = 0, No = 1
-    """
-    output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
-    arcpy.SelectLayerByLocation_management(output_parcels_layer, "INTERSECT", state_conservancy_fc)
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
-    arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
-
-
-def calc_requirement_9_7(output_parcels_fc, field_to_calc):
-    """
-        9.7
-        Requirement Long Name: Local Coastal Zone
-        Description: Select parcels that intersect the Local Coastal Zone Dataset. Yes = 0, No = 1
-    """
-    output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
-    arcpy.SelectLayerByLocation_management(output_parcels_layer, "INTERSECT", local_coastal_zone_fc)
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
-    arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
-
-
-def calc_requirement_9_8(output_parcels_fc, field_to_calc):
-    """
-        9.8
-        Requirement Long Name: Protected Area Mask
-        Description: Select parcels that intersect the Protected Area Mask Dataset. Yes = 0, No = 1
-    """
-    output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
-    arcpy.SelectLayerByLocation_management(output_parcels_layer, "INTERSECT", protected_area_mask_fc)
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
-    arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
-    arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
-
-
 # EXTRA FUNCTIONS ######################################################################################################
 
 def list_fields():
@@ -1051,16 +841,22 @@ def list_fields():
     for field in sorted_list:
         print str(field[0]) + ": " + field[1]
 
+# BEGIN PROCESSING #####################################################################################################
 
-# Function Calls #######################################################################################################
+start_time = datetime.datetime.now()
+print("Start Time: " + str(start_time))
 
-input_parcels_fc_list = arcpy.ListFeatureClasses(input_parcels_gdb)
+arcpy.env.workspace = output_gdb_dev_team
 
-input_parcels_fc_list = ["ALAMEDA_Parcels", "ALPINE_Parcels"]
+if input_parcels_fc_list == "*":
+    input_parcels_fc_list = arcpy.ListFeatureClasses(input_parcels_gdb)
+if requirements_to_process == "*":
+    requirements_to_process = requirements.keys()
 
+# For each parcel in the user defined list....
 for input_parcels_fc_name in input_parcels_fc_list:
 
-    print "Processing parcels: " + input_parcels_fc_name
+    print "\nProcessing parcels: " + input_parcels_fc_name
 
     # Get the path to the county parcels.
     input_parcels_fc = input_parcels_gdb + os.sep + input_parcels_fc_name
@@ -1074,19 +870,13 @@ for input_parcels_fc_name in input_parcels_fc_list:
         copy_parcels_fc(input_parcels_fc, output_parcels_fc)
     if not arcpy.Exists(output_parcels_fc_dev_team):
         copy_parcels_fc(input_parcels_fc, output_parcels_fc_dev_team)
-    ###################################
 
     # Get a list of the fields that currently exist in the output feature class.
     existing_output_fields = [field.name for field in arcpy.ListFields(output_parcels_fc)]
 
     #################################### Choose Data Processing Functions ########################################
 
-    #calculate_requirements(output_parcels_fc=output_parcels_fc, requirements_to_process=["0.1", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "8.1", "8.2", "8.3", "8.4", "8.5", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8"])
-    #calculate_requirements(output_parcels_fc=output_parcels_fc, requirements_to_process=["3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14"])
-    #calculate_requirements(output_parcels_fc=output_parcels_fc, requirements_to_process=["8.5"])
-    #calculate_requirements(output_parcels_fc=output_parcels_fc, requirements_to_process=["8.2", "8.3", "9.2"])
-    #calculate_requirements(output_parcels_fc=output_parcels_fc, requirements_to_process=["0.1", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "8.1", "8.2", "8.3", "8.4", "8.5", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8"])
-    calculate_requirements(output_parcels_fc=output_parcels_fc)
+    calculate_requirements(output_parcels_fc=output_parcels_fc, requirements_to_process=requirements_to_process)
 
     # Join Additional Requirement Fields (From Kai and other staff). Field names must have requiement ID at the end (e.g., 3_10)
     #requirements_to_join = ["3.10", "3.11", "3.12", "3.13"]
@@ -1095,9 +885,9 @@ for input_parcels_fc_name in input_parcels_fc_list:
 
     calculate_exemptions()
 
-    #create_requirements_table_dev_team()
+    create_requirements_table_dev_team()
 
-    #create_exemptions_table_dev_team()
+    create_exemptions_table_dev_team()
 
     #list_fields()
 
