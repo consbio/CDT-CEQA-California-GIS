@@ -155,7 +155,7 @@ exemptions = {
 
 requirements_with_no_data = {
     #"ALL_COUNTIES": ["3.9"],
-    "ALL_COUNTIES": ["3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14"],
+    "ALL_COUNTIES": ["3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "8.1", "8.2", "8.3", "9.2"],
     "alameda": ["2.6"],
     "alpine": ["2.6"],
     "amador": ["2.6"],
@@ -331,7 +331,7 @@ def calculate_requirements(output_parcels_fc, requirements_to_process=requiremen
         if not field_to_calc in existing_output_fields:
             arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
         if "2.6" not in requirements_with_no_data_this_county:
-            calc_requirement_2_6(output_parcels_fc, field_to_calc)
+            calc_requirement_from_model(output_parcels_fc, "2.6")
         else:
             print "No Data"
 
@@ -742,6 +742,13 @@ def create_requirements_table_dev_team():
 # INDIVIDUAL REQUIREMENTS ##############################################################################################
 
 
+def calc_requirement_from_model(output_parcels_fc, requirement_id):
+
+    model_id = requirement_id.replace(".", "")
+    model_name = arcpy.ListTools("*"+model_id)[0]
+    arcpy.model_name(output_parcels_fc, requirement_id)
+
+
 def calc_requirement_0_1(output_parcels_fc, field_to_calc):
     """
         0.1
@@ -1077,7 +1084,9 @@ for input_parcels_fc_name in input_parcels_fc_list:
     #calculate_requirements(output_parcels_fc=output_parcels_fc, requirements_to_process=["0.1", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "8.1", "8.2", "8.3", "8.4", "8.5", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8"])
     #calculate_requirements(output_parcels_fc=output_parcels_fc, requirements_to_process=["3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14"])
     #calculate_requirements(output_parcels_fc=output_parcels_fc, requirements_to_process=["8.5"])
-    calculate_requirements(output_parcels_fc=output_parcels_fc, requirements_to_process=["3.14"])
+    #calculate_requirements(output_parcels_fc=output_parcels_fc, requirements_to_process=["8.2", "8.3", "9.2"])
+    #calculate_requirements(output_parcels_fc=output_parcels_fc, requirements_to_process=["0.1", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "8.1", "8.2", "8.3", "8.4", "8.5", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8"])
+    calculate_requirements(output_parcels_fc=output_parcels_fc)
 
     # Join Additional Requirement Fields (From Kai and other staff). Field names must have requiement ID at the end (e.g., 3_10)
     #requirements_to_join = ["3.10", "3.11", "3.12", "3.13"]
