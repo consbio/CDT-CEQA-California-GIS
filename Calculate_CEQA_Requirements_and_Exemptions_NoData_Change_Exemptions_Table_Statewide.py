@@ -136,7 +136,7 @@ requirements = {
 
 # If county is missing data for a requirement (as indicated below), a field will be added to the county for that requirement with null values in it.
 requirements_with_no_data = {
-    "ALL_COUNTIES": ["3.9"],
+    "ALL_COUNTIES": ["3.3", "3.9", "3.14"],
     "alameda": [],
     "alpine": [],
     "amador": [],
@@ -1036,7 +1036,7 @@ for input_parcels_fc_name in input_parcels_fc_list:
 
     # NOTE: If the dev team tables already exist, the functions below will APPEND new rows.
     # So if re-running a county, the records for this county need to be deleted in this table first.
-    # Or, delete the entire table first.
+    # Or, delete the entire table first. Need to come up with a way to automate this.
     create_requirements_table_dev_team()
 
     create_exemptions_table_dev_team()
@@ -1044,6 +1044,6 @@ for input_parcels_fc_name in input_parcels_fc_list:
     end_time = datetime.datetime.now()
     duration = end_time - start_time
 
-    print("Start Time: " + str(start_time))
-    print("End Time: " + str(end_time))
-    print("Duration: " + str(duration))
+print("Start Time: " + str(start_time))
+print("End Time: " + str(end_time))
+print("Duration: " + str(duration))
