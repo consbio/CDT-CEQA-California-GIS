@@ -5,9 +5,13 @@ arcpy.env.overwriteOutput = True
 arcpy.CheckOutExtension("Spatial")
 
 # Parcel Feature Classes to process. Use "*" to process all parcels.
-input_parcels_fc_list = ["ALAMEDA_Parcels", "ALPINE_Parcels"]
+input_parcels_fc_list = ["FRESNO_Parcels"]
+input_parcels_fc_list = "*"
+input_parcels_fc_list = ["ALPINE_Parcels", "SIERRA_Parcels"]
+
 # Requirements to process. Use "*" to process all parcels.
-requirements_to_process = ["0.1", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "8.1", "8.2", "8.3", "8.4", "8.5", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8"]
+requirements_to_process = ["0.1", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "3.10", "3.12", "3.13", "8.1", "8.2", "8.3", "8.4", "8.5", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8"]
+requirements_to_process = "*"
 
 # Workspaces
 input_parcels_gdb = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Parcels_Projected_Delete_Identical.gdb"
@@ -18,6 +22,7 @@ scratch_ws = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel
 
 # Toolbox containing models for processing additional requirements (from Kai).
 statewide_toolbox = r"\\loxodonta\GIS\Projects\CDT-CEQA_California_2019\Workspaces\CDT-CEQA_California_2019_kai_foster\Tasks\General_Tasks\Statewide.tbx"
+statewide_toolbox_name = os.path.basename(statewide_toolbox).split(".")[0]
 arcpy.ImportToolbox(statewide_toolbox)
 
 # Kai's table
@@ -116,10 +121,10 @@ requirements = {
     "8.1": "wetlands_8_1",
     "8.2": "riparian_areas_8_2",
     "8.3": "special_habitats_8_3",
-    "8.4": "species_of_concern_8_4",
+    #"8.4": "species_of_concern_8_4",
     "8.5": "rare_threatened_endangered_sp_8_5",
     # Hazards
-    "9.1": "sea_level_rise_9_1",
+    #"9.1": "sea_level_rise_9_1",
     "9.2": "earthquake_hazard_zone_9_2",
     "9.3": "wildfire_hazard_9_3",
     "9.4": "flood_plain_9_4",
@@ -127,6 +132,69 @@ requirements = {
     "9.6": "state_conservancy_9_6",
     "9.7": "local_coastal_zone_9_7",
     "9.8": "protected_area_mask_9_8",
+}
+
+# If county is missing data for a requirement (as indicated below), a field will be added to the county for that requirement with null values in it.
+requirements_with_no_data = {
+    "ALL_COUNTIES": ["3.9"],
+    "alameda": [],
+    "alpine": [],
+    "amador": [],
+    "butte": [],
+    "calaveras": [],
+    "colusa": [],
+    "contracosta": [],
+    "delnorte": [],
+    "eldorado": [],
+    "fresno": [],
+    "glenn": [],
+    "humboldt": [],
+    "imperial": [],
+    "inyo": [],
+    "kern": [],
+    "kings": [],
+    "lake": [],
+    "lassen": [],
+    "losangeles": [],
+    "madera": [],
+    "marin": [],
+    "mariposa": [],
+    "mendocino": [],
+    "merced": [],
+    "modoc": [],
+    "mono": [],
+    "monterey": [],
+    "napa": [],
+    "nevada": [],
+    "orange": [],
+    "placer": [],
+    "plumas": [],
+    "riverside": [],
+    "sacramento": [],
+    "sanbenito": [],
+    "sanbernardino": [],
+    "sandiego": [],
+    "sanfrancisco": [],
+    "sanjoaquin": [],
+    "sanluisobispo": [],
+    "sanmateo": [],
+    "santabarbara": [],
+    "santaclara": [],
+    "santacruz": [],
+    "shasta": [],
+    "sierra": [],
+    "siskiyou": [],
+    "solano": [],
+    "sonoma": [],
+    "stanislaus": [],
+    "sutter": [],
+    "tehama": [],
+    "trinity": [],
+    "tulare": [],
+    "tuolumne": [],
+    "ventura": [],
+    "yolo": [],
+    "yuba": [],
 }
 
 # 03/12/2020 Feb 18 version of Criteria Spreadsheet. Includes updates from Helen as well as the addition of the species requirement (8.5). Includes 3.9 -3.14 (yellow stuff)
@@ -146,69 +214,6 @@ exemptions = {
     "15064.3": [["3.1", "3.5", "3.6", "3.7"]]
 }
 
-# If county is missing data for a requirement (as indicated below), a field will be added to the county for that requirement with null values in it.
-requirements_with_no_data = {
-    #"ALL_COUNTIES": ["3.9"],
-    "ALL_COUNTIES": ["3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "8.1", "8.2", "8.3", "9.2"],
-    "alameda": ["2.6"],
-    "alpine": ["2.6"],
-    "amador": ["2.6"],
-    "butte": [],
-    "calaveras": ["2.6"],
-    "colusa": ["2.6"],
-    "contracosta": ["2.6"],
-    "delnorte": ["2.6"],
-    "eldorado": [],
-    "fresno": ["2.6"],
-    "glenn": ["2.6"],
-    "humboldt": ["2.6"],
-    "imperial": [],
-    "inyo": ["2.6"],
-    "kern": [],
-    "kings": ["2.6"],
-    "lake": ["2.6"],
-    "lassen": ["2.6"],
-    "losangeles": [],
-    "madera": ["2.6"],
-    "marin": ["2.6"],
-    "mariposa": ["2.6"],
-    "mendocino": ["2.6"],
-    "merced": ["2.6"],
-    "modoc": ["2.6"],
-    "mono": ["2.6"],
-    "monterey": ["2.6"],
-    "napa": [],
-    "nevada": ["2.6"],
-    "orange": [],
-    "placer": [],
-    "plumas": ["2.6"],
-    "riverside": [],
-    "sacramento": [],
-    "sanbenito": ["2.6"],
-    "sanbernardino": [],
-    "sandiego": [],
-    "sanfrancisco": ["2.6"],
-    "sanjoaquin": ["2.6"],
-    "sanluisobispo": ["2.6"],
-    "sanmateo": [],
-    "santabarbara": ["2.6"],
-    "santaclara": ["2.6"],
-    "santacruz": ["2.6"],
-    "shasta": ["2.6"],
-    "sierra": ["2.6"],
-    "siskiyou": ["2.6"],
-    "solano": ["2.6"],
-    "sonoma": ["2.6"],
-    "stanislaus": ["2.6"],
-    "sutter": [],
-    "tehama": ["2.6"],
-    "trinity": ["2.6"],
-    "tulare": ["2.6"],
-    "tuolumne": ["2.6"],
-    "ventura": [],
-    "yolo": [],
-    "yuba": [],
-}
 
 # DATA PROCESSING FUNCTIONS ############################################################################################
 
@@ -219,6 +224,7 @@ def copy_parcels_fc(input_parcels_fc, output_parcels_fc):
     """
 
     print "Copying the original parcels Feature Class with only the user specified fields to keep..."
+    print output_parcels_fc
 
     # create an empty field mapping object
     mapS = arcpy.FieldMappings()
@@ -239,7 +245,7 @@ def copy_parcels_fc(input_parcels_fc, output_parcels_fc):
         config_keyword="")
 
 
-def calculate_requirements(output_parcels_fc, requirements_to_process):
+def calculate_requirements(requirements_to_process=requirements.keys()):
 
     county_name = os.path.basename(output_parcels_fc).split("_")[0].lower()
 
@@ -272,6 +278,7 @@ def calculate_requirements(output_parcels_fc, requirements_to_process):
 
 class RequirementFunctions(object):
 
+    # ARCPY FUNCTIONS
 
     def calc_requirement_0_1(self, output_parcels_fc, field_to_calc):
         """
@@ -290,7 +297,6 @@ class RequirementFunctions(object):
         arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
         arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
         arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
-
 
     def calc_requirement_2_1(self, output_parcels_fc, field_to_calc):
         """
@@ -313,7 +319,6 @@ class RequirementFunctions(object):
         arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
         arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
         arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
-
 
     def calc_requirement_2_2(self, output_parcels_fc, field_to_calc):
         """
@@ -338,7 +343,6 @@ class RequirementFunctions(object):
         arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
         arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
 
-
     def calc_requirement_2_3(self, output_parcels_fc, field_to_calc):
         """
             2.3
@@ -350,7 +354,6 @@ class RequirementFunctions(object):
         arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
         arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
         arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
-
 
     def calc_requirement_2_4(self, output_parcels_fc, field_to_calc):
         """
@@ -373,7 +376,6 @@ class RequirementFunctions(object):
         arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
         arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
 
-
     def calc_requirement_2_5(self, output_parcels_fc, field_to_calc):
         """
             2.5
@@ -385,17 +387,6 @@ class RequirementFunctions(object):
         arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 1, "PYTHON")
         arcpy.SelectLayerByAttribute_management("output_parcels_layer", "SWITCH_SELECTION")
         arcpy.CalculateField_management("output_parcels_layer", field_to_calc, 0, "PYTHON")
-
-
-    def calc_requirement_2_6(self, output_parcels_fc, field_to_calc):
-        """
-            2.6
-            Requirement Long Name: Within a Specific Plan boundary
-            Description: Select parcels that intersect a specific plan boundary. Yes = 1, No = 0
-        """
-        #arcpy.ModelName_ToolboxAlias() #Note that it's ModelName not Label.
-        arcpy.SpecificPlan26_Statewide(output_parcels_fc, field_to_calc)
-
 
     def calc_requirement_2_7(self, output_parcels_fc, field_to_calc):
         """
@@ -413,7 +404,6 @@ class RequirementFunctions(object):
         arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
         arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
 
-
     def calc_requirement_8_5(self, output_parcels_fc, field_to_calc):
 
         """
@@ -426,7 +416,6 @@ class RequirementFunctions(object):
         arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
         arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
         arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
-
 
     def calc_requirement_9_3(self, output_parcels_fc, field_to_calc):
         """
@@ -458,7 +447,6 @@ class RequirementFunctions(object):
 
         arcpy.DeleteField_management(output_parcels_fc, "COUNT")
 
-
     def calc_requirement_9_4(self, output_parcels_fc, field_to_calc):
         """
             9.4
@@ -471,7 +459,6 @@ class RequirementFunctions(object):
         arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
         arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
         arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
-
 
     def calc_requirement_9_5(self, output_parcels_fc, field_to_calc):
         """
@@ -519,7 +506,6 @@ class RequirementFunctions(object):
 
         arcpy.DeleteField_management(output_parcels_fc, "COUNT")
 
-
     def calc_requirement_9_6(self, output_parcels_fc, field_to_calc):
         """
             9.6
@@ -531,7 +517,6 @@ class RequirementFunctions(object):
         arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
         arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
         arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
-
 
     def calc_requirement_9_7(self, output_parcels_fc, field_to_calc):
         """
@@ -545,7 +530,6 @@ class RequirementFunctions(object):
         arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
         arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
 
-
     def calc_requirement_9_8(self, output_parcels_fc, field_to_calc):
         """
             9.8
@@ -558,8 +542,146 @@ class RequirementFunctions(object):
         arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
         arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
 
+    # MODELS
+        # Calling a model from arcpy after the toolbox has been imported:
+        # arcpy.ModelName_ToolboxAlias() #Note that it's ModelName not Label.
+        # arcpy.SpecificPlan26_Statewide(output_parcels_fc, field_to_calc)
+
+    def calc_requirement_2_6(self, output_parcels_fc, field_to_calc):
+        # This is the name of the model (not the label)
+        model_name = "r26"
+        full_model_name = model_name + "_" + statewide_toolbox_name
+        run_model_command = "arcpy." + full_model_name + "(r'%s', '%s')" % (output_parcels_fc, field_to_calc)
+        exec run_model_command
+
+    def calc_requirement_3_1(self, output_parcels_fc, field_to_calc):
+        # This is the name of the model (not the label)
+        model_name = "r31"
+        full_model_name = model_name + "_" + statewide_toolbox_name
+        run_model_command = "arcpy." + full_model_name + "(r'%s', '%s')" % (output_parcels_fc, field_to_calc)
+        exec run_model_command
+
+    def calc_requirement_3_2(self, output_parcels_fc, field_to_calc):
+        # This is the name of the model (not the label)
+        model_name = "r32"
+        full_model_name = model_name + "_" + statewide_toolbox_name
+        run_model_command = "arcpy." + full_model_name + "(r'%s', '%s')" % (output_parcels_fc, field_to_calc)
+        exec run_model_command
+
+    def calc_requirement_3_3(self, output_parcels_fc, field_to_calc):
+        # This is the name of the model (not the label)
+        model_name = "r33"
+        full_model_name = model_name + "_" + statewide_toolbox_name
+        run_model_command = "arcpy." + full_model_name + "(r'%s', '%s')" % (output_parcels_fc, field_to_calc)
+        exec run_model_command
+
+    def calc_requirement_3_4(self, output_parcels_fc, field_to_calc):
+        # This is the name of the model (not the label)
+        model_name = "r34"
+        full_model_name = model_name + "_" + statewide_toolbox_name
+        run_model_command = "arcpy." + full_model_name + "(r'%s', '%s')" % (output_parcels_fc, field_to_calc)
+        exec run_model_command
+
+    def calc_requirement_3_5(self, output_parcels_fc, field_to_calc):
+        # This is the name of the model (not the label)
+        model_name = "r35"
+        full_model_name = model_name + "_" + statewide_toolbox_name
+        run_model_command = "arcpy." + full_model_name + "(r'%s', '%s')" % (output_parcels_fc, field_to_calc)
+        exec run_model_command
+
+    def calc_requirement_3_6(self, output_parcels_fc, field_to_calc):
+        # This is the name of the model (not the label)
+        model_name = "r36"
+        full_model_name = model_name + "_" + statewide_toolbox_name
+        run_model_command = "arcpy." + full_model_name + "(r'%s', '%s')" % (output_parcels_fc, field_to_calc)
+        exec run_model_command
+
+    def calc_requirement_3_7(self, output_parcels_fc, field_to_calc):
+        # This is the name of the model (not the label)
+        model_name = "r37"
+        full_model_name = model_name + "_" + statewide_toolbox_name
+        run_model_command = "arcpy." + full_model_name + "(r'%s', '%s')" % (output_parcels_fc, field_to_calc)
+        exec run_model_command
+
+    def calc_requirement_3_8(self, output_parcels_fc, field_to_calc):
+        # This is the name of the model (not the label)
+        model_name = "r38"
+        full_model_name = model_name + "_" + statewide_toolbox_name
+        run_model_command = "arcpy." + full_model_name + "(r'%s', '%s')" % (output_parcels_fc, field_to_calc)
+        exec run_model_command
+
+    def calc_requirement_3_9(self, output_parcels_fc, field_to_calc):
+        # This is the name of the model (not the label)
+        model_name = "r39"
+        full_model_name = model_name + "_" + statewide_toolbox_name
+        run_model_command = "arcpy." + full_model_name + "(r'%s', '%s')" % (output_parcels_fc, field_to_calc)
+        exec run_model_command
+
+    def calc_requirement_3_10(self, output_parcels_fc, field_to_calc):
+        # This is the name of the model (not the label)
+        model_name = "r310"
+        full_model_name = model_name + "_" + statewide_toolbox_name
+        run_model_command = "arcpy." + full_model_name + "(r'%s', '%s')" % (output_parcels_fc, field_to_calc)
+        exec run_model_command
+
+    def calc_requirement_3_11(self, output_parcels_fc, field_to_calc):
+        # This is the name of the model (not the label)
+        model_name = "r311"
+        full_model_name = model_name + "_" + statewide_toolbox_name
+        run_model_command = "arcpy." + full_model_name + "(r'%s', '%s')" % (output_parcels_fc, field_to_calc)
+        exec run_model_command
+
+    def calc_requirement_3_12(self, output_parcels_fc, field_to_calc):
+        # This is the name of the model (not the label)
+        model_name = "r312"
+        full_model_name = model_name + "_" + statewide_toolbox_name
+        run_model_command = "arcpy." + full_model_name + "(r'%s', '%s')" % (output_parcels_fc, field_to_calc)
+        exec run_model_command
+
+    def calc_requirement_3_13(self, output_parcels_fc, field_to_calc):
+        # This is the name of the model (not the label)
+        model_name = "r313"
+        full_model_name = model_name + "_" + statewide_toolbox_name
+        run_model_command = "arcpy." + full_model_name + "(r'%s', '%s')" % (output_parcels_fc, field_to_calc)
+        exec run_model_command
+
+    def calc_requirement_3_14(self, output_parcels_fc, field_to_calc):
+        # This is the name of the model (not the label)
+        model_name = "r314"
+        full_model_name = model_name + "_" + statewide_toolbox_name
+        run_model_command = "arcpy." + full_model_name + "(r'%s', '%s')" % (output_parcels_fc, field_to_calc)
+        exec run_model_command
+
+    def calc_requirement_8_1(self, output_parcels_fc, field_to_calc):
+        # This is the name of the model (not the label)
+        model_name = "r81"
+        full_model_name = model_name + "_" + statewide_toolbox_name
+        run_model_command = "arcpy." + full_model_name + "(r'%s', '%s')" % (output_parcels_fc, field_to_calc)
+        exec run_model_command
+
+    def calc_requirement_8_2(self, output_parcels_fc, field_to_calc):
+        # This is the name of the model (not the label)
+        model_name = "r82"
+        full_model_name = model_name + "_" + statewide_toolbox_name
+        run_model_command = "arcpy." + full_model_name + "(r'%s', '%s')" % (output_parcels_fc, field_to_calc)
+        exec run_model_command
+
+    def calc_requirement_8_3(self, output_parcels_fc, field_to_calc):
+        # This is the name of the model (not the label)
+        model_name = "r83"
+        full_model_name = model_name + "_" + statewide_toolbox_name
+        run_model_command = "arcpy." + full_model_name + "(r'%s', '%s')" % (output_parcels_fc, field_to_calc)
+        exec run_model_command
+
+    def calc_requirement_9_2(self, output_parcels_fc, field_to_calc):
+        # This is the name of the model (not the label)
+        model_name = "r92"
+        full_model_name = model_name + "_" + statewide_toolbox_name
+        run_model_command = "arcpy." + full_model_name + "(r'%s', '%s')" % (output_parcels_fc, field_to_calc)
+        exec run_model_command
+
     def default_function(self, *args):
-        print "Command not recognized"
+        print "No function for this requirement. Values will not be calculated."
 
     def do_command(self, requirement_id, *args):
         return getattr(self, "calc_requirement_" + requirement_id.replace(".", "_"), self.default_function)(*args)
@@ -650,7 +772,7 @@ def rename_fields():
                               input_field.split("_")[-2] + "_" + input_field.split("_")[-1] + " on the end."
 
 
-def calculate_exemptions(exemptions_to_calculate=exemptions.keys(), start_oid=False, end_oid=False):
+def calculate_exemptions(exemptions_to_calculate=exemptions.keys()):
 
     print "\nCalculating Exemptions..."
 
@@ -661,7 +783,7 @@ def calculate_exemptions(exemptions_to_calculate=exemptions.keys(), start_oid=Fa
         arcpy.AddField_management(output_parcels_fc, "exemptions_count", "SHORT")
 
     print "Calculating 0's in the 'exemptions_count' field."
-    arcpy.CalculateField_management(output_parcels_fc, "exemptions_count", 0)
+    arcpy.CalculateField_management(output_parcels_fc, "exemptions_count", 0, "PYTHON")
 
     # Add a field for each exemption to calculate if it doesn't already exist.
     for exemption_to_calculate in exemptions_to_calculate:
@@ -747,16 +869,61 @@ def calculate_exemptions(exemptions_to_calculate=exemptions.keys(), start_oid=Fa
 
 # TABLES FOR DEV TEAM ##################################################################################################
 
+def create_requirements_table_dev_team():
+    """ Creates the requirements table & adds the exemptions_count field"""
+
+    if arcpy.Exists(output_parcels_fc):
+        existing_output_fields = [field.name for field in arcpy.ListFields(output_parcels_fc)]
+
+    output_requirements_table_name = "requirements"
+
+    # Keep PARCEL_ID field plus any requirement fields
+    fields_to_keep = ["PARCEL_ID", "COUNTYNAME"]
+    for field in existing_output_fields:
+        if field in requirements.values():
+            fields_to_keep.append(field)
+
+    # create an empty field mapping object
+    mapS = arcpy.FieldMappings()
+    # for each field, create an individual field map, and add it to the field mapping object
+    for field in fields_to_keep:
+        map = arcpy.FieldMap()
+        map.addInputField(output_parcels_fc, field)
+        mapS.addFieldMap(map)
+
+
+    output_table = output_gdb_dev_team + os.sep + output_requirements_table_name
+
+    # If no requirements table exists, create it.
+    if not arcpy.Exists(output_table):
+        print "\nCreating Requirements table..."
+        arcpy.TableToTable_conversion(
+            in_rows=output_parcels_fc,
+            out_path=output_gdb_dev_team, out_name=output_requirements_table_name, where_clause="",
+            field_mapping=mapS,
+            config_keyword="")
+
+    # Otherwise, append the rows
+    else:
+        print "\nAppending rows to the Requirements table..."
+        tmp_table = scratch_ws + os.sep + "tmp_table_requirements"
+        arcpy.CopyRows_management(output_parcels_fc, tmp_table)
+        #table_view = arcpy.MakeTableView_management(output_parcels_fc)
+        arcpy.Append_management(
+            inputs=tmp_table,
+            target=output_table,
+            schema_type="NO_TEST",
+            field_mapping=mapS,
+            subtype="")
+
+
 def create_exemptions_table_dev_team():
     """ Creates the requirements table & adds the exemptions_count field"""
 
     if arcpy.Exists(output_parcels_fc):
         existing_output_fields = [field.name for field in arcpy.ListFields(output_parcels_fc)]
 
-    input_parcels_fc = output_parcels_fc
     output_exemptions_table_name = "exemptions"
-
-    print "Fields to Keep..."
 
     # Add a field for each exemption to calculate
     exemption_fields = []
@@ -776,75 +943,28 @@ def create_exemptions_table_dev_team():
     mapS = arcpy.FieldMappings()
     # for each field, create an individual field map, and add it to the field mapping object
     for field in fields_to_keep:
-        print field
         map = arcpy.FieldMap()
-        map.addInputField(input_parcels_fc, field)
+        map.addInputField(output_parcels_fc, field)
         mapS.addFieldMap(map)
-
-    print "\nCreating Exemptions table..."
 
     output_table = output_gdb_dev_team + os.sep + output_exemptions_table_name
 
     # If no requirements table exists, create it.
     if not arcpy.Exists(output_table):
+        print "\nCreating Exemptions table..."
         arcpy.TableToTable_conversion(
-            in_rows=input_parcels_fc,
+            in_rows=output_parcels_fc,
             out_path=output_gdb_dev_team, out_name=output_exemptions_table_name, where_clause="",
             field_mapping=mapS,
             config_keyword="")
 
     # Otherwise, append the rows
     else:
+        print "\nAppending rows to the Exemptions table..."
+        tmp_table = scratch_ws + os.sep + "tmp_table_exemptions"
+        arcpy.CopyRows_management(output_parcels_fc, tmp_table)
         arcpy.Append_management(
-            inputs=input_parcels_fc,
-            target=output_table,
-            schema_type="NO_TEST",
-            field_mapping=mapS,
-            subtype="")
-
-
-def create_requirements_table_dev_team():
-    """ Creates the requirements table & adds the exemptions_count field"""
-
-    if arcpy.Exists(output_parcels_fc):
-        existing_output_fields = [field.name for field in arcpy.ListFields(output_parcels_fc)]
-
-    input_parcels_fc = output_parcels_fc
-    output_requirements_table_name = "requirements"
-
-    print "Fields to Keep..."
-
-    # Keep PARCEL_ID field plus any requirement fields
-    fields_to_keep = ["PARCEL_ID", "COUNTYNAME"]
-    for field in existing_output_fields:
-        if field in requirements.values():
-            fields_to_keep.append(field)
-
-    # create an empty field mapping object
-    mapS = arcpy.FieldMappings()
-    # for each field, create an individual field map, and add it to the field mapping object
-    for field in fields_to_keep:
-        print field
-        map = arcpy.FieldMap()
-        map.addInputField(input_parcels_fc, field)
-        mapS.addFieldMap(map)
-
-    print "\nCreating Requirements table..."
-
-    output_table = output_gdb_dev_team + os.sep + output_requirements_table_name
-
-    # If no requirements table exists, create it.
-    if not arcpy.Exists(output_table):
-        arcpy.TableToTable_conversion(
-            in_rows=input_parcels_fc,
-            out_path=output_gdb_dev_team, out_name=output_requirements_table_name, where_clause="",
-            field_mapping=mapS,
-            config_keyword="")
-
-    # Otherwise, append the rows
-    else:
-        arcpy.Append_management(
-            inputs=input_parcels_fc,
+            inputs=tmp_table,
             target=output_table,
             schema_type="NO_TEST",
             field_mapping=mapS,
@@ -871,14 +991,16 @@ def list_fields():
 # BEGIN PROCESSING #####################################################################################################
 
 start_time = datetime.datetime.now()
-print("Start Time: " + str(start_time))
+print("\nStart Time: " + str(start_time))
 
-arcpy.env.workspace = output_gdb_dev_team
+arcpy.env.workspace = input_parcels_gdb
 
 if input_parcels_fc_list == "*":
-    input_parcels_fc_list = arcpy.ListFeatureClasses(input_parcels_gdb)
+    input_parcels_fc_list = arcpy.ListFeatureClasses()
 if requirements_to_process == "*":
     requirements_to_process = requirements.keys()
+
+arcpy.env.workspace = output_gdb_dev_team
 
 # For each parcel in the user defined list....
 for input_parcels_fc_name in input_parcels_fc_list:
@@ -903,7 +1025,7 @@ for input_parcels_fc_name in input_parcels_fc_list:
 
     #################################### Choose Data Processing Functions ########################################
 
-    calculate_requirements(output_parcels_fc=output_parcels_fc, requirements_to_process=requirements_to_process)
+    calculate_requirements(requirements_to_process)
 
     # Join Additional Requirement Fields (From Kai and other staff). Field names must have requiement ID at the end (e.g., 3_10)
     #requirements_to_join = ["3.10", "3.11", "3.12", "3.13"]
@@ -912,11 +1034,12 @@ for input_parcels_fc_name in input_parcels_fc_list:
 
     calculate_exemptions()
 
+    # NOTE: If the dev team tables already exist, the functions below will APPEND new rows.
+    # So if re-running a county, the records for this county need to be deleted in this table first.
+    # Or, delete the entire table first.
     create_requirements_table_dev_team()
 
     create_exemptions_table_dev_team()
-
-    #list_fields()
 
     end_time = datetime.datetime.now()
     duration = end_time - start_time
@@ -924,4 +1047,3 @@ for input_parcels_fc_name in input_parcels_fc_list:
     print("Start Time: " + str(start_time))
     print("End Time: " + str(end_time))
     print("Duration: " + str(duration))
-
