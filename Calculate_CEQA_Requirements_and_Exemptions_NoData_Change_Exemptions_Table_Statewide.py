@@ -1,3 +1,12 @@
+########################################################################################################################
+# Script: Create EEMS Input Feature Class (NAME FIELDS NO GROUP)
+# Author: Mike Gough
+# Date created: 03/17/2020
+# Date last modified: 03/19/2020
+# Python Version: 2.7
+# Description:
+
+
 import os
 import arcpy
 import datetime
@@ -6,11 +15,11 @@ arcpy.CheckOutExtension("Spatial")
 
 # Parcel Feature Classes to process. Use "*" to process all parcels.
 input_parcels_fc_list = ["FRESNO_Parcels"]
-input_parcels_fc_list = "*"
 input_parcels_fc_list = ["ALPINE_Parcels", "SIERRA_Parcels"]
+input_parcels_fc_list = "*"
 
 # Requirements to process. Use "*" to process all parcels.
-requirements_to_process = ["0.1", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "3.10", "3.12", "3.13", "8.1", "8.2", "8.3", "8.4", "8.5", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8"]
+#requirements_to_process = ["0.1", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "3.10", "3.12", "3.13", "8.1", "8.2", "8.3", "8.4", "8.5", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8"]
 requirements_to_process = "*"
 
 # Workspaces
@@ -24,6 +33,9 @@ scratch_ws = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel
 statewide_toolbox = r"\\loxodonta\GIS\Projects\CDT-CEQA_California_2019\Workspaces\CDT-CEQA_California_2019_kai_foster\Tasks\General_Tasks\Statewide.tbx"
 statewide_toolbox_name = os.path.basename(statewide_toolbox).split(".")[0]
 arcpy.ImportToolbox(statewide_toolbox)
+
+output_requirements_table_name = "requirements"
+output_exemptions_table_name = "exemptions"
 
 # Kai's table
 #additional_requirements_table = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\From_Kai\Transit_and_Infill.gdb\Sacramento_Parcels_MG_v7_3_14"
@@ -135,66 +147,115 @@ requirements = {
 }
 
 # If county is missing data for a requirement (as indicated below), a field will be added to the county for that requirement with null values in it.
+
+# 04/14/2020 From NoData Spreadsheet
 requirements_with_no_data = {
-    "ALL_COUNTIES": ["3.3", "3.9", "3.14"],
-    "alameda": [],
-    "alpine": [],
-    "amador": [],
-    "butte": [],
-    "calaveras": [],
-    "colusa": [],
-    "contracosta": [],
-    "delnorte": [],
+
+# ALL COUNTIES
+    "ALL_COUNTIES": ["3.9"],
+
+    #AMBAG
+    "monterey":["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+
+    # BCAG
+    "butte":["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+
+    #FCOG
+    "fresno":["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+
+    #KCAG
+    "kings":["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+
+    # KCOG
+    "kern": ["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+
+    #MCAG
+    "Merced":["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+
+    #MCTC
+    "madera":["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+
+    # MTC
+    "alameda": ["2.6","3.4","3.10","3.11","3.12","3.13"],
+    "contracosta": ["2.6","3.4","3.10","3.11","3.12","3.13"],
+    "marin": ["2.6","3.4","3.10","3.11","3.12","3.13"],
+    "napa": ["3.4","3.10","3.11","3.12","3.13"],
+    "sanfrancisco": ["2.6","3.4","3.10","3.11","3.12","3.13"],
+    "sanmateo": ["3.4","3.10","3.11","3.12","3.13"],
+    "santaclara": ["2.6","3.4","3.10","3.11","3.12","3.13"],
+    "solano": ["2.6","3.4","3.10","3.11","3.12","3.13"],
+    "sonoma": ["2.6","3.4","3.10","3.11","3.12","3.13"],
+
+    # SACOG
     "eldorado": [],
-    "fresno": [],
-    "glenn": [],
-    "humboldt": [],
-    "imperial": [],
-    "inyo": [],
-    "kern": [],
-    "kings": [],
-    "lake": [],
-    "lassen": [],
-    "losangeles": [],
-    "madera": [],
-    "marin": [],
-    "mariposa": [],
-    "mendocino": [],
-    "merced": [],
-    "modoc": [],
-    "mono": [],
-    "monterey": [],
-    "napa": [],
-    "nevada": [],
-    "orange": [],
-    "placer": [],
-    "plumas": [],
-    "riverside": [],
+    "placer": ["3.1",],
     "sacramento": [],
-    "sanbenito": [],
-    "sanbernardino": [],
-    "sandiego": [],
-    "sanfrancisco": [],
-    "sanjoaquin": [],
-    "sanluisobispo": [],
-    "sanmateo": [],
-    "santabarbara": [],
-    "santaclara": [],
-    "santacruz": [],
-    "shasta": [],
-    "sierra": [],
-    "siskiyou": [],
-    "solano": [],
-    "sonoma": [],
-    "stanislaus": [],
     "sutter": [],
-    "tehama": [],
-    "trinity": [],
-    "tulare": [],
-    "tuolumne": [],
-    "ventura": [],
     "yolo": [],
     "yuba": [],
+
+    # SANDAG
+    "sandiego": ["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+
+    #SBCAG
+    "santabarbara":["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+
+    # SCAG
+    "imperial": ["3.4","3.10","3.11","3.12","3.13","3.14"],
+    "losangeles": ["3.4","3.10","3.11","3.12","3.13","3.14"],
+    "orange": ["3.4","3.10","3.11","3.12","3.13","3.14"],
+    "riverside": ["3.4","3.10","3.11","3.12","3.13","3.14"],
+    "sanbernardino": ["3.4","3.10","3.11","3.12","3.13","3.14"],
+    "ventura": ["3.4","3.10","3.11","3.12","3.13","3.14"],
+
+    #SJCOG
+    "sanjoaquin":["3.1","3.2","3.3","3.4","3.5","3.6","3.7","3.8","3.10","3.11","3.12","3.13","3.14"],
+
+    #SLOCOG
+    "sanluis":["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+
+    #SRTA
+    "shasta":["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+
+    #StanCOG"
+    "stanislaus":["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+
+    # OTHER COUNTIES
+    "alpine": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "amador": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "calaveras": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "colusa": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "delnorte": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "fresno": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "glenn": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "humboldt": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "inyo": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "kings": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "lake": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "lassen": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "madera": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "mariposa": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "mendocino": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "merced": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "modoc": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "mono": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "monterey": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "nevada": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "plumas": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "sanbenito": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "sanjoaquin": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "sanluisobispo": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "santabarbara": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "santacruz": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "shasta": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "sierra": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "siskiyou": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "stanislaus": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "tehama": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "trinity": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "tulare": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "tuolumne": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+
 }
 
 # 03/12/2020 Feb 18 version of Criteria Spreadsheet. Includes updates from Helen as well as the addition of the species requirement (8.5). Includes 3.9 -3.14 (yellow stuff)
@@ -245,6 +306,28 @@ def copy_parcels_fc(input_parcels_fc, output_parcels_fc):
         config_keyword="")
 
 
+def delete_county_rows_from_dev_table(output_parcels_fc, table):
+
+    # Get the name of the county that appears in the the attribute table.
+    output_parcels_fc_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
+    arcpy.SelectLayerByAttribute_management(output_parcels_fc_layer, "NEW_SELECTION", "OBJECTID = 1")
+    with arcpy.da.SearchCursor(output_parcels_fc_layer, "COUNTYNAME") as sc:
+        for row in sc:
+            county_name_in_att_table = row[0]
+
+    temp_table_view = "temp_table_view"
+    arcpy.MakeTableView_management(table, temp_table_view)
+
+    expression = "COUNTYNAME = '%s'" % county_name_in_att_table
+
+    # Execute SelectLayerByAttribute to determine which rows to delete
+    arcpy.SelectLayerByAttribute_management(temp_table_view, "NEW_SELECTION", expression)
+
+    if int(arcpy.GetCount_management(temp_table_view)[0]) > 0:
+        print "\nThere were rows in the dev team requirements table for this county (%s) from a previous run. Deleting..." % county_name_in_att_table
+        arcpy.DeleteRows_management(temp_table_view)
+
+
 def calculate_requirements(requirements_to_process=requirements.keys()):
 
     county_name = os.path.basename(output_parcels_fc).split("_")[0].lower()
@@ -275,6 +358,10 @@ def calculate_requirements(requirements_to_process=requirements.keys()):
         else:
             print "No data for this requirement. A field has been added with <null> values."
 
+    # Call function to delete rows in the requirements table for this county if this county is in that table.
+    output_requirements_table_dev_team = output_gdb_dev_team + os.sep + output_requirements_table_name
+    if arcpy.Exists(output_requirements_table_dev_team):
+        delete_county_rows_from_dev_table(output_parcels_fc, output_requirements_table_dev_team)
 
 class RequirementFunctions(object):
 
@@ -866,6 +953,10 @@ def calculate_exemptions(exemptions_to_calculate=exemptions.keys()):
                 row[uc.fields.index("exemptions_count")] = exemptions_count
                 uc.updateRow(row)
 
+    # Call function to delete rows in the exemptions table for this county if this county is in that table.
+    output_exemptions_table_dev_team = output_gdb_dev_team + os.sep + output_exemptions_table_name
+    if arcpy.Exists(output_exemptions_table_dev_team):
+        delete_county_rows_from_dev_table(output_parcels_fc, output_exemptions_table_dev_team)
 
 # TABLES FOR DEV TEAM ##################################################################################################
 
@@ -874,8 +965,6 @@ def create_requirements_table_dev_team():
 
     if arcpy.Exists(output_parcels_fc):
         existing_output_fields = [field.name for field in arcpy.ListFields(output_parcels_fc)]
-
-    output_requirements_table_name = "requirements"
 
     # Keep PARCEL_ID field plus any requirement fields
     fields_to_keep = ["PARCEL_ID", "COUNTYNAME"]
@@ -890,7 +979,6 @@ def create_requirements_table_dev_team():
         map = arcpy.FieldMap()
         map.addInputField(output_parcels_fc, field)
         mapS.addFieldMap(map)
-
 
     output_table = output_gdb_dev_team + os.sep + output_requirements_table_name
 
@@ -922,8 +1010,6 @@ def create_exemptions_table_dev_team():
 
     if arcpy.Exists(output_parcels_fc):
         existing_output_fields = [field.name for field in arcpy.ListFields(output_parcels_fc)]
-
-    output_exemptions_table_name = "exemptions"
 
     # Add a field for each exemption to calculate
     exemption_fields = []
@@ -1034,15 +1120,11 @@ for input_parcels_fc_name in input_parcels_fc_list:
 
     calculate_exemptions()
 
-    # NOTE: If the dev team tables already exist, the functions below will APPEND new rows.
-    # So if re-running a county, the records for this county need to be deleted in this table first.
-    # Or, delete the entire table first. Need to come up with a way to automate this.
     create_requirements_table_dev_team()
-
     create_exemptions_table_dev_team()
 
-    end_time = datetime.datetime.now()
-    duration = end_time - start_time
+end_time = datetime.datetime.now()
+duration = end_time - start_time
 
 print("Start Time: " + str(start_time))
 print("End Time: " + str(end_time))

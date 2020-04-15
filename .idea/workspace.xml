@@ -109,8 +109,8 @@
       <file leaf-file-name="Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table_Statewide.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table_Statewide.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2655">
-              <caret line="688" lean-forward="true" selection-start-line="688" selection-end-line="688" />
+            <state relative-caret-position="309">
+              <caret line="621" column="88" selection-start-line="621" selection-start-column="88" selection-end-line="621" selection-end-column="88" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
                 <element signature="e#1776#2108#0" />
@@ -369,6 +369,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
+    <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
@@ -719,8 +720,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table_Statewide.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2655">
-          <caret line="688" lean-forward="true" selection-start-line="688" selection-end-line="688" />
+        <state relative-caret-position="309">
+          <caret line="621" column="88" selection-start-line="621" selection-start-column="88" selection-end-line="621" selection-end-column="88" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
             <element signature="e#1776#2108#0" />
