@@ -1,10 +1,11 @@
 ########################################################################################################################
-# Script: Create EEMS Input Feature Class (NAME FIELDS NO GROUP)
+# Script: Calculate CEQA Requirements Statewide)
 # Author: Mike Gough
 # Date created: 03/17/2020
-# Date last modified: 03/19/2020
+# Date last modified: 04/20/2020
 # Python Version: 2.7
 # Description:
+########################################################################################################################
 
 
 import os
@@ -362,6 +363,7 @@ def calculate_requirements(requirements_to_process=requirements.keys()):
     output_requirements_table_dev_team = output_gdb_dev_team + os.sep + output_requirements_table_name
     if arcpy.Exists(output_requirements_table_dev_team):
         delete_county_rows_from_dev_table(output_parcels_fc, output_requirements_table_dev_team)
+
 
 class RequirementFunctions(object):
 
