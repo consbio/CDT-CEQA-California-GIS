@@ -353,7 +353,7 @@ def calculate_requirements(requirements_to_process=requirements.keys()):
         field_to_calc = requirements[requirement_with_no_data_this_county]
         # If the field exists, recalculate as None, which is <null>
         if field_to_calc in existing_output_fields:
-            arcpy.CalculateField_managment(output_parcels_fc, field_to_calc, "None", "PYTHON")
+            arcpy.CalculateField_management(output_parcels_fc, field_to_calc, "None", "PYTHON")
         # If the field does not exist, add it, and the values will get set to <null> by default.
         else:
             arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
