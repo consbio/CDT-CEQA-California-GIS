@@ -18,6 +18,10 @@ arcpy.CheckOutExtension("Spatial")
 input_parcels_fc_list = ["FRESNO_Parcels"]
 input_parcels_fc_list = ["ALPINE_Parcels", "SIERRA_Parcels"]
 input_parcels_fc_list = "*"
+# 4/20/2020 Rerun these parcels, as the script will not write <NULLs> if the requirement field previously exists and has 1's or 0's.
+# Based on an investigation into the datasets that had been processed prior the full statewide, these are the ones that had completed prior.
+input_parcels_fc_list = ["ALAMEDA_Parcels", "ALPINE_Parcels", "AMADOR_Parcels", "BUTTE_Parcels", "CALAVERAS_Parcels", "COLUSA_Parcels", "CONTRACOSTA_Parcels", "DELNORTE_Parcels", "ELDORADO_Parcels", "FRESNO_Parcels", "GLENN_Parcels", "HUMBOLDT_Parcels", "IMPERIAL_Parcels", "SIERRA_Parcels"]
+
 
 # Requirements to process. Use "*" to process all parcels.
 #requirements_to_process = ["0.1", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "3.10", "3.12", "3.13", "8.1", "8.2", "8.3", "8.4", "8.5", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8"]
@@ -59,9 +63,9 @@ original_fields_to_keep = [
     "Zoning",
     "LOT_SIZE_AREA",
     "LOT_SIZE_AREA_UNIT",
-    "PARCEL_ID",
-    "SHAPE_Length",
-    "SHAPE_Area"
+    "PARCEL_ID"
+    #"SHAPE_Length",
+    #"SHAPE_Area"
 ]
 
 # Datasets used in calculating requirements:
@@ -150,6 +154,7 @@ requirements = {
 # If county is missing data for a requirement (as indicated below), a field will be added to the county for that requirement with null values in it.
 
 # 04/14/2020 From NoData Spreadsheet
+# Note: If the list of NoData requiremetns changes, the corresponding feature class needs to be recreated. Otherwise a new field with NULL values won't get created.
 requirements_with_no_data = {
 
 # ALL COUNTIES
@@ -286,7 +291,8 @@ def copy_parcels_fc(input_parcels_fc, output_parcels_fc):
     """
 
     print "Copying the original parcels Feature Class with only the user specified fields to keep..."
-    print output_parcels_fc
+    print "From: " + input_parcels_fc
+    print "To: " + output_parcels_fc
 
     # create an empty field mapping object
     mapS = arcpy.FieldMappings()
@@ -336,10 +342,15 @@ def calculate_requirements(requirements_to_process=requirements.keys()):
     # Get a list of all the requirements that this county  doesn't have data for.
     requirements_with_no_data_this_county = requirements_with_no_data[county_name] + requirements_with_no_data["ALL_COUNTIES"]
 
-    # Add a field for each of the requirements with "No Data". Will get set to <null> but default.
+    # If the field for the no data requirement exists, calculate values as <null>.
+    # If the field does not exist, add it. The field will get set to <null> but default.
     for requirement_with_no_data_this_county in requirements_with_no_data_this_county:
         field_to_calc = requirements[requirement_with_no_data_this_county]
-        if field_to_calc not in existing_output_fields:
+        # If the field exists, recalculate as None, which is <null>
+        if field_to_calc in existing_output_fields:
+            arcpy.CalculateField_managment(output_parcels_fc, field_to_calc, "None", "PYTHON")
+        # If the field does not exist, add it, and the values will get set to <null> by default.
+        else:
             arcpy.AddField_management(output_parcels_fc, field_to_calc, "SHORT")
             existing_output_fields.append(field_to_calc)
 
