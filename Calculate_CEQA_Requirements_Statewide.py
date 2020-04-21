@@ -155,6 +155,11 @@ requirements = {
 
 # 04/14/2020 From NoData Spreadsheet
 # Note: If the list of NoData requiremetns changes, the corresponding feature class needs to be recreated. Otherwise a new field with NULL values won't get created.
+# Note: A problem was identified where if a requirement field had previously been calculated as 1 & 0, and then it was subsequently added to the list of nodata fields,
+# that field would not get overwritted with <null> values because the code just created the field if it didn't exist, but it it existed it remained unaffected.
+# On 4/21/2020, logic was added to fix this problem. For every nodata field, if the field exists, it will be recalculated as "None" which should result in <nodata>
+# If the field doesn't exist it will get created with <null> values as default, same as before.
+# This block of code was created after the first statewide run and has not been tested. Need to make sure it's working propery if we do another run.
 requirements_with_no_data = {
 
 # ALL COUNTIES
