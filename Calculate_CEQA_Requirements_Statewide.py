@@ -2,9 +2,27 @@
 # Script: Calculate CEQA Requirements Statewide)
 # Author: Mike Gough
 # Date created: 03/17/2020
-# Date last modified: 04/20/2020
+# Date last modified: 04/22/2020
 # Python Version: 2.7
-# Description:
+# Description: This script calculates CEQA requirements & exemptions for parcels in the state of California.
+# Requirement calculations are based on the spatial relationships each parcel has with other spatial datasets
+# pertaining to the requirement. For example, requirement 2.3 is "within city limits" -- This script will assess
+# whether or not a parcel meets this requirement based on whether or not the center of the parcels falls within a city
+# limit.
+# Exemptions are based on requirements. In order to meet an exemption, a parcel must meet one or more requirements.
+# The list of requirements and the list of exemptions (along with their dependent requirements) are defined by the user
+# in the requirements dictionary and the exemptions dictionary, respectively.
+# This script adds a field for every requirement and exemption and calculates a value to indicate whether or not the
+# each parcel meets the requirement or exemption.
+# A calculated value of 1 indicates that the parcel meets the requirement or exemption.
+# A calculated value of 0 indicates that the parcel does not meet the requirement or exemption.
+# A NULL value indicates that there is not enough information to calculate a 1 or a 0.
+# In most cases, this is due to a lack of data representing the phenomenon being assessed.
+# The list of counties and the requirements for which they are missing data is defined by the user
+# (refer to the requirements_with_no_data dictionary)
+# Each requirement is calculated either by python function, or a call to an external ArcGIS Model.
+# The logic for each is encapsulated within the RequirmentFunctions class.
+# Use the function calls at the bottom of this script to choose which operations this script should perform .
 ########################################################################################################################
 
 
@@ -15,11 +33,12 @@ arcpy.env.overwriteOutput = True
 arcpy.CheckOutExtension("Spatial")
 
 # Parcel Feature Classes to process. Use "*" to process all parcels.
-input_parcels_fc_list = ["FRESNO_Parcels"]
 input_parcels_fc_list = ["ALPINE_Parcels", "SIERRA_Parcels"]
 input_parcels_fc_list = "*"
+
 # 4/20/2020 Rerun these parcels, as the script will not write <NULLs> if the requirement field previously exists and has 1's or 0's.
 # Based on an investigation into the datasets that had been processed prior the full statewide, these are the ones that had completed prior.
+input_parcels_fc_list = "*"
 input_parcels_fc_list = ["ALAMEDA_Parcels", "ALPINE_Parcels", "AMADOR_Parcels", "BUTTE_Parcels", "CALAVERAS_Parcels", "COLUSA_Parcels", "CONTRACOSTA_Parcels", "DELNORTE_Parcels", "ELDORADO_Parcels", "FRESNO_Parcels", "GLENN_Parcels", "HUMBOLDT_Parcels", "IMPERIAL_Parcels", "SIERRA_Parcels"]
 
 
