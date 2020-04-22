@@ -25,7 +25,6 @@
 # Use the function calls at the bottom of this script to choose which operations this script should perform.
 ########################################################################################################################
 
-
 import os
 import arcpy
 import datetime
@@ -35,7 +34,6 @@ arcpy.CheckOutExtension("Spatial")
 # Parcel Feature Classes to process. Use "*" to process all parcels.
 #input_parcels_fc_list = ["ALAMEDA_Parcels", "ALPINE_Parcels", "AMADOR_Parcels", "BUTTE_Parcels", "CALAVERAS_Parcels", "COLUSA_Parcels", "CONTRACOSTA_Parcels", "DELNORTE_Parcels", "ELDORADO_Parcels", "FRESNO_Parcels", "GLENN_Parcels", "HUMBOLDT_Parcels", "IMPERIAL_Parcels", "SIERRA_Parcels"]
 input_parcels_fc_list = "*"
-
 
 # Requirements to process. Use "*" to process all parcels.
 #requirements_to_process = ["0.1", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "3.10", "3.12", "3.13", "8.1", "8.2", "8.3", "8.4", "8.5", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8"]
@@ -56,7 +54,7 @@ arcpy.ImportToolbox(statewide_toolbox)
 output_requirements_table_name = "requirements"
 output_exemptions_table_name = "exemptions"
 
-# Kai's table
+# Kai's Join Table
 #additional_requirements_table = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\From_Kai\Transit_and_Infill.gdb\Sacramento_Parcels_MG_v7_3_14"
 join_requirements_table = r"\\loxodonta\GIS\Projects\CDT-CEQA_California_2019\Workspaces\CDT-CEQA_California_2019_kai_foster\Tasks\General_Tasks\Data\Inputs\Inputs.gdb\Sacramento_Pilot\Sacramento_Parcels_MG"
 
