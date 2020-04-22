@@ -48,7 +48,7 @@
         <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_Statewide.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="600">
-              <caret line="341" column="72" selection-start-line="341" selection-start-column="72" selection-end-line="341" selection-end-column="72" />
+              <caret line="329" column="72" selection-start-line="329" selection-start-column="72" selection-end-line="329" selection-end-column="72" />
               <folding>
                 <element signature="e#17347#40142#0" />
                 <element signature="e#40218#41297#0" />
@@ -128,10 +128,11 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="y" value="9" />
-    <option name="width" value="1880" />
-    <option name="height" value="1005" />
+  <component name="ProjectFrameBounds" extendedState="7">
+    <option name="x" value="170" />
+    <option name="y" value="39" />
+    <option name="width" value="829" />
+    <option name="height" value="915" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -305,7 +306,7 @@
     </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -700,7 +701,7 @@
     <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_Statewide.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="600">
-          <caret line="341" column="72" selection-start-line="341" selection-start-column="72" selection-end-line="341" selection-end-column="72" />
+          <caret line="329" column="72" selection-start-line="329" selection-start-column="72" selection-end-line="329" selection-end-column="72" />
           <folding>
             <element signature="e#17347#40142#0" />
             <element signature="e#40218#41297#0" />
