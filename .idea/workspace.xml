@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7b3751b4-152f-460c-8539-1fb51277ddec" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/Calculate_CEQA_Requirements_Statewide.py" beforeDir="false" afterPath="$PROJECT_DIR$/Calculate_CEQA_Requirements_Statewide.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Calculate_CEQA_Requirements_Statewide.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -32,27 +32,13 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Revised_2.1.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Revised_2.1.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Revised_2.1.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="17">
               <caret line="1" column="9" selection-start-line="1" selection-start-column="9" selection-end-line="1" selection-end-column="9" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Calculate_CEQA_Requirements_Statewide.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_Statewide.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="600">
-              <caret line="329" column="72" selection-start-line="329" selection-start-column="72" selection-end-line="329" selection-end-column="72" />
-              <folding>
-                <element signature="e#17347#40142#0" />
-                <element signature="e#40218#41297#0" />
-                <element signature="e#41325#44911#0" />
               </folding>
             </state>
           </provider>

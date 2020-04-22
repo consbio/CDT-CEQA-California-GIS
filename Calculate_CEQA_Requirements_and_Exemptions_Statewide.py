@@ -1,5 +1,5 @@
 ########################################################################################################################
-# Script: Calculate CEQA Requirements Statewide
+# Script: Calculate CEQA Requirements and Exemptions (Statewide Implementation)
 # Author: Mike Gough
 # Date created: 03/17/2020
 # Date last modified: 04/22/2020
@@ -78,8 +78,6 @@ original_fields_to_keep = [
     "LOT_SIZE_AREA",
     "LOT_SIZE_AREA_UNIT",
     "PARCEL_ID"
-    #"SHAPE_Length",
-    #"SHAPE_Area"
 ]
 
 # Datasets used in calculating requirements:
