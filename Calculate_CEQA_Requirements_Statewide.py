@@ -7,7 +7,7 @@
 # Description: This script calculates CEQA requirements & exemptions for parcels in the state of California.
 # Requirement calculations are based on the spatial relationships each parcel has with other spatial datasets
 # pertaining to the requirement. For example, requirement 2.3 is "within city limits" -- This script will assess
-# whether or not a parcel meets this requirement based on whether or not the center of the parcels falls within
+# whether or not a parcel meets this requirement based on whether or not the center of the parcel falls within
 # the extent of a city boundary.
 # Exemptions are based on requirements. In order to meet an exemption, a parcel must meet one or more requirements.
 # The list of requirements and the list of exemptions (along with their dependent requirements) are defined by the user
@@ -21,7 +21,7 @@
 # The list of counties and the requirements for which they are missing data is defined by the user
 # (refer to the requirements_with_no_data dictionary)
 # Each requirement is calculated either by a python function, or a call to an external ArcGIS Model.
-# The logic for each is defined by a set of methods in the RequirmentFunctions class.
+# The logic for each is defined by a set of methods in the RequirementFunctions class.
 # Use the function calls at the bottom of this script to choose which operations this script should perform.
 ########################################################################################################################
 
