@@ -85,7 +85,7 @@ urbanized_area_prc_21071_fc = r"Database Connections\CBI Outputs.sde\cbioutputs.
 # 2.2
 urban_area_prc_21094_5_fc = r"Database Connections\CBI Intermediate.sde\cbiintermediate.mike_gough.urban_area_prc_21094_5"
 
-# 0.1, 2.1, 2.2, 2.3
+# 0.1, 2.3
 city_boundaries_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Inputs.gdb\CA_TIGER_2019_incorporated_cities_with_TIGER_2017_population"
 unincorporated_islands = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Intermediate.gdb\CA_TIGER_Unincorporated_Islands_with_Population_Dissolve" #2.2
 

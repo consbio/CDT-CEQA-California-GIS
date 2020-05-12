@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7b3751b4-152f-460c-8539-1fb51277ddec" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_Statewide.py" beforeDir="false" afterPath="$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_Statewide.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Revised_2.1.py" beforeDir="false" afterPath="$PROJECT_DIR$/Revised_2.1.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -32,11 +34,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Revised_2.1.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Revised_2.1.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Revised_2.1.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="1" column="9" selection-start-line="1" selection-start-column="9" selection-end-line="1" selection-end-column="9" />
+            <state relative-caret-position="187">
+              <caret line="131" column="90" lean-forward="true" selection-start-line="131" selection-start-column="90" selection-end-line="131" selection-end-column="90" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
               </folding>
@@ -47,8 +49,8 @@
       <file leaf-file-name="Revised_2.2.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Revised_2.2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="8" column="58" selection-start-line="8" selection-start-column="58" selection-end-line="8" selection-end-column="58" />
+            <state relative-caret-position="306">
+              <caret line="18" lean-forward="true" selection-start-line="18" selection-end-line="18" />
             </state>
           </provider>
         </entry>
@@ -56,7 +58,7 @@
       <file leaf-file-name="arc_objects_get_symbology_from_lyr.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/arc_objects_get_symbology_from_lyr.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2091">
+            <state relative-caret-position="813">
               <caret line="128" column="43" selection-start-line="128" selection-start-column="43" selection-end-line="128" selection-end-column="43" />
             </state>
           </provider>
@@ -65,10 +67,24 @@
       <file leaf-file-name="Prepare_Parcels.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Prepare_Parcels.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="221">
-              <caret line="15" column="15" selection-start-line="15" selection-start-column="15" selection-end-line="15" selection-end-column="15" />
+            <state relative-caret-position="323">
+              <caret line="19" column="19" selection-start-line="19" selection-start-column="19" selection-end-line="19" selection-end-column="19" />
               <folding>
                 <element signature="e#502#514#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Calculate_CEQA_Requirements_and_Exemptions_Statewide.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_Statewide.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="221">
+              <caret line="440" lean-forward="true" selection-start-line="440" selection-end-line="440" />
+              <folding>
+                <element signature="e#15045#16273#0" />
+                <element signature="e#16346#17340#0" />
+                <element signature="e#17421#19734#0" />
               </folding>
             </state>
           </provider>
@@ -94,7 +110,6 @@
         <option value="$PROJECT_DIR$/Create_Real_Data.py" />
         <option value="$PROJECT_DIR$/Test_Exemptions_Bug.py" />
         <option value="F:/Projects2/ArcObjects_DataBasin/scripts/arc_objects_get_symbology_from_lyr.py" />
-        <option value="$PROJECT_DIR$/Revised_2.1.py" />
         <option value="$PROJECT_DIR$/Prepare_Parcels.py" />
         <option value="$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_state.py" />
         <option value="$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions.py" />
@@ -105,6 +120,8 @@
         <option value="$PROJECT_DIR$/arc_objects_get_symbology_from_lyr.py" />
         <option value="$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table_Statewide.py" />
         <option value="$PROJECT_DIR$/Calculate_CEQA_Requirements_Statewide.py" />
+        <option value="$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_Statewide.py" />
+        <option value="$PROJECT_DIR$/Revised_2.1.py" />
       </list>
     </option>
   </component>
@@ -114,21 +131,18 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
-    <option name="x" value="170" />
-    <option name="y" value="39" />
-    <option name="width" value="829" />
-    <option name="height" value="915" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="66" />
+    <option name="y" value="19" />
+    <option name="width" value="950" />
+    <option name="height" value="1040" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes>
-      <pane id="Scope" />
-      <pane id="ProjectPane" />
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -292,23 +306,23 @@
     </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.55307263" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.55307263" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.36312848" />
       <window_info content_ui="combo" id="Project" order="0" weight="0.06503198" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="right" id="SciView" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.15307263" />
+      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -321,24 +335,24 @@
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.06503198" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32513967" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Python Console" order="10" />
+      <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.15307263" />
       <window_info anchor="right" id="Database" order="4" />
       <window_info anchor="bottom" id="Terminal" order="11" />
       <window_info anchor="bottom" id="Event Log" order="12" side_tool="true" />
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="right" id="SciView" order="3" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Python Console" order="10" />
     </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -358,12 +372,14 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Revised_2.1.py">
+    <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_Statewide.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="17" column="12" selection-start-line="17" selection-start-column="12" selection-end-line="17" selection-end-column="12" />
+        <state relative-caret-position="153">
+          <caret line="9" column="109" selection-start-line="9" selection-start-column="109" selection-end-line="9" selection-end-column="109" />
           <folding>
-            <element signature="e#0#12#0" expanded="true" />
+            <element signature="e#15045#16273#0" />
+            <element signature="e#16346#17340#0" />
+            <element signature="e#17421#19734#0" />
           </folding>
         </state>
       </provider>
@@ -527,37 +543,7 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_state.py" />
-    <entry file="file://$PROJECT_DIR$/Prepare_Parcels.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="15" column="15" selection-start-line="15" selection-start-column="15" selection-end-line="15" selection-end-column="15" />
-          <folding>
-            <element signature="e#502#514#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Revised_2.2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" column="58" selection-start-line="8" selection-start-column="58" selection-end-line="8" selection-end-column="58" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_NoData.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="342">
-          <caret line="1348" selection-start-line="1348" selection-end-line="1348" />
-          <folding>
-            <element signature="e#12149#20750#0" />
-            <element signature="e#20844#21987#0" />
-            <element signature="e#22015#25601#0" />
-            <element signature="e#25837#27079#0" />
-            <element signature="e#27125#27715#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_NoData.py" />
     <entry file="file://C:/Python27/ArcGIS10.6/Lib/site-packages/comtypes/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="232">
@@ -569,58 +555,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="481">
           <caret line="259" lean-forward="true" selection-start-line="259" selection-end-line="259" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#1776#2108#0" />
-            <element signature="e#5054#6713#0" />
-            <element signature="e#7085#11635#0" />
-            <element signature="e#8570#9220#0" />
-            <element signature="e#9311#10467#0" />
-            <element signature="e#10572#11556#0" />
-            <element signature="e#11653#13514#0" />
-            <element signature="e#12497#35292#0" />
-            <element signature="e#11564#12854#0" />
-            <element signature="e#12935#14160#0" />
-            <element signature="e#14241#15693#0" />
-            <element signature="e#15774#16425#0" />
-            <element signature="e#16506#17594#0" />
-            <element signature="e#17675#18376#0" />
-            <element signature="e#18883#19664#0" />
-            <element signature="e#19746#20447#0" />
-            <element signature="e#20528#21933#0" />
-            <element signature="e#22014#22804#0" />
-            <element signature="e#22885#25083#0" />
-            <element signature="e#25757#26401#0" />
-            <element signature="e#26481#27128#0" />
-            <element signature="e#27208#27858#0" />
-            <element signature="e#27864#27872#0" />
-            <element signature="e#27945#28226#0" />
-            <element signature="e#28518#28799#0" />
-            <element signature="e#28905#29188#0" />
-            <element signature="e#29268#29551#0" />
-            <element signature="e#29631#29914#0" />
-            <element signature="e#29994#30277#0" />
-            <element signature="e#30357#30640#0" />
-            <element signature="e#30720#31003#0" />
-            <element signature="e#31083#31366#0" />
-            <element signature="e#31446#31729#0" />
-            <element signature="e#31810#32094#0" />
-            <element signature="e#32175#32459#0" />
-            <element signature="e#32540#32824#0" />
-            <element signature="e#32905#33189#0" />
-            <element signature="e#33270#33554#0" />
-            <element signature="e#33634#33917#0" />
-            <element signature="e#33997#34280#0" />
-            <element signature="e#34360#34643#0" />
-            <element signature="e#34723#35006#0" />
-            <element signature="e#18234#19313#0" />
-            <element signature="e#19341#22927#0" />
-            <element signature="e#41262#46240#0" />
-            <element signature="e#44694#46381#0" />
-            <element signature="e#44722#46547#0" />
-            <element signature="e#55840#56264#0" />
-            <element signature="e#54664#56238#0" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -628,33 +562,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="337">
           <caret line="206" column="41" selection-start-line="206" selection-start-column="41" selection-end-line="206" selection-end-column="41" />
-          <folding>
-            <element signature="e#1922#2254#0" />
-            <element signature="e#7209#7859#0" />
-            <element signature="e#8182#8994#0" />
-            <element signature="e#18636#19724#0" />
-            <element signature="e#19042#22628#0" />
-            <element signature="e#30921#32151#0" />
-            <element signature="e#41075#45905#0" />
-            <element signature="e#45953#46568#0" />
-            <element signature="e#46616#47644#0" />
-            <element signature="e#47692#48357#0" />
-            <element signature="e#48405#49142#0" />
-            <element signature="e#49191#49865#0" />
-            <element signature="e#49913#51192#0" />
-            <element signature="e#51240#51999#0" />
-            <element signature="e#54142#54759#0" />
-            <element signature="e#54807#55427#0" />
-            <element signature="e#55475#56098#0" />
-            <element signature="e#56246#56670#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/arc_objects_get_symbology_from_lyr.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2091">
-          <caret line="128" column="43" selection-start-line="128" selection-start-column="43" selection-end-line="128" selection-end-column="43" />
         </state>
       </provider>
     </entry>
@@ -662,36 +569,52 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="34">
           <caret line="104" column="26" selection-start-line="104" selection-start-column="26" selection-end-line="104" selection-end-column="26" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#1922#2254#0" />
-            <element signature="e#9584#10396#0" />
-            <element signature="e#10578#15264#0" />
-          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_Statewide.py" />
+    <entry file="file://$PROJECT_DIR$/Revised_2.2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="18" lean-forward="true" selection-start-line="18" selection-end-line="18" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Revised_2.1.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" column="9" selection-start-line="1" selection-start-column="9" selection-end-line="1" selection-end-column="9" />
+        <state relative-caret-position="187">
+          <caret line="131" column="90" lean-forward="true" selection-start-line="131" selection-start-column="90" selection-end-line="131" selection-end-column="90" />
           <folding>
             <element signature="e#0#12#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file:////loxodonta/gis/Projects/CDT-CEQA_California_2019/Workspaces/CDT-CEQA_California_2019_mike_gough/Tasks/CEQA_Parcel_Exemptions/Tools/Scripts/Calculate_CEQA_Requirements_and_Exemptions_Statewide.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_Statewide.py">
+    <entry file="file://$PROJECT_DIR$/arc_objects_get_symbology_from_lyr.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="600">
-          <caret line="329" column="72" selection-start-line="329" selection-start-column="72" selection-end-line="329" selection-end-column="72" />
+        <state relative-caret-position="813">
+          <caret line="128" column="43" selection-start-line="128" selection-start-column="43" selection-end-line="128" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Prepare_Parcels.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="19" column="19" selection-start-line="19" selection-start-column="19" selection-end-line="19" selection-end-column="19" />
           <folding>
-            <element signature="e#17347#40142#0" />
-            <element signature="e#40218#41297#0" />
-            <element signature="e#41325#44911#0" />
+            <element signature="e#502#514#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_Statewide.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="440" lean-forward="true" selection-start-line="440" selection-end-line="440" />
+          <folding>
+            <element signature="e#15045#16273#0" />
+            <element signature="e#16346#17340#0" />
+            <element signature="e#17421#19734#0" />
           </folding>
         </state>
       </provider>

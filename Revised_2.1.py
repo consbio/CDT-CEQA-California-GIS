@@ -8,7 +8,8 @@ cities_with_population_fc = r"Database Connections\CBI Inputs.sde\cbiinputs.mike
 unincorporated_islands_with_population_fc = "P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Intermediate.gdb\CA_TIGER_Unincorporated_Islands_with_Population_Dissolve"
 urbanized_area_prc_21071 = intermediate_ws + os.sep + "urbanized_area_prc_21071"
 
-# arcpy.Union_analysis([cities_with_population_fc, unincorporated_islands_with_population_fc], urbanized_area_prc_21071)
+arcpy.Union_analysis([cities_with_population_fc, unincorporated_islands_with_population_fc], urbanized_area_prc_21071)
+
 fields_to_drop = [
     "FID_CA_TIGER_2019_incorporated_cities_with_TIGER_2017_population",
     "placens",
@@ -21,6 +22,7 @@ fields_to_drop = [
     "FID_CA_TIGER_Unincorporated_Islands_with_Population_Dissolve",
     "FID_CA_TIGER_2019_Unincorporated_Islands"
 ]
+
 # arcpy.DeleteField_management(in_table=urbanized_area_prc_21071, drop_field=fields_to_drop)
 
 arcpy.AddField_management(urbanized_area_prc_21071, "city_name", "TEXT")
