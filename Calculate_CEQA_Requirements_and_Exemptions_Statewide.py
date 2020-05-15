@@ -2,7 +2,7 @@
 # Script: Calculate CEQA Requirements and Exemptions (Statewide Implementation)
 # Author: Mike Gough
 # Date created: 03/17/2020
-# Date last modified: 04/22/2020
+# Date last modified: 05/12/2020
 # Python Version: 2.7
 # Description: This script calculates CEQA requirements & exemptions for parcels in the state of California.
 # Requirement calculations are based on the spatial relationships each parcel has with other spatial datasets
@@ -31,13 +31,15 @@ import datetime
 arcpy.env.overwriteOutput = True
 arcpy.CheckOutExtension("Spatial")
 
-# Parcel Feature Classes to process. Use "*" to process all parcels.
+# Parcel Feature Classes to process. Use "*" to process all counties
+# If processing requirements for all counties, manually delete requirements table first since all records in this table will be deleted).
+# If processing exemptions for all counties, manually delete exemptions table first since all records in this table will be deleted).
 #input_parcels_fc_list = ["ALAMEDA_Parcels", "ALPINE_Parcels", "AMADOR_Parcels", "BUTTE_Parcels", "CALAVERAS_Parcels", "COLUSA_Parcels", "CONTRACOSTA_Parcels", "DELNORTE_Parcels", "ELDORADO_Parcels", "FRESNO_Parcels", "GLENN_Parcels", "HUMBOLDT_Parcels", "IMPERIAL_Parcels", "SIERRA_Parcels"]
 input_parcels_fc_list = "*"
 
 # Requirements to process. Use "*" to process all parcels.
 #requirements_to_process = ["0.1", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "3.10", "3.12", "3.13", "8.1", "8.2", "8.3", "8.4", "8.5", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8"]
-requirements_to_process = "*"
+requirements_to_process = ["2.4"]
 
 # Workspaces
 input_parcels_gdb = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Parcels_Projected_Delete_Identical.gdb"
@@ -90,11 +92,13 @@ city_boundaries_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CE
 unincorporated_islands = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Intermediate.gdb\CA_TIGER_Unincorporated_Islands_with_Population_Dissolve" #2.2
 
 # 2.4
-urbanized_area_urban_cluster_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Inputs.gdb\CA_urbanized_area_urban_cluster"
-incorporated_and_unincorporated_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Inputs.gdb\CA_incorporated_and_unincorporated"
+incorporated_place_fc = r"\\loxodonta\gis\Source_Data\boundaries\state\CA\TIGER_2019_State_Level_GDB\FGDB\tlgdb_2019_a_06_ca_1.gdb\Incorporated_Place"
 
 # 2.5
 mpo_boundary_dissolve_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Intermediate\Intermediate.gdb\MPO_boundaries_dissolve"
+
+# 2.7
+urbanized_area_urban_cluster_fc = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Inputs.gdb\CA_urbanized_area_urban_cluster"
 
 # 8.5
 rare_threatened_or_endangered_fc = r"Database Connections\CBI Intermediate.sde\cbiintermediate.mike_gough.CA_Rare_Threatened_or_Endangered_Erase_Impervious_del_fields"
@@ -467,22 +471,19 @@ class RequirementFunctions(object):
         """
             2.4
             Requirement Long Name: Unincorporated
-            Select parcels where the CITY = Unincorporated
-            Select parcels that HAVE THEIR CENTERS IN this layer
+            If within an incorporated, calc 0, switch selection, calc 1.
+            Select parcels that HAVE THEIR CENTERS IN TIGER CENSUS incorporated areas. Yes = 0, No = 1
         """
 
-        # Unincorporated areas
-        incorporated_and_unincorporated_layer = arcpy.MakeFeatureLayer_management(incorporated_and_unincorporated_fc)
-        unincorporated_layer = arcpy.SelectLayerByAttribute_management(incorporated_and_unincorporated_layer, "NEW_SELECTION", "CITY = 'Unincorporated'")
-
-        # Select parcels that HAVE THEIR CENTERS IN the unincorporated area
         output_parcels_layer = arcpy.MakeFeatureLayer_management(output_parcels_fc)
-        arcpy.SelectLayerByLocation_management(output_parcels_layer, "HAVE_THEIR_CENTER_IN", unincorporated_layer)
+        # Select parcels that HAVE THEIR CENTERS IN the incorporated area
+        arcpy.SelectLayerByLocation_management(output_parcels_layer, "HAVE_THEIR_CENTER_IN", incorporated_place_fc)
 
         # Calculate 1's and 0's
-        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
-        arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
         arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 0, "PYTHON")
+        arcpy.SelectLayerByAttribute_management(output_parcels_layer, "SWITCH_SELECTION")
+        arcpy.CalculateField_management(output_parcels_layer, field_to_calc, 1, "PYTHON")
+
 
     def calc_requirement_2_5(self, output_parcels_fc, field_to_calc):
         """
@@ -1132,14 +1133,18 @@ for input_parcels_fc_name in input_parcels_fc_list:
 
     #################################### Choose Data Processing Functions ########################################
 
-    calculate_requirements(requirements_to_process)
+    # Calling this function will delete any pre-existing rows in the requirements table for the counties being processed.
+    # If running on all counties with "*",  manually delete the requirements table first.
+    #calculate_requirements(requirements_to_process)
 
     # Join Additional Requirement Fields (From Kai and other staff). Field names must have requiement ID at the end (e.g., 3_10)
     #requirements_to_join = ["3.10", "3.11", "3.12", "3.13"]
     #join_additional_requirements(join_requirements_table, requirements_to_join)
     #rename_fields() # Only necessary if joining additional requirement fields.
 
-    calculate_exemptions()
+    # Calling this function will delete any pre-existing rows in the exemptions table for the counties being processed.
+    # If running on all counties with "*",  manually delete the exemptions table first.
+    #calculate_exemptions()
 
     create_requirements_table_dev_team()
     create_exemptions_table_dev_team()
