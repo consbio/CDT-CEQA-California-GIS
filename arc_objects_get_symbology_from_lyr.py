@@ -15,6 +15,7 @@
 
 ########################################################################################################################
 
+import arcpy
 from comtypes.client import CreateObject
 import comtypes.gen.esriCarto as esriCarto
 import comtypes.gen.esriDisplay as esriDisplay
@@ -262,7 +263,7 @@ def getSymbolType(mySymbol):
 
 if __name__ == "__main__":
 
-    for inputLyrFile in glob.glob(inputDir + "/3_2_3_4*lyr"):
+    for inputLyrFile in glob.glob(inputDir + "/3_6*lyr"):
         inputLyrBasename = os.path.basename(inputLyrFile).split(".")[0]
         outputJSONfile = outputDir + os.sep + inputLyrBasename + ".json"
         main(inputLyrFile, outputJSONfile)
