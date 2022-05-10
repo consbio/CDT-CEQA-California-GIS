@@ -2,7 +2,7 @@
 # Script: Calculate CEQA Requirements and Exemptions (Statewide Implementation)
 # Author: Mike Gough
 # Date created: 03/17/2020
-# Date last modified: 05/12/2020
+# Date last modified: 06/30/2020
 # Python Version: 2.7
 # Description: This script calculates CEQA requirements & exemptions for parcels in the state of California.
 # Requirement calculations are based on the spatial relationships each parcel has with other spatial datasets
@@ -31,15 +31,19 @@ import datetime
 arcpy.env.overwriteOutput = True
 arcpy.CheckOutExtension("Spatial")
 
-# Parcel Feature Classes to process. Use "*" to process all counties
 # If processing requirements for all counties, manually delete requirements table first since all records in this table will be deleted).
 # If processing exemptions for all counties, manually delete exemptions table first since all records in this table will be deleted).
-#input_parcels_fc_list = ["ALAMEDA_Parcels", "ALPINE_Parcels", "AMADOR_Parcels", "BUTTE_Parcels", "CALAVERAS_Parcels", "COLUSA_Parcels", "CONTRACOSTA_Parcels", "DELNORTE_Parcels", "ELDORADO_Parcels", "FRESNO_Parcels", "GLENN_Parcels", "HUMBOLDT_Parcels", "IMPERIAL_Parcels", "SIERRA_Parcels"]
-input_parcels_fc_list = "*"
 
-# Requirements to process. Use "*" to process all parcels.
-#requirements_to_process = ["0.1", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "3.10", "3.12", "3.13", "8.1", "8.2", "8.3", "8.4", "8.5", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8"]
-requirements_to_process = ["2.4"]
+# Parcel Feature Classes to process. Use "*" to process all counties, or create a list of counties to process
+# input_parcels_fc_list = "*"
+# input_parcels_fc_list = ["SANBENITO_Parcels", "SANBERNARDINO_Parcels"]
+
+# Requirements to process. Use "*" to process all requirements, or create a list of requirements to process.
+# requirements_to_process = "*"
+# requirements_to_process = ["3.10", "2.6"]
+
+input_parcels_fc_list = "*"
+requirements_to_process = "*"
 
 # Workspaces
 input_parcels_gdb = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\Parcels_Projected_Delete_Identical.gdb"
@@ -57,7 +61,6 @@ output_requirements_table_name = "requirements"
 output_exemptions_table_name = "exemptions"
 
 # Kai's Join Table
-#additional_requirements_table = r"P:\Projects3\CDT-CEQA_California_2019_mike_gough\Tasks\CEQA_Parcel_Exemptions\Data\Inputs\From_Kai\Transit_and_Infill.gdb\Sacramento_Parcels_MG_v7_3_14"
 join_requirements_table = r"\\loxodonta\GIS\Projects\CDT-CEQA_California_2019\Workspaces\CDT-CEQA_California_2019_kai_foster\Tasks\General_Tasks\Data\Inputs\Inputs.gdb\Sacramento_Pilot\Sacramento_Parcels_MG"
 
 # Fields from the original parcels feature class to keep in the output parcels for Data Basin & Dev.
@@ -166,115 +169,107 @@ requirements = {
 }
 
 # If county is missing data for a requirement (as indicated below), a field will be added to the county for that requirement with null values in it.
-# 04/14/2020 From NoData Spreadsheet
+
+# 07/24/2020 Added in sanbenito and santacruz as those were missing from the NoData list.
 requirements_with_no_data = {
 
-# ALL COUNTIES
+    # ALL COUNTIES
     "ALL_COUNTIES": ["3.9"],
 
     #AMBAG
-    "monterey":["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "monterey": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "sanbenito": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "santacruz": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
 
     # BCAG
-    "butte":["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "butte":["3.3"],
 
     #FCOG
-    "fresno":["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "fresno":["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
 
     #KCAG
-    "kings":["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "kings":["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
 
     # KCOG
-    "kern": ["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "kern": ["3.3","3.10","3.11","3.12","3.13","3.14"],
 
     #MCAG
-    "Merced":["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "merced":["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
 
     #MCTC
-    "madera":["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "madera":["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
 
     # MTC
-    "alameda": ["2.6","3.4","3.10","3.11","3.12","3.13"],
-    "contracosta": ["2.6","3.4","3.10","3.11","3.12","3.13"],
-    "marin": ["2.6","3.4","3.10","3.11","3.12","3.13"],
-    "napa": ["3.4","3.10","3.11","3.12","3.13"],
-    "sanfrancisco": ["2.6","3.4","3.10","3.11","3.12","3.13"],
-    "sanmateo": ["3.4","3.10","3.11","3.12","3.13"],
-    "santaclara": ["2.6","3.4","3.10","3.11","3.12","3.13"],
-    "solano": ["2.6","3.4","3.10","3.11","3.12","3.13"],
-    "sonoma": ["2.6","3.4","3.10","3.11","3.12","3.13"],
+    "alameda": ["2.6","3.10","3.11","3.12","3.13"],
+    "contracosta": ["2.6","3.10","3.11","3.12","3.13"],
+    "marin": ["2.6","3.10","3.11","3.12","3.13"],
+    "napa": ["3.10","3.11","3.12","3.13"],
+    "sanfrancisco": ["2.6","3.10","3.11","3.12","3.13"],
+    "sanmateo": ["3.10","3.11","3.12","3.13"],
+    "santaclara": ["2.6","3.10","3.11","3.12","3.13"],
+    "solano": ["2.6","3.10","3.11","3.12","3.13"],
+    "sonoma": ["2.6","3.10","3.11","3.12","3.13"],
 
     # SACOG
     "eldorado": [],
-    "placer": ["3.1",],
+    "placer": [],
     "sacramento": [],
     "sutter": [],
     "yolo": [],
     "yuba": [],
 
     # SANDAG
-    "sandiego": ["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "sandiego": ["3.3","3.10","3.11","3.12","3.13","3.14"],
 
     #SBCAG
-    "santabarbara":["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "santabarbara":["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
 
     # SCAG
-    "imperial": ["3.4","3.10","3.11","3.12","3.13","3.14"],
-    "losangeles": ["3.4","3.10","3.11","3.12","3.13","3.14"],
-    "orange": ["3.4","3.10","3.11","3.12","3.13","3.14"],
-    "riverside": ["3.4","3.10","3.11","3.12","3.13","3.14"],
-    "sanbernardino": ["3.4","3.10","3.11","3.12","3.13","3.14"],
-    "ventura": ["3.4","3.10","3.11","3.12","3.13","3.14"],
+    "imperial": ["3.10","3.11","3.12","3.13","3.14"],
+    "losangeles": ["3.10","3.11","3.12","3.13","3.14"],
+    "orange": ["3.10","3.11","3.12","3.13","3.14"],
+    "riverside": ["3.10","3.11","3.12","3.13","3.14"],
+    "sanbernardino": ["3.10","3.11","3.12","3.13","3.14"],
+    "ventura": ["3.10","3.11","3.12","3.13","3.14"],
 
     #SJCOG
-    "sanjoaquin":["3.1","3.2","3.3","3.4","3.5","3.6","3.7","3.8","3.10","3.11","3.12","3.13","3.14"],
+    "sanjoaquin":["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
 
     #SLOCOG
-    "sanluis":["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "sanluisobispo":["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
 
     #SRTA
-    "shasta":["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "shasta":["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
 
     #StanCOG"
-    "stanislaus":["3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "stanislaus":["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
 
     # OTHER COUNTIES
-    "alpine": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "amador": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "calaveras": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "colusa": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "delnorte": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "fresno": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "glenn": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "humboldt": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "inyo": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "kings": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "lake": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "lassen": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "madera": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "mariposa": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "mendocino": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "merced": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "modoc": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "mono": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "monterey": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "nevada": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "plumas": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "sanbenito": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "sanjoaquin": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "sanluisobispo": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "santabarbara": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "santacruz": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "shasta": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "sierra": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "siskiyou": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "stanislaus": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "tehama": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "trinity": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "tulare": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
-    "tuolumne": ["2.6","3.3","3.4","3.10","3.11","3.12","3.13","3.14"],
+    "alpine": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "amador": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "calaveras": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "colusa": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "delnorte": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "glenn": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "humboldt": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "inyo": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "lake": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "lassen": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "mariposa": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "mendocino": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "modoc": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "mono": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "nevada": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "plumas": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "sierra": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "siskiyou": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "tehama": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "trinity": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "tulare": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
+    "tuolumne": ["2.6","3.3","3.10","3.11","3.12","3.13","3.14"],
 
 }
+
 
 # 03/12/2020 Feb 18 version of Criteria Spreadsheet. Includes updates from Helen as well as the addition of the species requirement (8.5). Includes 3.9 -3.14 (yellow stuff)
 exemptions = {
@@ -1124,8 +1119,10 @@ for input_parcels_fc_name in input_parcels_fc_list:
 
     # Create output Feature Class for Data Basin and for Dev Team if they don't already exist ##############
     if not arcpy.Exists(output_parcels_fc):
+        print "Copying to Data Basin GDB"
         copy_parcels_fc(input_parcels_fc, output_parcels_fc)
     if not arcpy.Exists(output_parcels_fc_dev_team):
+        print "Copying to Dev Team GDB..."
         copy_parcels_fc(input_parcels_fc, output_parcels_fc_dev_team)
 
     # Get a list of the fields that currently exist in the output feature class.
@@ -1135,8 +1132,9 @@ for input_parcels_fc_name in input_parcels_fc_list:
 
     # Calling this function will delete any pre-existing rows in the requirements table for the counties being processed.
     # If running on all counties with "*",  manually delete the requirements table first.
-    #calculate_requirements(requirements_to_process)
+    calculate_requirements(requirements_to_process)
 
+    # NOT NEEDED if all the additional requirements are processed by models called by this script.
     # Join Additional Requirement Fields (From Kai and other staff). Field names must have requiement ID at the end (e.g., 3_10)
     #requirements_to_join = ["3.10", "3.11", "3.12", "3.13"]
     #join_additional_requirements(join_requirements_table, requirements_to_join)
@@ -1144,7 +1142,7 @@ for input_parcels_fc_name in input_parcels_fc_list:
 
     # Calling this function will delete any pre-existing rows in the exemptions table for the counties being processed.
     # If running on all counties with "*",  manually delete the exemptions table first.
-    #calculate_exemptions()
+    calculate_exemptions()
 
     create_requirements_table_dev_team()
     create_exemptions_table_dev_team()
