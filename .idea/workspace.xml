@@ -2,10 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7b3751b4-152f-460c-8539-1fb51277ddec" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_Statewide.py" beforeDir="false" afterPath="$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_Statewide.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Revised_2.1.py" beforeDir="false" afterPath="$PROJECT_DIR$/Revised_2.1.py" afterDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
-    <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -15,9 +14,10 @@
     <SUITE FILE_PATH="coverage/CEQA$call.coverage" NAME="call Coverage Results" MODIFIED="1574117980906" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/CEQA$Create_Dummy_Data.coverage" NAME="Create_Dummy_Data Coverage Results" MODIFIED="1578508919504" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/CEQA$Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table.coverage" NAME="Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table Coverage Results" MODIFIED="1585343576458" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/CEQA$Calculate_CEQA_Requirements_and_Exemptions_Statewide.coverage" NAME="Calculate_CEQA_Requirements_and_Exemptions_Statewide Coverage Results" MODIFIED="1589406576369" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/CEQA$Calculate_CEQA_Requirements_and_Exemptions_Statewide.coverage" NAME="Calculate_CEQA_Requirements_and_Exemptions_Statewide Coverage Results" MODIFIED="1595371692908" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/CEQA$List_Fields.coverage" NAME="List_Fields Coverage Results" MODIFIED="1579198946443" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/CEQA$arc_objects_get_symbology_from_lyr__1_.coverage" NAME="arc_objects_get_symbology_from_lyr (1) Coverage Results" MODIFIED="1586374159155" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/CEQA$test_calc.coverage" NAME="test_calc Coverage Results" MODIFIED="1594154097521" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:/test" />
+    <SUITE FILE_PATH="coverage/CEQA$arc_objects_get_symbology_from_lyr__1_.coverage" NAME="arc_objects_get_symbology_from_lyr (1) Coverage Results" MODIFIED="1595443282942" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/CEQA$Prepare_Parcels.coverage" NAME="Prepare_Parcels Coverage Results" MODIFIED="1582917387235" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/CEQA$Revised_2_2.coverage" NAME="Revised_2.2 Coverage Results" MODIFIED="1583531900061" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/CEQA$Calculate_CEQA_Requirements_and_Exemptions.coverage" NAME="Calculate_CEQA_Requirements_and_Exemptions Coverage Results" MODIFIED="1583525904339" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -30,64 +30,6 @@
     <SUITE FILE_PATH="coverage/CEQA$Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table_Statewide.coverage" NAME="Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table_Statewide Coverage Results" MODIFIED="1586821696782" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/CEQA$Rasterize_and_Upload_Requirements.coverage" NAME="Rasterize_and_Upload_Requirements Coverage Results" MODIFIED="1575394985722" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/CEQA$Test_Exemptions_Bug.coverage" NAME="Test_Exemptions_Bug Coverage Results" MODIFIED="1580166506361" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-  </component>
-  <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Revised_2.1.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Revised_2.1.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="131" column="90" lean-forward="true" selection-start-line="131" selection-start-column="90" selection-end-line="131" selection-end-column="90" />
-              <folding>
-                <element signature="e#0#12#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Revised_2.2.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Revised_2.2.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="18" lean-forward="true" selection-start-line="18" selection-end-line="18" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="arc_objects_get_symbology_from_lyr.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/arc_objects_get_symbology_from_lyr.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="813">
-              <caret line="128" column="43" selection-start-line="128" selection-start-column="43" selection-end-line="128" selection-end-column="43" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Prepare_Parcels.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Prepare_Parcels.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="323">
-              <caret line="19" column="19" selection-start-line="19" selection-start-column="19" selection-end-line="19" selection-end-column="19" />
-              <folding>
-                <element signature="e#502#514#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Calculate_CEQA_Requirements_and_Exemptions_Statewide.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_Statewide.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="773" column="66" selection-start-line="773" selection-start-column="66" selection-end-line="773" selection-end-column="66" />
-              <folding>
-                <element signature="e#15045#16273#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -114,11 +56,13 @@
         <option value="C:/Python27/ArcGIS10.6/Lib/site-packages/comtypes/__init__.py" />
         <option value="$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_NoData.py" />
         <option value="$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table.py" />
-        <option value="$PROJECT_DIR$/arc_objects_get_symbology_from_lyr.py" />
         <option value="$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table_Statewide.py" />
         <option value="$PROJECT_DIR$/Calculate_CEQA_Requirements_Statewide.py" />
         <option value="$PROJECT_DIR$/Revised_2.1.py" />
+        <option value="C:/test/test_calc.py" />
+        <option value="F:/Projects2/Staff/Justin/Python_Field_Calculations/how_to_calculate_fields.py" />
         <option value="$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_Statewide.py" />
+        <option value="$PROJECT_DIR$/arc_objects_get_symbology_from_lyr.py" />
       </list>
     </option>
   </component>
@@ -128,18 +72,23 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="20" />
-    <option name="y" value="10" />
-    <option name="width" value="1372" />
-    <option name="height" value="1040" />
+  <component name="ProjectFrameBounds" extendedState="1">
+    <option name="x" value="47" />
+    <option name="y" value="42" />
+    <option name="width" value="1880" />
+    <option name="height" value="1005" />
   </component>
+  <component name="ProjectId" id="1nlc0OGpQKIKAbnNtq1s0uCyyMM" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -152,57 +101,7 @@
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
-  </component>
-  <component name="RunManager" selected="Python.Calculate_CEQA_Requirements_and_Exemptions_Statewide">
-    <configuration name="Calculate_CEQA_Requirements_and_Exemptions_NoData" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="CEQA" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_NoData.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-    </configuration>
-    <configuration name="Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="CEQA" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-    </configuration>
+  <component name="RunManager" selected="Python.Revised_2.1">
     <configuration name="Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table_Statewide" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="CEQA" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -221,6 +120,9 @@
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
     </configuration>
     <configuration name="Calculate_CEQA_Requirements_and_Exemptions_Statewide" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="CEQA" />
@@ -240,6 +142,31 @@
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Revised_2.1" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="CEQA" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Revised_2.1.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
     </configuration>
     <configuration name="arc_objects_get_symbology_from_lyr (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="CEQA" />
@@ -259,24 +186,50 @@
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="test_calc" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="CEQA" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="C:/test" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="C:/test/test_calc.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
     </configuration>
     <list>
       <item itemvalue="Python.arc_objects_get_symbology_from_lyr (1)" />
-      <item itemvalue="Python.Calculate_CEQA_Requirements_and_Exemptions_NoData" />
-      <item itemvalue="Python.Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table" />
       <item itemvalue="Python.Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table_Statewide" />
       <item itemvalue="Python.Calculate_CEQA_Requirements_and_Exemptions_Statewide" />
+      <item itemvalue="Python.test_calc" />
+      <item itemvalue="Python.Revised_2.1" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.Calculate_CEQA_Requirements_and_Exemptions_Statewide" />
-        <item itemvalue="Python.Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table_Statewide" />
+        <item itemvalue="Python.Revised_2.1" />
         <item itemvalue="Python.arc_objects_get_symbology_from_lyr (1)" />
-        <item itemvalue="Python.Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table" />
-        <item itemvalue="Python.Calculate_CEQA_Requirements_and_Exemptions_NoData" />
+        <item itemvalue="Python.Calculate_CEQA_Requirements_and_Exemptions_Statewide" />
+        <item itemvalue="Python.test_calc" />
+        <item itemvalue="Python.Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table_Statewide" />
       </list>
     </recent_temporary>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="project-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration />
     <option name="IGNORE_SPACES_IN_ANNOTATE" value="true" />
@@ -288,6 +241,17 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1570659952352</updated>
+      <workItem from="1611967894934" duration="832000" />
+      <workItem from="1620249774765" duration="7349000" />
+      <workItem from="1622479287601" duration="1164000" />
+      <workItem from="1623426752746" duration="1145000" />
+      <workItem from="1624294504076" duration="1800000" />
+      <workItem from="1626201625273" duration="1725000" />
+      <workItem from="1626716475727" duration="1106000" />
+      <workItem from="1638487481699" duration="1412000" />
+      <workItem from="1639515247732" duration="1617000" />
+      <workItem from="1649268396615" duration="1215000" />
+      <workItem from="1651769610071" duration="13861000" />
     </task>
     <servers />
   </component>
@@ -303,23 +267,23 @@
     </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="47" y="42" width="1880" height="1005" extended-state="1" />
     <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.18100558" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.23575419" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.36312848" />
       <window_info content_ui="combo" id="Project" order="0" weight="0.06503198" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="right" id="SciView" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.15307263" />
       <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.15307263" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -353,39 +317,17 @@
     </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="1" />
-  </component>
-  <component name="VcsContentAnnotationSettings">
-    <option name="myLimit" value="2678400000" />
+    <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="OFFER_MOVE_TO_ANOTHER_CHANGELIST_ON_PARTIAL_COMMIT" value="true" />
     <option name="INCLUDE_TEXT_INTO_SHELF" value="false" />
     <option name="USE_COMMIT_MESSAGE_MARGIN" value="false" />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <option name="time" value="65" />
-    </breakpoint-manager>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/CEQA$Revised_2_1.coverage" NAME="Revised_2.1 Coverage Results" MODIFIED="1653515637556" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_Statewide.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="9" column="109" selection-start-line="9" selection-start-column="109" selection-end-line="9" selection-end-column="109" />
-          <folding>
-            <element signature="e#15045#16273#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/arc_objects_get_symbology_from_lyr.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4335">
-          <caret line="260" column="59" lean-forward="true" selection-start-line="260" selection-start-column="59" selection-end-line="260" selection-end-column="59" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Create_Real_Data.py" />
     <entry file="file://$PROJECT_DIR$/Rasterize_and_Upload_Requirements.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -499,7 +441,6 @@
     </entry>
     <entry file="file://$USER_HOME$/AppData/Local/Temp/README-MS58.txt" />
     <entry file="file://$USER_HOME$/AppData/Local/Temp/CBI_Data_Catalog_Script-1.py" />
-    <entry file="file://$USER_HOME$/AppData/Local/Temp/CBI_Data_Catalog_Script.py" />
     <entry file="file://$PROJECT_DIR$/List_Fields.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="459">
@@ -546,56 +487,59 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table_Statewide.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="481">
-          <caret line="259" lean-forward="true" selection-start-line="259" selection-end-line="259" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="337">
-          <caret line="206" column="41" selection-start-line="206" selection-start-column="41" selection-end-line="206" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="104" column="26" selection-start-line="104" selection-start-column="26" selection-end-line="104" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table_Statewide.py" />
+    <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_NoData_Change_Exemptions_Table.py" />
+    <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions.py" />
     <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_Statewide.py" />
-    <entry file="file://$PROJECT_DIR$/Revised_2.2.py">
+    <entry file="file://C:/test/test_calc.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="18" lean-forward="true" selection-start-line="18" selection-end-line="18" />
+        <state relative-caret-position="391">
+          <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://F:/Projects2/Staff/Justin/Python_Field_Calculations/how_to_calculate_fields.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="23" selection-start-line="23" selection-end-line="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Temp/CBI_Data_Catalog_Script.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="595">
+          <caret line="37" column="41" selection-start-line="37" selection-start-column="41" selection-end-line="37" selection-end-column="41" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Revised_2.1.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="131" column="90" lean-forward="true" selection-start-line="131" selection-start-column="90" selection-end-line="131" selection-end-column="90" />
+        <state relative-caret-position="2210">
+          <caret line="131" column="90" selection-start-line="131" selection-start-column="90" selection-end-line="131" selection-end-column="90" />
           <folding>
             <element signature="e#0#12#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Revised_2.2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="18" selection-start-line="18" selection-end-line="18" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/arc_objects_get_symbology_from_lyr.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="813">
-          <caret line="128" column="43" selection-start-line="128" selection-start-column="43" selection-end-line="128" selection-end-column="43" />
+        <state relative-caret-position="1887">
+          <caret line="116" column="39" selection-start-line="116" selection-start-column="39" selection-end-line="116" selection-end-column="39" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Prepare_Parcels.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="19" column="19" selection-start-line="19" selection-start-column="19" selection-end-line="19" selection-end-column="19" />
+        <state relative-caret-position="119">
+          <caret line="7" column="107" selection-start-line="7" selection-start-column="107" selection-end-line="7" selection-end-column="107" />
           <folding>
             <element signature="e#502#514#0" expanded="true" />
           </folding>
@@ -604,11 +548,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Calculate_CEQA_Requirements_and_Exemptions_Statewide.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="773" column="66" selection-start-line="773" selection-start-column="66" selection-end-line="773" selection-end-column="66" />
-          <folding>
-            <element signature="e#15045#16273#0" />
-          </folding>
+        <state relative-caret-position="48">
+          <caret line="558" column="10" selection-start-line="558" selection-start-column="10" selection-end-line="558" selection-end-column="10" />
         </state>
       </provider>
     </entry>
